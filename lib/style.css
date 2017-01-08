@@ -1,0 +1,86 @@
+body{
+	font-family: Helvetica, "Trebuchet MS" , Arial;
+	font-size: small;
+}
+input {
+	text-align: center;
+}
+.part.result {
+	border: 1px solid #C5C5C5;
+	background-color: #EEEEEE;
+}
+#formulaireCalcPvAutonome {
+	float: left;
+    width: 520px;
+}
+#CarteZone{
+	float: right;
+}
+#CarteZone img{
+	width: 500px;
+	border: 1px solid #C5C5C5;
+}
+.form {
+	margin: 7px;
+}
+#Reset {
+	color: #616161;
+}
+.End {
+	margin-top: 20px;
+}
+
+
+/* Onglet */
+#onglets{
+	display: none;
+}
+#onglets li{
+	float: left;
+	list-style: none;
+	padding: 7px;
+	margin-right: 5px;
+	border: 1px solid #000000;
+	cursor: pointer;
+	background-color: #EEEEEE;
+	z-index: 1;
+}
+#onglets .actif{
+	border-bottom: none;
+	font-weight: bold;
+	z-index: 10;
+}
+#contenu{
+	clear: both;
+	margin: 0 20px;
+	padding: 10px;
+	border: 1px solid #000000;
+	background-color: #EEEEEE;
+	width: 500px;
+	overflow: hidden;
+	border-radius: 5px;
+}
+
+/* Infobulle */
+a.bulles {
+	color:#07396A;
+	text-decoration:none;
+	cursor:pointer;
+	cursor:hand
+}
+a:hover.bulles {
+	text-decoration:none;
+}
+#tooltip {
+    position:absolute;
+    z-index:9999;
+    color:#fff;
+    width:210px;
+}
+/* hack IE */
+*html #tooltip .tipHeader {margin-bottom:-6px;}
+#tooltip .tipBody {
+    background-color:#000;
+    padding:5px;
+}
+

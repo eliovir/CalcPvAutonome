@@ -184,7 +184,7 @@ if (isset($_GET['submit'])) {
 </form>
 
 <div id="CarteZone">
-	<a href="./img/Zone-solar-map-fr.png" target="_blank"><img src="./img/Zone-solar-map-fr.png" /></a>
+	<a href="./lib/Zone-solar-map-fr.png" target="_blank"><img src="./lib/Zone-solar-map-fr.png" /></a>
 </div>
  
 <script type="text/javascript">
