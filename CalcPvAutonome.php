@@ -6,6 +6,7 @@ if (isset($_GET['submit'])) {
 ?>
 <div class="part result">
 	<h2 class="titre result">Résultat du dimensionnement</h2>
+	<p><b>Avertissement</b>: Les résultats sont donnés à titre indicatifs. </p>
 	<h3>Les panneaux photovoltaïques</h3>
 	<p>On cherche ici la puissance (crête exprimé en W) des panneaux photovoltaïque à installer pour satisfaire vos besoins en fonction de votre situation géographique. La formule est la suivante : </p>
 	<p>Pc = Bj / (Rb X Ri X Ej)</p>
@@ -290,3 +291,4 @@ $( "#Reset" ).click(function() {
 });
 
 </script>
+

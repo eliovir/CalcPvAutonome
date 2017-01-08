@@ -8,7 +8,7 @@
 </head>
 <body>
 	<h1>Calculer/dimensionner son installation photovoltaïque en site isolé (autonome)</h1>
-	<p><b>Avertissement</b>: Les résultats sont donnés à titre indicatifs. </p>
+	<p class="footer_right">Cet outil est libre de droit (<a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a>), voir le <a href="https://github.com/kepon85/CalcPvAutonome">dépôt github</a></p>
 	<?php include('./CalcPvAutonome.php'); ?>
 </body>
 </html>
