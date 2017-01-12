@@ -7,8 +7,16 @@
 	<link href="./lib/style.css" media="screen" rel="stylesheet" type="text/css" />	
 </head>
 <body>
-	<h1>Calculer/dimensionner son installation photovoltaïque en site isolé (autonome)</h1>
-	<p class="footer_right">Cet outil est libre de droit (<a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a>), voir le <a href="https://github.com/kepon85/CalcPvAutonome">dépôt github</a></p>
-	<?php include('./CalcPvAutonome.php'); ?>
+	<div id="page-wrap">
+		<h1>Calculer/dimensionner son installation photovoltaïque en site isolé (autonome)</h1>
+		<?php include('./CalcPvAutonome.php'); ?>
+		<div id="footer">
+            <p class="footer_right">Par <a href="http://david.mercereau.info/">David Mercereau</a> (<a href="https://github.com/kepon85/CalcPvAutonome">Dépôt github</a>)</p>
+            <p class="footer_left">Cet outil est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
+        </div>
+	</div>
+	<div id="bg">
+		<img src="./lib/solar-panel-1393880_1280.png" alt="">
+	</div>
 </body>
 </html>

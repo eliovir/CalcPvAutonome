@@ -1,7 +1,7 @@
 <script src="./lib/jquery-3.1.1.slim.min.js"></script> 
 <?php 
 include('./lib/Fonction.php');
-$config_ini = parse_ini_file('./config.ini'); 
+$config_ini = parse_ini_file('./config.ini', true); 
 if (isset($_GET['submit'])) {
 ?>
 <div class="part result">
@@ -18,7 +18,7 @@ if (isset($_GET['submit'])) {
 		<li>Ej : rayonnement moyen quotidien du mois le plus défavorable dans le plan du panneau (kWh/m²/j)</li>
 		<?php 
 		if (empty($_GET['Ej']) && isset($_GET['ZoneId'])) {
-			$Ej = $config_ini['zone'.$_GET['ZoneId'].'_'.$_GET['Deg']];
+			$Ej = $config_ini['irradiation']['zone'.$_GET['ZoneId'].'_'.$_GET['Deg']];
 			echo '<ul><li>Vous avez sélectionné la Zone '.$_GET['ZoneId'].' avec un angle de '.$_GET['Deg'].'°, nous allons considérer Ej égale à '.$Ej.'</li></ul>';
 		} else {
 			$Ej = $_GET['Ej'];
@@ -86,7 +86,7 @@ if (isset($_GET['submit'])) {
 		<p>C'est l'étape la plus importante pour votre dimensionnement. Pour vous y aider faites un tableau avec chaque appareil & leur durée d'utilisation comme <a href="http://energie-developpement.blogspot.fr/2011/09/calculer-la-consommation-denergie-dune.html" target="_blank">expliqué sur cet article</a></p>
 		
 		<div class="form Bj">
-			<label>Vesoins électrique journalier :</label>
+			<label>Vos besoins électrique journalier :</label>
 			<input id="Bj" type="number" min="1" max="99999" style="width: 100px;" value="<?php echo valeurRecup('Bj'); ?>" name="Bj" />  Wh/j
 		</div>
 		<?php

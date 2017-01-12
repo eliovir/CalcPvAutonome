@@ -5,6 +5,51 @@ body{
 input {
 	text-align: center;
 }
+
+
+/* L'image en background */
+#bg {
+	position:fixed; 
+	top:-50%; 
+	left:-50%; 
+	width:200%; 
+	height:200%;
+}
+#bg img {
+	position:absolute; 
+	top:0; 
+	left:0; 
+	right:0; 
+	bottom:0; 
+	margin:auto; 
+	min-width:50%;
+	min-height:50%;
+}
+
+/* Le carde de la page */		
+#page-wrap { 
+	position: relative; 
+	z-index: 2; 
+	width: 90%; 
+	margin: 50px auto; 
+	padding: 20px; 
+	background: white; 
+	-moz-box-shadow: 0 0 20px black; 
+	-webkit-box-shadow: 0 0 20px black; 
+	box-shadow: 0 0 20px black; 
+	opacity: 0.95;
+}
+
+/* Pied de page */
+#footer {
+	clear: both;
+	padding: 10px;
+}
+.footer_right {
+	float: right;
+}
+
+/* Des trucs des formulaires */
 .part.result {
 	border: 1px solid #C5C5C5;
 	background-color: #EEEEEE;
@@ -61,15 +106,17 @@ input {
 	border-radius: 5px;
 }
 
+a {
+	color:#07396A;
+	text-decoration:underline;
+}
+
 /* Infobulle */
 a.bulles {
 	color:#07396A;
 	text-decoration:none;
 	cursor:pointer;
 	cursor:hand
-}
-a:hover.bulles {
-	text-decoration:none;
 }
 #tooltip {
     position:absolute;
