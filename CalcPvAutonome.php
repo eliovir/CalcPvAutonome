@@ -5,68 +5,165 @@ $config_ini = parse_ini_file('./config.ini', true);
 if (isset($_GET['submit'])) {
 ?>
 <div class="part result">
-	<h2 class="titre result">Résultat du dimensionnement</h2>
+	<h2 class="titre">Résultat du dimensionnement</h2>
 	<p><b>Avertissement</b>: Les résultats sont donnés à titre indicatifs. </p>
+	<!-- 
+		Les PV
+	-->
 	<h3>Les panneaux photovoltaïques</h3>
-	<p>On cherche ici la puissance (crête exprimé en W) des panneaux photovoltaïque à installer pour satisfaire vos besoins en fonction de votre situation géographique. La formule est la suivante : </p>
-	<p>Pc = Bj / (Rb X Ri X Ej)</p>
-	<ul>
-		<li>Pc (Wc) : Puissance crête</li>
-		<li>Bj (Wh/j) : Besoin journalier</li>
-		<li>Rb : rendement électrique des batteries</li>
-		<li>Ri : rendement électrique du reste de l’installation (régulateur de charge…)</li>
-		<li>Ej : rayonnement moyen quotidien du mois le plus défavorable dans le plan du panneau (kWh/m²/j)</li>
+	<div id="resultCalcPv" class="calcul">
+		<p>On cherche ici la puissance (crête exprimé en W) des panneaux photovoltaïque à installer pour satisfaire vos besoins en fonction de votre situation géographique. La formule est la suivante : </p>
+		<p>Pc = Bj / (Rb X Ri X Ej)</p>
+		<ul>
+			<li>Pc (Wc) : Puissance crête</li>
+			<li>Bj (Wh/j) : Besoin journalier</li>
+			<li>Rb : rendement électrique des batteries</li>
+			<li>Ri : rendement électrique du reste de l’installation (régulateur de charge…)</li>
+			<li>Ej : rayonnement moyen quotidien du mois le plus défavorable dans le plan du panneau (kWh/m²/j)</li>
+			<?php 
+			if (empty($_GET['Ej']) && isset($_GET['ZoneId'])) {
+				$Ej = $config_ini['irradiation']['zone'.$_GET['ZoneId'].'_'.$_GET['Deg']];
+				echo '<ul><li>Vous avez sélectionné la Zone '.$_GET['ZoneId'].' avec un angle de '.$_GET['Deg'].'°, nous allons considérer Ej égale à '.$Ej.'</li></ul>';
+			} else {
+				$Ej = $_GET['Ej'];
+			}
+			?>
+		</ul>
+		<p>Dans votre cas ça nous fait : </p>
 		<?php 
-		if (empty($_GET['Ej']) && isset($_GET['ZoneId'])) {
-			$Ej = $config_ini['irradiation']['zone'.$_GET['ZoneId'].'_'.$_GET['Deg']];
-			echo '<ul><li>Vous avez sélectionné la Zone '.$_GET['ZoneId'].' avec un angle de '.$_GET['Deg'].'°, nous allons considérer Ej égale à '.$Ej.'</li></ul>';
+		$Pc = convertNumber($_GET['Bj'])/(convertNumber($_GET['Rb'])*convertNumber($_GET['Ri'])*convertNumber($Ej));
+		?>
+		<p><a class="more" id="resultCalcPvHide">Cacher le calcul</a></p>
+		<p>Pc = <?= $_GET['Bj'] ?> / (<?= $_GET['Rb'] ?> * <?= $_GET['Ri'] ?> * <?= $Ej ?>) = <b><?= convertNumber($Pc, 'print') ?> Wc</b></p>
+	</div>
+	
+	<p>Vous avez donc besoin d'une puissance de panneau photovoltaîque équivalente à <b><?= convertNumber($Pc, 'print') ?>Wc</b>.</p>
+	<p><a id="resultCalcPvShow">Voir, comprendre la démarche, le calcul</a></p>
+	<p>Une fourchette de budget est estimé entre <?= convertNumber($config_ini['prix']['pv_bas']*$Pc, 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['pv_haut']*$Pc, 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['pv_bas'] ?>€/Wc en fourchette basse & <?= $config_ini['prix']['pv_haut'] ?>€/Wc en haute">?</a>)</p>
+	<!-- 
+		Les batteries
+	-->
+	<h3>Les batteries</h3>
+	<div id="resultCalcBat" class="calcul">
+		<p>On cherche ici la capacité nominale des batteries exprimé en ampères heure (Ah)</p>
+		<?php 
+		// Si le niveau est débutant on choisie pour lui
+		if ($_GET['Ni'] == 1) {
+			$_GET['Aut'] = 5;
+			$_GET['DD'] = 80;
+		} 
+		// Si la tension U à été mise en automatique ou que le niveau n'est pas expert
+		if ($_GET['U'] == 0 || $_GET['Ni'] != 3) {
+			if (convertNumber($Pc) < 800) {
+				$U = 12;
+			} elseif (convertNumber($Pc) > 1600) {
+				$U = 48;
+			} else {	
+				$U = 24;
+			}
 		} else {
-			$Ej = $_GET['Ej'];
+			$U = $_GET['U'];
 		}
 		?>
-	</ul>
-	<p>Dans votre cas ça nous fait : </p>
-	<?php 
-	$Pc = convertNumber($_GET['Bj'])/(convertNumber($_GET['Rb'])*convertNumber($_GET['Ri'])*convertNumber($Ej));
-	?>
-	<p>Pc = <?= $_GET['Bj'] ?> / (<?= $_GET['Rb'] ?> * <?= $_GET['Ri'] ?> * <?= $Ej ?>) = <b><?= convertNumber($Pc, 'print') ?> Wc</b></p>
-	<p>Vous avez donc besoin d'une puissance de panneau photovoltaîque équivalente à <b><?= convertNumber($Pc, 'print') ?>Wc</b>.</p>
-	<h3>Les batteries</h3>
-	<p>On cherche ici la capacité nominale des batteries exprimé en ampères heure (Ah)</p>
-	<?php 
-	// Si le niveau est débutant on choisie pour lui
-	if ($_GET['Ni'] == 1) {
-		$_GET['Aut'] = 5;
-		$_GET['DD'] = 80;
-	} 
-	// Si la tension U à été mise en automatique ou que le niveau n'est pas expert
-	if ($_GET['U'] == 0 || $_GET['Ni'] != 3) {
-		if (convertNumber($Pc) < 800) {
-			$U = 12;
-		} elseif (convertNumber($Pc) > 1600) {
-			$U = 48;
-		} else {	
-			$U = 24;
-		}
-	} else {
-		$U = $_GET['U'];
-	}
-	?>
-	<p>Cap = (Bj x Aut) / (DD x U)</p>
-	<ul>
-		<li>Cap (Ah) : Capacité nominale des batteries</li>
-		<li>Bj (Wh/j) : Besoin journalier</li>
-		<li>Aut : Nombre de jour d'autonomie (sans soleil)</li>
-		<li>DD (%) : <a rel="tooltip" class="bulles" title="Avec la technologie AGM il ne faut pas passer sous le seuil critique des 50%">Degré de décharge maximum</a></li>
-		<li>U (V) : <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 800Wc : 12V<br />De 800 à 1600 Wc : 24V<br />Au dessus de 1600 Wc : 48V">Tension du finale du parc de batterie</a></li>
-	</ul>
-	<p>Dans votre cas ça nous fait : </p>
-	<?php 
-	$Cap = (convertNumber($_GET['Bj'])*convertNumber($_GET['Aut']))/(convertNumber($_GET['DD'])*0.01*convertNumber($U));
-	?>
-	<p>Cap = (<?= $_GET['Bj'] ?> x <?= $_GET['Aut'] ?>) / (<?= $_GET['DD']*0.01 ?> x <?= $U ?>) = <b><?= convertNumber($Cap, 'print') ?> Ah</b></p>
+		<p>Cap = (Bj x Aut) / (DD x U)</p>
+		<ul>
+			<li>Cap (Ah) : Capacité nominale des batteries</li>
+			<li>Bj (Wh/j) : Besoin journalier</li>
+			<li>Aut : Nombre de jour d'autonomie (sans soleil)</li>
+			<li>DD (%) : <a rel="tooltip" class="bulles" title="Avec la technologie AGM il ne faut pas passer sous le seuil critique des 50%">Degré de décharge maximum</a></li>
+			<li>U (V) : <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 800Wc : 12V<br />De 800 à 1600 Wc : 24V<br />Au dessus de 1600 Wc : 48V">Tension du finale du parc de batterie</a></li>
+		</ul>
+		<p>Dans votre cas ça nous fait : </p>
+		<?php 
+		$Cap = (convertNumber($_GET['Bj'])*convertNumber($_GET['Aut']))/(convertNumber($_GET['DD'])*0.01*convertNumber($U));
+		?>
+		<p><a class="more" id="resultCalcBatHide">Cacher le calcul</a></p>
+		<p>Cap = (<?= $_GET['Bj'] ?> x <?= $_GET['Aut'] ?>) / (<?= $_GET['DD']*0.01 ?> x <?= $U ?>) = <b><?= convertNumber($Cap, 'print') ?> Ah</b></p>
+	</div>
 	<p>Vous avez donc besoin d'un parc de batterie de <b><?= convertNumber($Cap, 'print') ?> Ah en <?= $U ?> V</b>.</p>
+	<p><a id="resultCalcBatShow">Voir, comprendre la démarche, le calcul</a></p>	
+	<?php 
+	// Config batterie : 
+	$meilleurParcBatterie['nbBatterieParallele'] = 99999;
+	$meilleurParcBatterie['diffCap'] = 99999;
+	$meilleurParcBatterie['nom'] = 'Impossible à déterminer';
+	$meilleurParcBatterie['V'] = 0;
+	$meilleurParcBatterie['Ah'] = 0;
+	foreach ($config_ini['batterie'] as $idBat => $batterie) {
+		// En mode auto on utilise les batteires 2V si on est au dessus des 550Ah
+		if ($_GET['ModBat'] == 'auto') {
+			if ($Cap > 550 && $batterie['V'] >= 12) {
+				continue;
+			} else if ($Cap < 550 && $batterie['V'] < 12) {
+				continue;
+			}
+		// Si on est en mode manuel on fait le calcul uniquement sur le bon modèl 
+		} else if ($_GET['ModBat'] != $idBat) {
+			continue;
+		}
+		// Calcul du nombre de batterie nessésaire 
+		// ENT(capacité recherché / capcité de la batterie)+1
+		$nbBatterie=intval($Cap / $batterie['Ah'])+1;
+		// Capacité déduite
+		$capParcBatterie=$batterie['Ah']*$nbBatterie;
+		// Différence avec la capacité souhauté
+		$diffCap=$capParcBatterie-$Cap;
+		// Debug
+		//echo '<br />';
+		//echo 'Pour '.$batterie['nom'].' ::: '.$nbBatterie ;
+		//echo ' | total (Ah)'.$capParcBatterie;
+		//echo ' | diff = '.$diffCap;
+		if ($nbBatterie < $meilleurParcBatterie['nbBatterieParallele']
+		|| $nbBatterie == $meilleurParcBatterie['nbBatterieParallele'] && $diffCap <= $meilleurParcBatterie['diffCap']) {
+			# Nouvelle meilleur config
+			// Debug
+			// echo 'nouvelle meilleur config';
+			$meilleurParcBatterie['diffCap'] = round($diffCap);
+			$meilleurParcBatterie['nom'] = $batterie['nom'];
+			$meilleurParcBatterie['V'] = $batterie['V'];
+			$meilleurParcBatterie['Ah'] = $batterie['Ah'];
+			$meilleurParcBatterie['nbBatterieParallele'] = $nbBatterie;
+			$meilleurParcBatterie['nbBatterieSerie'] = $U/$meilleurParcBatterie['V'];
+			$meilleurParcBatterie['nbBatterieTotal'] = $meilleurParcBatterie['nbBatterieSerie'] * $meilleurParcBatterie['nbBatterieParallele'];
+
+		}
+	}
+	if ($_GET['ModBat'] == 'auto') {
+		echo '<p>Une hypothèse de câblge serait d\'avoir <b>'.$meilleurParcBatterie['nbBatterieTotal'].' batterie(s)</b> de type <b>'.$meilleurParcBatterie['nom'].'</b> ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
+	} else {
+		echo '<p>Vous avez choisi de travailler avec des batterie(s) de type <b>'.$meilleurParcBatterie['nom'].'</b>, une hypothèse de câblge avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
+	}
+	echo '<ul><li>'.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s) (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah</a>) de '.$meilleurParcBatterie['nbBatterieSerie'].' série(s) (<a rel="tooltip" class="bulles" title="Tension de la batterie ('.$meilleurParcBatterie['V'].'V) * '.$meilleurParcBatterie['nbBatterieSerie'].' série(s)">pour une tension de '.$U.'V</a>) <a rel="tooltip" class="bulles" target="_blank" title="Pour comprendre le câblage des batteries" href="http://www.solarmad-nrj.com/cablagebatterie.html">?</a></li></ul>';
+	?>
+	<p>Une fourchette de budget est estimé entre <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas'] ?>€/Ah en fourchette basse & <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut'] ?>€/Ah en haute">?</a>)</p>
+	<h3>Le reste de l'équipement</h3>
+	<p>Il vous reste encore à choisir :</p>
+	<ul>
+		<li>Le régulateur de charge : il est entre les batteries et les panneaux, c'est lui qui gère la charge des batteries. Pour le choisir il faut connaître le courant et la tension d’arrivée des panneaux ;</li>
+		<li><a href="http://www.solarmad-nrj.com/convertisseur.html">Le convertisseur</a> : il est là pour convertir le signal continu des batteries <?= $U ?>V en signal alternatif 230V. Il se choisit avec le voltage d’entrée (ici <?= $U ?>V venus des batteries) et sa puissance maximum en sortie. Pour la puissance maximum de sortie il faut prendre votre appareil qui consomme le plus ou la somme de la puissance des appareils qui seront alumé en même temps ; </li>
+		<li>Le câblage, les éléments de protections...</li>
+	</ul>
 </div>
+<script type="text/javascript">
+	$( "#resultCalcPvShow" ).click(function() {
+		$( "#resultCalcPv" ).show( "slow" );
+		$( "#resultCalcPvShow" ).hide( "slow" );
+	});
+	$( "#resultCalcPvHide" ).click(function() {
+		$( "#resultCalcPv" ).hide( "slow" );
+		$( "#resultCalcPvShow" ).show( "slow" );
+	});
+	$( "#resultCalcBatShow" ).click(function() {
+		$( "#resultCalcBat" ).show( "slow" );
+		$( "#resultCalcBatShow" ).hide( "slow" );
+	});
+	$( "#resultCalcBatHide" ).click(function() {
+		$( "#resultCalcBat" ).hide( "slow" );
+		$( "#resultCalcBatShow" ).show( "slow" );
+	});
+	$( "#resultCalcPvHide" ).click();
+	$( "#resultCalcBatHide" ).click();
+</script>
 <?php
 }
 ?>
@@ -158,7 +255,7 @@ if (isset($_GET['submit'])) {
 	
 	<div class="part bat">
 		<h2 class="titre bat">Dimensionnement du parc de batterie</h2>
-		<p>Cet application est pré-paramétré pour des batteries plomb AGM.</p>
+		<p>Cet application est pré-paramétré pour des batteries plomb AGM/Gel/OPzV</p>
 		<div class="form Aut">
 			<label>Nombre de jours d'autonomies : </label>
 			<input maxlength="2" size="2" id="Aut" type="number" step="1" min="0" max="50" style="width: 50px" value="<?php echo valeurRecup('Aut'); ?>" name="Aut" />
@@ -176,11 +273,25 @@ if (isset($_GET['submit'])) {
 			<label>Degré de décharge : </label>
 			<input  maxlength="2" size="2" id="DD" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('DD'); ?>" name="DD" /> %
 		</div>
+		<div class="form ModBat">
+			<label>Modèle de batterie : </label>
+			<select id="ModBat" name="ModBat">
+				<option value="auto">Auto</option>
+				<?php 
+				foreach ($config_ini['batterie'] as $batModele => $batValeur) {
+					echo '<option value="'.$batModele.'"';
+					echo valeurRecupSelect('ModBat', $batModele);
+					echo '>'.$batValeur['nom'].'</option>';
+					echo "\n";
+				}
+				?>
+			</select> <a rel="tooltip" class="bulles" title="En mode automatique, au dessus de 550A, il sera utilisé des batteries GEL OPzV 2V">(?)</a>
+		</div>
 	</div>
 	
 	<div class="form End">
 		<input id="Reset" type="button" value="Remise à 0" name="reset" />
-		<input id="Submit" type="submit" value="Lancer le calcule" name="submit" />
+		<input id="Submit" type="submit" value="Lancer le calcul" name="submit" />
 	</div>
 </form>
 
@@ -241,6 +352,7 @@ function changeNiveau() {
 		$( ".form.U" ).hide();
 		$( ".form.DD" ).hide();
 		$( ".part.bat" ).hide();
+		$( ".form.ModBat" ).hide();
 	// Eclaire (2)
 	} else if  ($( "#Ni" ).val() == 2) {
 		$( ".form.Ri" ).hide();
@@ -249,6 +361,7 @@ function changeNiveau() {
 		$( ".form.U" ).hide();
 		$( ".form.DD" ).hide();
 		$( ".part.bat" ).show();
+		$( ".form.ModBat" ).hide();
 	// Expert (3)
 	} else if ($( "#Ni" ).val() == 3) {
 		$( ".form.Ri" ).show();
@@ -257,6 +370,7 @@ function changeNiveau() {
 		$( ".form.U" ).show();
 		$( ".form.DD" ).show();
 		$( ".part.bat" ).show();
+		$( ".form.ModBat" ).show();
 	}
 }
 changeNiveau();

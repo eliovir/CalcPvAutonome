@@ -27,4 +27,6 @@ function convertNumber($number, $to = null) {
 		return number_format($number, 3, '.', '');
 	}
 }
+
+
 ?>

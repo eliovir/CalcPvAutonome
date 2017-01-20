@@ -26,9 +26,9 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
 
 ### Todos
 
- - Estimation prix
+ - Hypotèse câblage PV. 
  - Prévoir d'autres technologie batterie que AGM
- - Expliquer qu'il faut un régulateur, convertisseur	
+ - Sauvegarde du résultat par URL, envoyer à un amis...
  - Faire un truc plus simple pour déterminer les besoins journaliers
  - Responsive
  - Test sans javascript
