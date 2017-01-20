@@ -16,8 +16,8 @@ Pour l'utilisateur de base :
 
   - 3 mode au formulaire (Débutant, Eclairé, Expert)
   - Pour déterminer l'ensoleillement : 
-		- (simple) Carte par zone
-		- (précis) Valeur du site http://ines.solaire.free.fr/gisesol_1.php (kWh/m²/j)
+	- (simple) Carte par zone
+	- (précis) Valeur du site http://ines.solaire.free.fr/gisesol_1.php (kWh/m²/j)
   - En mode expert, ajuster le degré de décharge, les valeurs de rendement électrique des batteries ou du reste de l'installation, 
   - Déduction automatique de la tension du parc de batteries à utiliser (possibiliter de forcer une valeur en mdoe expert)
   - Déduction automatique d'une configuration du parc de câblage des batteries et du modèle à utiliser (exemple : "2 batteries 220Ah 12V en série") (possibiliter de forcer un modèle de travail en mode expert)
