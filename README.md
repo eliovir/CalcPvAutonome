@@ -48,6 +48,8 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
 
 ### Todos
 
+ - Bug info bulle pas bien positionné
+ 
  - Hypotèse câblage PV. 
  - Prévoir d'autres technologie batterie que AGM
  - Sauvegarde du résultat par URL, envoyer à un amis...
@@ -55,6 +57,11 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
  - Responsive
  - Test sans javascript
  - Récup' valeur Ines directement (sans carte de zone)
+ - Traduction anglais
+ 
+CalcConsommation : 
+ - Plus de pédagogie sur le calcul
+ - Sauvegarder dans les cookies (il manque pas grand chose)
  
 ### Auteur
 

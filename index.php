@@ -5,12 +5,35 @@
 	<title>[CalcPvAutonome] Calculer/dimensionner son installation photovoltaïque en site isolé (autonome)</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<link href="./lib/style.css" media="screen" rel="stylesheet" type="text/css" />	
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="-1">
+	<script> 
+	<!-- https://www.browser-update.org/ -->
+	var $buoop = {vs:{i:10,f:40,o:-8,s:8,c:50},api:4}; 
+	function $buo_f(){ 
+	 var e = document.createElement("script"); 
+	 e.src = "//browser-update.org/update.min.js"; 
+	 document.body.appendChild(e);
+	};
+	try {document.addEventListener("DOMContentLoaded", $buo_f,false)}
+	catch(e){window.attachEvent("onload", $buo_f)}
+	</script>
 </head>
 <body>
 	<div id="page-wrap">
-		<h1>Calculer/dimensionner son installation photovoltaïque en site isolé (autonome)</h1>
-		<p style="padding : 5px 10px; background : #FFFF99; border : 1px dotted #FFCC33;">Ce logiciel libre et colaboratif est en recherche de contributeur. N'hésitez donc pas à donner votre avis sur la méthode de calucl, l'orthographe, les idée de fonctionnalitées qui vous manque ect... Envoyez tout ça par email à : <a href="http://david.mercereau.info/contact/" target="_blank">calcpvautonome(arobase)zici.fr</a> (changer (arobase par le "@") ou directement sur le <a href="https://github.com/kepon85/CalcPvAutonome">dépôt Github</a></p>
-		<?php include('./CalcPvAutonome.php'); ?>
+
+		<?php
+		$HelpMe='<p style="padding : 5px 10px; background : #FFFF99; border : 1px dotted #FFCC33;">Ce logiciel libre et colaboratif est en recherche de contributeur. N\'hésitez donc pas à donner votre avis sur la méthode de calucl, l\'orthographe, les idée de fonctionnalités qui vous manque, la couleur qui vous pique les yeux ect... Envoyez tout ça par email à : <a href="http://david.mercereau.info/contact/" target="_blank">calcpvautonome(arobase)zici.fr</a> (changer (arobase par le "@") ou directement sur le <a href="https://github.com/kepon85/CalcPvAutonome">dépôt Github</a></p>';
+		if (isset($_GET['p']) && $_GET['p'] == 'CalcConsommation') {
+			echo '<h1>Calculer ces besoins électriques journalier</h1>';
+			echo $HelpMe;
+			include('./CalcConsommation.php'); 
+		} else {
+			echo '<h1>Calculer/dimensionner son installation photovoltaïque en site isolé (autonome)</h1>';
+			echo $HelpMe;
+			include('./CalcPvAutonome.php'); 
+		}
+		?>
 		<div id="footer">
             <p class="footer_right">Par <a href="http://david.mercereau.info/">David Mercereau</a> (<a href="https://github.com/kepon85/CalcPvAutonome">Dépôt github</a>)</p>
             <p class="footer_left">Cet outil est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>

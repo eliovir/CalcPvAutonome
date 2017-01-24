@@ -180,7 +180,7 @@ if (isset($_GET['submit'])) {
 	
 	<h2 class="titre vous">Votre consommation :</h2>	
 			
-		<p>C'est l'étape la plus importante pour votre dimensionnement. Pour vous y aider faites un tableau avec chaque appareil & leur durée d'utilisation comme <a href="http://energie-developpement.blogspot.fr/2011/09/calculer-la-consommation-denergie-dune.html" target="_blank">expliqué sur cet article</a></p>
+		<p>C'est l'étape la plus importante pour votre dimensionnement. Si vous ne connaissez pas cette valeur rendez-vous sur notre <b><a href="<?= $config_ini['formulaire']['UrlCalcConsommation'] ?>&from=CalcPvAutonome" id="DemandeCalcPvAutonome">interface de calcul de besoin journalier</a></b></p>
 		
 		<div class="form Bj">
 			<label>Vos besoins électrique journalier :</label>
@@ -298,8 +298,28 @@ if (isset($_GET['submit'])) {
 <div id="CarteZone">
 	<a href="./lib/Zone-solar-map-fr.png" target="_blank"><img src="./lib/Zone-solar-map-fr.png" /></a>
 </div>
- 
+
+<!-- Détection des changement dans le formulaire -->
+<input type="hidden" value="0" id="ModificationDuFormulaire" />
+
 <script type="text/javascript">
+// Détection des changement dans le formulaire
+$( "input" ).change(function () {
+	if ($( "#ModificationDuFormulaire" ).val() == 0) {
+		$( "#ModificationDuFormulaire" ).val(1);		
+	}
+});
+$( "select" ).change(function () {
+	if ($( "#ModificationDuFormulaire" ).val() == 0) {
+		$( "#ModificationDuFormulaire" ).val(1);		
+	}
+});
+$('#DemandeCalcPvAutonome').click(function() {
+	if ($( "#ModificationDuFormulaire" ).val() == 1) {
+		return confirm("Vous avez commencé à remplir ce formulaire, vous allez perdre ces informations en continuant.");
+	}
+});
+
 /* infobulles http://javascript.developpez.com/tutoriels/javascript/creer-info-bulles-css-et-javascript-simplement-avec-jquery/ */
 $(document).ready(function() {
     // Sélectionner tous les liens ayant l'attribut rel valant tooltip

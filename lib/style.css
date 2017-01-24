@@ -84,6 +84,7 @@ input {
 	float: right;
 	margin-right: 30px;
 	color: #A11810;
+	text-align: right;
 }
 /* Read more */
 .more {
