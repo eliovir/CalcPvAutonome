@@ -9,7 +9,7 @@ $config_ini = parse_ini_file('./config.ini', true);
 	<li>Regarder sur la notice, sur l'appareil lui même parfois ;</li>
 	<li>Vous procurer un Wattmètre (~10€) il se branche entre la prise et votre appareil et vous indique précisément la consommation ;</li>
 </ul></p>
-<p>Pour dimensioner une installation photovoltaîque autonôme, réfléchissez comme si c'était l'hivers (le temps d'éclairage est plus long par exemple...) :</p>
+<p>Pour dimensioner une installation photovoltaïque autonome, réfléchissez comme si c'était l'hiver (le temps d'éclairage est plus long par exemple...) :</p>
 <form>
 <table>
 	<tr>
@@ -17,15 +17,15 @@ $config_ini = parse_ini_file('./config.ini', true);
 		<th>Puissance (Watt)</th>
 		<th>Nombre</th>
 		<th>Temps d'utilisation quotidien</th>
-		<th>Consomamtion quotidienne</th>
+		<th>Consommation quotidienne</th>
 		<th>.</th>
 	</tr>
 	
 </table>
 
-<p id="resultatConsoTotal">Consommation quotidienne total : <b><span id="ConsoTotal">0</span> Wh/j</b>
-<br /><a href="" id="hrefCalcPvAutonome">Indiquer cette valeur comme "Besoin journalier" pour le <br />
-calcule de votre installation photovoltaïque autonome</a></p>
+<p id="resultatConsoTotal">Consommation quotidienne totale : <b><span id="ConsoTotal">0</span> Wh/j</b>
+<br /><a href="" id="hrefCalcPvAutonome">Indiquer cette valeur comme "Besoins journaliers" pour le <br />
+calcul de votre installation photovoltaïque autonome</a></p>
 
 <p><input type="button" class="add" value="Ajouter une ligne vide" /> 
 <select id="addEquiModele" name="addEquiModele">

@@ -6,17 +6,17 @@ if (isset($_GET['submit'])) {
 ?>
 <div class="part result">
 	<h2 class="titre">Résultat du dimensionnement</h2>
-	<p><b>Avertissement</b>: Les résultats sont donnés à titre indicatifs. </p>
+	<p><b>Avertissement</b>: Les résultats sont donnés à titre indicatif. </p>
 	<!-- 
 		Les PV
 	-->
 	<h3>Les panneaux photovoltaïques</h3>
 	<div id="resultCalcPv" class="calcul">
-		<p>On cherche ici la puissance (crête exprimé en W) des panneaux photovoltaïque à installer pour satisfaire vos besoins en fonction de votre situation géographique. La formule est la suivante : </p>
+		<p>On cherche ici la puissance (crête exprimée en W) des panneaux photovoltaïques à installer pour satisfaire vos besoins en fonction de votre situation géographique. La formule est la suivante : </p>
 		<p>Pc = Bj / (Rb X Ri X Ej)</p>
 		<ul>
 			<li>Pc (Wc) : Puissance crête</li>
-			<li>Bj (Wh/j) : Besoin journalier</li>
+			<li>Bj (Wh/j) : Besoins journaliers</li>
 			<li>Rb : rendement électrique des batteries</li>
 			<li>Ri : rendement électrique du reste de l’installation (régulateur de charge…)</li>
 			<li>Ej : rayonnement moyen quotidien du mois le plus défavorable dans le plan du panneau (kWh/m²/j)</li>
@@ -37,15 +37,15 @@ if (isset($_GET['submit'])) {
 		<p>Pc = <?= $_GET['Bj'] ?> / (<?= $_GET['Rb'] ?> * <?= $_GET['Ri'] ?> * <?= $Ej ?>) = <b><?= convertNumber($Pc, 'print') ?> Wc</b></p>
 	</div>
 	
-	<p>Vous avez donc besoin d'une puissance de panneau photovoltaîque équivalente à <b><?= convertNumber($Pc, 'print') ?>Wc</b>.</p>
+	<p>Vous avez donc besoin d'une puissance de panneau photovoltaïque équivalente à <b><?= convertNumber($Pc, 'print') ?>Wc</b>.</p>
 	<p><a id="resultCalcPvShow">Voir, comprendre la démarche, le calcul</a></p>
-	<p>Une fourchette de budget est estimé entre <?= convertNumber($config_ini['prix']['pv_bas']*$Pc, 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['pv_haut']*$Pc, 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['pv_bas'] ?>€/Wc en fourchette basse & <?= $config_ini['prix']['pv_haut'] ?>€/Wc en haute">?</a>)</p>
+	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['pv_bas']*$Pc, 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['pv_haut']*$Pc, 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['pv_bas'] ?>€/Wc en fourchette basse & <?= $config_ini['prix']['pv_haut'] ?>€/Wc en haute">?</a>)</p>
 	<!-- 
 		Les batteries
 	-->
 	<h3>Les batteries</h3>
 	<div id="resultCalcBat" class="calcul">
-		<p>On cherche ici la capacité nominale des batteries exprimé en ampères heure (Ah)</p>
+		<p>On cherche ici la capacité nominale des batteries exprimée en ampères heure (Ah)</p>
 		<?php 
 		// Si le niveau est débutant on choisie pour lui
 		if ($_GET['Ni'] == 1) {
@@ -68,10 +68,10 @@ if (isset($_GET['submit'])) {
 		<p>Cap = (Bj x Aut) / (DD x U)</p>
 		<ul>
 			<li>Cap (Ah) : Capacité nominale des batteries</li>
-			<li>Bj (Wh/j) : Besoin journalier</li>
+			<li>Bj (Wh/j) : Besoins journaliers</li>
 			<li>Aut : Nombre de jour d'autonomie (sans soleil)</li>
 			<li>DD (%) : <a rel="tooltip" class="bulles" title="Avec la technologie AGM il ne faut pas passer sous le seuil critique des 50%">Degré de décharge maximum</a></li>
-			<li>U (V) : <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 800Wc : 12V<br />De 800 à 1600 Wc : 24V<br />Au dessus de 1600 Wc : 48V">Tension du finale du parc de batterie</a></li>
+			<li>U (V) : <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 800Wc : 12V<br />De 800 à 1600 Wc : 24V<br />Au dessus de 1600 Wc : 48V">Tension finale du parc de batterie</a></li>
 		</ul>
 		<p>Dans votre cas ça nous fait : </p>
 		<?php 
@@ -80,7 +80,7 @@ if (isset($_GET['submit'])) {
 		<p><a class="more" id="resultCalcBatHide">Cacher le calcul</a></p>
 		<p>Cap = (<?= $_GET['Bj'] ?> x <?= $_GET['Aut'] ?>) / (<?= $_GET['DD']*0.01 ?> x <?= $U ?>) = <b><?= convertNumber($Cap, 'print') ?> Ah</b></p>
 	</div>
-	<p>Vous avez donc besoin d'un parc de batterie de <b><?= convertNumber($Cap, 'print') ?> Ah en <?= $U ?> V</b>.</p>
+	<p>Vous avez donc besoin d'un parc de batteries de <b><?= convertNumber($Cap, 'print') ?> Ah en <?= $U ?> V</b>.</p>
 	<p><a id="resultCalcBatShow">Voir, comprendre la démarche, le calcul</a></p>	
 	<?php 
 	// Config batterie : 
@@ -129,19 +129,19 @@ if (isset($_GET['submit'])) {
 		}
 	}
 	if ($_GET['ModBat'] == 'auto') {
-		echo '<p>Une hypothèse de câblge serait d\'avoir <b>'.$meilleurParcBatterie['nbBatterieTotal'].' batterie(s)</b> de type <b>'.$meilleurParcBatterie['nom'].'</b> ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
+		echo '<p>Une hypothèse de câblage serait d\'avoir <b>'.$meilleurParcBatterie['nbBatterieTotal'].' batterie(s)</b> de type <b>'.$meilleurParcBatterie['nom'].'</b> ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
 	} else {
-		echo '<p>Vous avez choisi de travailler avec des batterie(s) de type <b>'.$meilleurParcBatterie['nom'].'</b>, une hypothèse de câblge avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
+		echo '<p>Vous avez choisi de travailler avec des batterie(s) de type <b>'.$meilleurParcBatterie['nom'].'</b>, une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
 	}
-	echo '<ul><li>'.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s) (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah</a>) de '.$meilleurParcBatterie['nbBatterieSerie'].' série(s) (<a rel="tooltip" class="bulles" title="Tension de la batterie ('.$meilleurParcBatterie['V'].'V) * '.$meilleurParcBatterie['nbBatterieSerie'].' série(s)">pour une tension de '.$U.'V</a>) <a rel="tooltip" class="bulles" target="_blank" title="Pour comprendre le câblage des batteries" href="http://www.solarmad-nrj.com/cablagebatterie.html">?</a></li></ul>';
+	echo '<ul><li>'.$meilleurParcBatterie['nbBatterieParallele'].' en parallèle(s) (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah</a>) de '.$meilleurParcBatterie['nbBatterieSerie'].' en série(s) (<a rel="tooltip" class="bulles" title="Tension de la batterie ('.$meilleurParcBatterie['V'].'V) * '.$meilleurParcBatterie['nbBatterieSerie'].' série(s)">pour une tension de '.$U.'V</a>) <a rel="tooltip" class="bulles" target="_blank" title="Pour comprendre le câblage des batteries cliquer ici" href="http://www.solarmad-nrj.com/cablagebatterie.html">?</a></li></ul>';
 	?>
-	<p>Une fourchette de budget est estimé entre <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas'] ?>€/Ah en fourchette basse & <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut'] ?>€/Ah en haute">?</a>)</p>
+	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas'] ?>€/Ah en fourchette basse & <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut'] ?>€/Ah en haute">?</a>)</p>
 	<h3>Le reste de l'équipement</h3>
 	<p>Il vous reste encore à choisir :</p>
 	<ul>
 		<li>Le régulateur de charge : il est entre les batteries et les panneaux, c'est lui qui gère la charge des batteries. Pour le choisir il faut connaître le courant et la tension d’arrivée des panneaux ;</li>
-		<li><a href="http://www.solarmad-nrj.com/convertisseur.html">Le convertisseur</a> : il est là pour convertir le signal continu des batteries <?= $U ?>V en signal alternatif 230V. Il se choisit avec le voltage d’entrée (ici <?= $U ?>V venus des batteries) et sa puissance maximum en sortie. Pour la puissance maximum de sortie il faut prendre votre appareil qui consomme le plus ou la somme de la puissance des appareils qui seront alumé en même temps ; </li>
-		<li>Le câblage, les éléments de protections...</li>
+		<li><a href="http://www.solarmad-nrj.com/convertisseur.html">Le convertisseur</a> : il est là pour convertir le signal continu des batteries <?= $U ?>V en signal alternatif 230V. Il se choisit avec le voltage d’entrée (ici <?= $U ?>V venus des batteries) et sa puissance maximum en sortie. Pour la puissance maximum de sortie il faut prendre votre appareil qui consomme le plus ou la somme de la puissance des appareils qui seront allumés en même temps ; </li>
+		<li>Le câblage, les éléments de protection...</li>
 	</ul>
 </div>
 <script type="text/javascript">
@@ -170,7 +170,7 @@ if (isset($_GET['submit'])) {
 <form method="get" action="#" id="formulaireCalcPvAutonome">
 	
 	<div class="form Ni">
-		<label>Votre degré de connaisance en photovoltaîque : </label>
+		<label>Votre degré de connaisance en photovoltaïque : </label>
 		<select id="Ni" name="Ni">
 			<option value="1"<?php echo valeurRecupSelect('Ni', 1); ?>>Débutant</option>
 			<option value="2"<?php echo valeurRecupSelect('Ni', 2); ?>>Eclairé</option>
@@ -180,10 +180,10 @@ if (isset($_GET['submit'])) {
 	
 	<h2 class="titre vous">Votre consommation :</h2>	
 			
-		<p>C'est l'étape la plus importante pour votre dimensionnement. Si vous ne connaissez pas cette valeur rendez-vous sur notre <b><a href="<?= $config_ini['formulaire']['UrlCalcConsommation'] ?>&from=CalcPvAutonome" id="DemandeCalcPvAutonome">interface de calcul de besoin journalier</a></b></p>
+		<p>C'est l'étape la plus importante pour votre dimensionnement. Si vous ne connaissez pas cette valeur rendez-vous sur notre <b><a href="<?= $config_ini['formulaire']['UrlCalcConsommation'] ?>&from=CalcPvAutonome" id="DemandeCalcPvAutonome">interface de calcul de besoins journaliers</a></b></p>
 		
 		<div class="form Bj">
-			<label>Vos besoins électrique journalier :</label>
+			<label>Vos besoins électriques journaliers :</label>
 			<input id="Bj" type="number" min="1" max="99999" style="width: 100px;" value="<?php echo valeurRecup('Bj'); ?>" name="Bj" />  Wh/j
 		</div>
 		<?php
@@ -209,35 +209,35 @@ if (isset($_GET['submit'])) {
 			<div class="modeCarte item">
 				<div class="form ZoneId">
 					<p>Cette simulation simple part du principe que vous êtes orienté plein sud (0°) sans zone d'ombre :</p>
-					<label>Sélection votre zone (en fonction de la carte ci-après) : </label>
+					<label>Sélectionner votre zone (en fonction de la carte ci-après) : </label>
 					<select name="ZoneId">
 						<option value="1" style="background-color: #98e84f"<?php echo valeurRecupSelect('ZoneId', 1); ?>>Zone 1 : Lile</option>
 						<option value="2" style="background-color: #ccee53"<?php echo valeurRecupSelect('ZoneId', 2); ?>>Zone 2 : Paris, Rennes, Strasbourg</option>
 						<option value="3" style="background-color: #f9ef58"<?php echo valeurRecupSelect('ZoneId', 3); ?>>Zone 3 : Nantes, Orléans, Besançon</option>
-						<option value="4" style="background-color: #f7cd3a"<?php echo valeurRecupSelect('ZoneId', 4); ?>>Zone 4 : Limoges, Clemont-Ferand</option>
+						<option value="4" style="background-color: #f7cd3a"<?php echo valeurRecupSelect('ZoneId', 4); ?>>Zone 4 : Limoges, Clermont-Ferrand</option>
 						<option value="5" style="background-color: #ed8719"<?php echo valeurRecupSelect('ZoneId', 5); ?>>Zone 5 : Lyon, Bordeaux, Toulouse</option>
 						<option value="6" style="background-color: #e16310"<?php echo valeurRecupSelect('ZoneId', 6); ?>>Zone 6 : Carcasonne, Aubnas</option>
-						<option value="7" style="background-color: #c9490c"<?php echo valeurRecupSelect('ZoneId', 7); ?>>Zone 7 : Montpelier, Nimes, Perpignan</option>
+						<option value="7" style="background-color: #c9490c"<?php echo valeurRecupSelect('ZoneId', 7); ?>>Zone 7 : Montpellier, Nimes, Perpignan</option>
 						<option value="8" style="background-color: #b61904"<?php echo valeurRecupSelect('ZoneId', 8); ?>>Zone 8 : Marseille</option>
 					</select>
 				</div>
 				
 				<div class="form Deg">
-					<label>Donner l'inclinaison des panneaux <a rel="tooltip" class="bulles" title="En site isolé on choisi l'inclinaison optimum pour le pire mois de l'année niveau ensoleillement, en France souvent décembre ~65°">(~65° conseillé)</a></label>
+					<label>Donner l'inclinaison des panneaux <a rel="tooltip" class="bulles" title="En site isolé on choisie l'inclinaison optimum pour le pire mois de l'année niveau ensoleillement, en France souvent décembre ~65°">(~65° conseillé)</a></label>
 					
 					<select name="Deg">
 						<option value="35"<?php echo valeurRecupSelect('Deg', 35); ?>>35°</option>
 						<option value="65"<?php echo valeurRecupSelect('Deg', 65); ?>>65°</option>
 					</select>
 				</div>
-				<p>Pour plus d'option et de précision, vous pouvez paser en mode valeur.</p>
+				<p>Pour plus d'options et de précisions, vous pouvez passer en mode valeur.</p>
 			</div>
 		
 			<div class="modeInput item">
 				<div class="form Ej">
 					<label>Donner la valeur du rayonnement moyen quotidien du mois le plus défavorable dans le plan (l'inclinaison) du panneau :</label>
 					<input maxlength="4" size="4" id="Ej" type="number" step="0.01" min="0" max="10" style="width: 100px;" value="<?php echo valeurRecup('Ej'); ?>" name="Ej" /> kWh/m²/j
-					<p>Pour obtenir cette valeur rendez vous sur le site de <a href="http://ines.solaire.free.fr/gisesol_1.php" target="_blank">INES</a>, choisir votre ville, l'inclinaison & l'orientation des panneaux puis valider. Il s'agit ensuite de prendre la plus basse valeur de la ligne "Globale (IGP)" (derrnière ligne du second tableau) Plus d'information en bas de cette page : <a href="http://www.photovoltaique.guidenr.fr/cours-photovoltaique-autonome/VI_calcul-puissance-crete.php">Comment obtenir la valeur de Ei, Min sur le site de l'INES ?</a></p>
+					<p>Pour obtenir cette valeur rendez vous sur le site de <a href="http://ines.solaire.free.fr/gisesol_1.php" target="_blank">INES</a>, choisir votre ville, l'inclinaison & l'orientation des panneaux puis valider. Il s'agit ensuite de prendre la plus basse valeur de la ligne "Globale (IGP)" (dernière ligne du second tableau) Plus d'informations en bas de cette page : <a href="http://www.photovoltaique.guidenr.fr/cours-photovoltaique-autonome/VI_calcul-puissance-crete.php">Comment obtenir la valeur de Ei, Min sur le site de l'INES ?</a></p>
 				</div>
 			</div>
 			
@@ -254,10 +254,10 @@ if (isset($_GET['submit'])) {
 	</div>
 	
 	<div class="part bat">
-		<h2 class="titre bat">Dimensionnement du parc de batterie</h2>
-		<p>Cet application est pré-paramétré pour des batteries plomb AGM/Gel/OPzV</p>
+		<h2 class="titre bat">Dimensionnement du parc de batteries</h2>
+		<p>Cette application est pré-paramétrée pour des batteries plomb AGM/Gel/OPzV</p>
 		<div class="form Aut">
-			<label>Nombre de jours d'autonomies : </label>
+			<label>Nombre de jours d'autonomie : </label>
 			<input maxlength="2" size="2" id="Aut" type="number" step="1" min="0" max="50" style="width: 50px" value="<?php echo valeurRecup('Aut'); ?>" name="Aut" />
 		</div>
 		<div class="form U">
