@@ -19,8 +19,8 @@ Pour l'utilisateur de base :
 	- (simple) Carte par zone
 	- (précis) Valeur du site http://ines.solaire.free.fr/gisesol_1.php (kWh/m²/j)
   - En mode expert, ajuster le degré de décharge, les valeurs de rendement électrique des batteries ou du reste de l'installation, 
-  - Déduction automatique de la tension du parc de batteries à utiliser (possibiliter de forcer une valeur en mdoe expert)
-  - Déduction automatique d'une configuration du parc de câblage des batteries et du modèle à utiliser (exemple : "2 batteries 220Ah 12V en série") (possibiliter de forcer un modèle de travail en mode expert)
+  - Déduction automatique de la tension du parc de batteries à utiliser (possibilité de forcer une valeur en mode expert)
+  - Déduction automatique d'une configuration du parc de câblage des batteries et du modèle à utiliser (exemple : "2 batteries 220Ah 12V en série") (possibilité de forcer un modèle de travail en mode expert)
   - Estimation d'une fourchette du coût du parc de batterie & photovoltaïque 
   - Explication détailé du calcul pour fait pour parvenir au résultat
 
@@ -49,11 +49,12 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
 ### Todos
 
  - Bug info bulle pas bien positionné
+ - S'il y a une virgule dans le tableau de consommation, à l'import dans le calcpvautonome ça passe pas...
  
  - Hypotèse câblage PV. 
  - Prévoir d'autres technologie batterie que AGM
+ - Générer un beau dessin avec le câblage
  - Sauvegarde du résultat par URL, envoyer à un amis...
- - Faire un truc plus simple pour déterminer les besoins journaliers
  - Responsive
  - Test sans javascript
  - Récup' valeur Ines directement (sans carte de zone)
@@ -61,6 +62,7 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
  
 CalcConsommation : 
  - Plus de pédagogie sur le calcul
+ - Cocher les appareils branchés simultanément
  - Sauvegarder dans les cookies (il manque pas grand chose)
  
 ### Auteur
