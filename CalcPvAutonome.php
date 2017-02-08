@@ -1,10 +1,55 @@
-<script src="./lib/jquery-3.1.1.slim.min.js"></script> 
 <?php 
 include('./lib/Fonction.php');
 $config_ini = parse_ini_file('./config.ini', true); 
-if (isset($_GET['submit'])) {
 ?>
-<div class="part result">
+<script src="./lib/jquery-3.1.1.slim.min.js"></script> 
+<?php
+/*
+ * ####### Résultat #######
+*/
+
+if (isset($_GET['submit'])) {
+	echo '<div class="part result">';
+	// Détection des erreurs de formulaires
+	$erreurDansLeFormulaire=null;
+	if (empty($_GET['Bj']) || $_GET['Bj'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('Bj', 'Le besoin journalier n\'est pas correcte car < 0');
+	}
+	if ($_GET['ModPv'] == 'perso') {
+		if (empty($_GET['PersoPvV']) || $_GET['PersoPvV'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvV', 'La tension du panneau personalisé n\'est pas correcte car < 0');
+		}
+		if (empty($_GET['PersoPvW']) || $_GET['PersoPvW'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvW', 'La puissance du panneau personalisé n\'est pas correcte car < 0');
+		}
+		if (empty($_GET['PersoPvVdoc']) || $_GET['PersoPvVdoc'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvVdoc', 'La tension en circuit ouvert (Vdoc) du panneau personalisé n\'est pas correcte car < 0');
+		}
+		if (empty($_GET['PersoPvIsc']) || $_GET['PersoPvIsc'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvIsc', 'Le courant de court circuit (Isc) du panneau personalisé n\'est pas correcte car < 0');
+		}
+	}
+	if (empty($_GET['Aut']) || $_GET['Aut'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('Aut', 'Le nombre de jour d\'autonomie n\'est pas correcte car < 0');
+	}
+	if (empty($_GET['Rb']) || $_GET['Rb'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('Rb', 'Le rendement électrique des batteries n\'est pas correcte car < 0');
+	}
+	if (empty($_GET['Ri']) || $_GET['Ri'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('Ri', 'Le rendement électrique de l\'installation n\'est pas correcte car < 0');
+	}
+	if (empty($_GET['DD']) || $_GET['DD'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('DD', 'Le degré de décharge n\'est pas correcte car < 0');
+	}
+	if ($erreurDansLeFormulaire !== null) {
+		echo '<div class="erreurForm">';
+		echo '<p>Il y a des erreurs dans le formulaire qui empêche de continuer, merci de corriger ::</p>';
+		echo '<ul>'.$erreurDansLeFormulaire.'</ul>';
+		echo '</div>';
+	} else {
+	// Pas d'erreur
+	?>
+
 	<h2 class="titre">Résultat du dimensionnement</h2>
 	<p><b>Avertissement</b>: Les résultats sont donnés à titre indicatif. </p>
 	<!-- 
@@ -39,6 +84,77 @@ if (isset($_GET['submit'])) {
 	
 	<p>Vous avez donc besoin d'une puissance de panneau photovoltaïque équivalente à <b><?= convertNumber($Pc, 'print') ?>Wc</b>.</p>
 	<p><a id="resultCalcPvShow">Voir, comprendre la démarche, le calcul</a></p>
+	<?php
+	/*
+	 * ####### Recherche d'une Config panneux : #######
+	*/
+	/* Personnaliser */
+	if ($_GET['ModPv'] == 'perso') {
+		// Combien de panneau ?
+		$nbPv=intval($Pc / $_GET['PersoPvW'])+1;
+		// Capacité déduite
+		// Capacité déduite
+		$PcParcPv=$_GET['PersoPvW']*$nbPv;
+		// Différence avec la capacité souhauté
+		$diffPcParc=$PcParcPv-$Pc;
+		$meilleurParcPv['nbPv'] = $nbPv;
+		$meilleurParcPv['diffPcParc'] = round($diffPcParc);
+		$meilleurParcPv['W'] = $_GET['PersoPvW'];
+		$meilleurParcPv['V'] = $_GET['PersoPvV'];
+		$meilleurParcPv['Vdoc'] = $_GET['PersoPvVdoc'];
+		$meilleurParcPv['Isc'] = $_GET['PersoPvIsc'];
+	/* Automatique selon les info's */
+	} else {
+		$meilleurParcPv['nbPv'] = 99999;
+		$meilleurParcPv['diffPcParc'] = 99999;
+		$meilleurParcPv['W'] = 0;
+		debug('<ul type="1">');
+		foreach ($config_ini['pv'] as $idPv => $pv) {
+			// Gestion du mode automatique dans le type :
+			if ($_GET['ModPv'] == 'auto' && $_GET['TypePv'] != 'auto') {
+				if ($_GET['TypePv'] != $pv['type']) {
+					continue;
+				}
+			}
+			if ($_GET['ModPv'] != 'auto' && $_GET['ModPv'] != $idPv) {
+				continue;
+			}
+			// Calcul du nombre de panneaux nessésaire 
+			$nbPv=intval($Pc / $pv['W'])+1;
+			// Capacité déduite
+			$PcParcPv=$pv['W']*$nbPv;
+			// Différence avec la capacité souhauté
+			$diffPcParc=$PcParcPv-$Pc;
+			// Debug
+			debug('<li>');
+			debug('Test de config pour '.$pv['W'].' ::: nb pv: '.$nbPv);
+			debug(' | puissance total (W) : '.$PcParcPv);
+			debug(' | diff puissance souhaité : '.$diffPcParc);
+			if ($nbPv < $meilleurParcPv['nbPv'] || $diffPcParc <= $meilleurParcPv['diffPcParc']) {
+				# Nouvelle meilleur config
+				// Debug
+				debug(' | * nouvelle meilleur config');
+				$meilleurParcPv['nbPv'] = $nbPv;
+				$meilleurParcPv['diffPcParc'] = round($diffPcParc);
+				$meilleurParcPv['W'] = $pv['W'];
+				$meilleurParcPv['V'] = $pv['V'];
+				$meilleurParcPv['Vdoc'] = $pv['Vdoc'];
+				$meilleurParcPv['Isc'] = $pv['Isc'];
+				$meilleurParcPv['type'] = $pv['type'];
+				$meilleurParcPv['nbPv'] = $nbPv;
+			}
+			debug('</li>');
+		}
+		debug('</ul>');
+	}
+	if ($_GET['ModPv'] == 'auto') {
+		echo '<p>Une hypothèse serait d\'avoir <b>'.$meilleurParcPv['nbPv'].' panneau(x)</b> '.$meilleurParcPv['type'].' de <b>'.$meilleurParcPv['W'].'Wc</b> chacun en '.$meilleurParcPv['V'].'V (<a rel="tooltip" class="bulles" title="Caractéristique du panneau : <br />P = '.$meilleurParcPv['W'].'W<br />U = '.$meilleurParcPv['V'].'V<br />Vdoc ='.$meilleurParcPv['Vdoc'].'V<br />Isc = '.$meilleurParcPv['Isc'].'A">?</a>) ce qui pousse la capacité du parc à '.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W :</p>';
+	}elseif ($_GET['ModPv'] == 'perso') {
+		echo '<p>Avec votre panneau personnalisé (<a rel="tooltip" class="bulles" title="Caractéristique du panneau : <br />P = '.$meilleurParcPv['W'].'W<br />U = '.$meilleurParcPv['V'].'V<br />Vdoc ='.$meilleurParcPv['Vdoc'].'V<br />Isc = '.$meilleurParcPv['Isc'].'A">détail ici</a>) l\'hypothèse serait d\'avoir <b>'.$meilleurParcPv['nbPv'].' panneau(x)</b> de <b>'.$meilleurParcPv['W'].'Wc</b> chacun en '.$meilleurParcPv['V'].'V ce qui pousse la capacité du parc à '.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W :</p>';
+	} else {
+		echo '<p>Avec le panneau '.$meilleurParcPv['type'].' sélectionné de <b>'.$meilleurParcPv['W'].'Wc</b> en '.$meilleurParcPv['V'].'V , une hypothèse serait d\'avoir <b>'.$meilleurParcPv['nbPv'].' de ces panneau(x)</b> (<a rel="tooltip" class="bulles" title="Caractéristique du panneau : <br />P = '.$meilleurParcPv['W'].'W<br />U = '.$meilleurParcPv['V'].'V<br />Vdoc ='.$meilleurParcPv['Vdoc'].'V<br />Isc = '.$meilleurParcPv['Isc'].'A">?</a>) ce qui pousse la capacité du parc à '.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W :</p>';
+	}
+	?>
 	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['pv_bas']*$Pc, 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['pv_haut']*$Pc, 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['pv_bas'] ?>€/Wc en fourchette basse & <?= $config_ini['prix']['pv_haut'] ?>€/Wc en haute">?</a>)</p>
 	<!-- 
 		Les batteries
@@ -83,12 +199,15 @@ if (isset($_GET['submit'])) {
 	<p>Vous avez donc besoin d'un parc de batteries de <b><?= convertNumber($Cap, 'print') ?> Ah en <?= $U ?> V</b>.</p>
 	<p><a id="resultCalcBatShow">Voir, comprendre la démarche, le calcul</a></p>	
 	<?php 
-	// Config batterie : 
+	/*
+	 * ####### Recherche d'une Config batterie : #######
+	*/
 	$meilleurParcBatterie['nbBatterieParallele'] = 99999;
 	$meilleurParcBatterie['diffCap'] = 99999;
 	$meilleurParcBatterie['nom'] = 'Impossible à déterminer';
 	$meilleurParcBatterie['V'] = 0;
 	$meilleurParcBatterie['Ah'] = 0;
+	debug('<ul type="1">');
 	foreach ($config_ini['batterie'] as $idBat => $batterie) {
 		// En mode auto on utilise les batteires 2V si on est au dessus des 550Ah
 		if ($_GET['ModBat'] == 'auto') {
@@ -109,15 +228,15 @@ if (isset($_GET['submit'])) {
 		// Différence avec la capacité souhauté
 		$diffCap=$capParcBatterie-$Cap;
 		// Debug
-		//echo '<br />';
-		//echo 'Pour '.$batterie['nom'].' ::: '.$nbBatterie ;
-		//echo ' | total (Ah)'.$capParcBatterie;
-		//echo ' | diff = '.$diffCap;
+		debug('<li>');
+		debug('Test de config pour '.$batterie['nom'].' ::: nb de batterie: '.$nbBatterie);
+		debug(' | total (Ah) : '.$capParcBatterie);
+		debug(' | diff capacité souhaité : '.$diffCap);
 		if ($nbBatterie < $meilleurParcBatterie['nbBatterieParallele']
 		|| $nbBatterie == $meilleurParcBatterie['nbBatterieParallele'] && $diffCap <= $meilleurParcBatterie['diffCap']) {
 			# Nouvelle meilleur config
 			// Debug
-			// echo 'nouvelle meilleur config';
+			debug(' | * nouvelle meilleur config');
 			$meilleurParcBatterie['diffCap'] = round($diffCap);
 			$meilleurParcBatterie['nom'] = $batterie['nom'];
 			$meilleurParcBatterie['V'] = $batterie['V'];
@@ -127,7 +246,9 @@ if (isset($_GET['submit'])) {
 			$meilleurParcBatterie['nbBatterieTotal'] = $meilleurParcBatterie['nbBatterieSerie'] * $meilleurParcBatterie['nbBatterieParallele'];
 
 		}
+		debug('</li>');
 	}
+	debug('</ul>');
 	if ($_GET['ModBat'] == 'auto') {
 		echo '<p>Une hypothèse de câblage serait d\'avoir <b>'.$meilleurParcBatterie['nbBatterieTotal'].' batterie(s)</b> de type <b>'.$meilleurParcBatterie['nom'].'</b> ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
 	} else {
@@ -143,29 +264,35 @@ if (isset($_GET['submit'])) {
 		<li><a href="http://www.solarmad-nrj.com/convertisseur.html">Le convertisseur</a> : il est là pour convertir le signal continu des batteries <?= $U ?>V en signal alternatif 230V. Il se choisit avec le voltage d’entrée (ici <?= $U ?>V venus des batteries) et sa puissance maximum en sortie. Pour la puissance maximum de sortie il faut prendre votre appareil qui consomme le plus ou la somme de la puissance des appareils qui seront allumés en même temps ; </li>
 		<li>Le câblage, les éléments de protection...</li>
 	</ul>
-</div>
-<script type="text/javascript">
-	$( "#resultCalcPvShow" ).click(function() {
-		$( "#resultCalcPv" ).show( "slow" );
-		$( "#resultCalcPvShow" ).hide( "slow" );
-	});
-	$( "#resultCalcPvHide" ).click(function() {
-		$( "#resultCalcPv" ).hide( "slow" );
-		$( "#resultCalcPvShow" ).show( "slow" );
-	});
-	$( "#resultCalcBatShow" ).click(function() {
-		$( "#resultCalcBat" ).show( "slow" );
-		$( "#resultCalcBatShow" ).hide( "slow" );
-	});
-	$( "#resultCalcBatHide" ).click(function() {
-		$( "#resultCalcBat" ).hide( "slow" );
-		$( "#resultCalcBatShow" ).show( "slow" );
-	});
-	$( "#resultCalcPvHide" ).click();
-	$( "#resultCalcBatHide" ).click();
-</script>
-<?php
+	<!-- Afficher ou non les informations complémentaire du formulaire -->
+	<script type="text/javascript">
+		$( "#resultCalcPvShow" ).click(function() {
+			$( "#resultCalcPv" ).show( "slow" );
+			$( "#resultCalcPvShow" ).hide( "slow" );
+		});
+		$( "#resultCalcPvHide" ).click(function() {
+			$( "#resultCalcPv" ).hide( "slow" );
+			$( "#resultCalcPvShow" ).show( "slow" );
+		});
+		$( "#resultCalcBatShow" ).click(function() {
+			$( "#resultCalcBat" ).show( "slow" );
+			$( "#resultCalcBatShow" ).hide( "slow" );
+		});
+		$( "#resultCalcBatHide" ).click(function() {
+			$( "#resultCalcBat" ).hide( "slow" );
+			$( "#resultCalcBatShow" ).show( "slow" );
+		});
+		$( "#resultCalcPvHide" ).click();
+		$( "#resultCalcBatHide" ).click();
+	</script>
+	<?php
+	} 
+	echo '</div>';
 }
+
+/*
+ * ####### Formulaire #######
+*/
 ?>
 <form method="get" action="#" id="formulaireCalcPvAutonome">
 	
@@ -242,6 +369,51 @@ if (isset($_GET['submit'])) {
 			</div>
 			
 		</div>
+		
+		<div class="form ModPv">
+			<label>Modèle de panneau : </label>
+			<select id="ModPv" name="ModPv">
+				<option value="auto">Automatique</option>
+				<option value="perso" style="font-weight: bold"<?php echo valeurRecupSelect('ModPv', 'perso'); ?>>Personnaliser</option>
+				<?php 
+				foreach ($config_ini['pv'] as $pvModele => $pvValeur) {
+					echo '<option value="'.$pvModele.'"';
+					echo valeurRecupSelect('ModPv', $pvModele);
+					echo '>'.ucfirst($pvValeur['type']).' '.$pvValeur['W'].'Wc en '.$pvValeur['V'].'V</option>';
+					echo "\n";
+				}
+				?>
+			</select> 
+		</div>
+		<div class="form TypePv">
+			<label>Technologie préféré de panneau : </label>
+			<select id="TypePv" name="TypePv">
+				<option value="monocristalin"<?php echo valeurRecupSelect('TypePv', 'monocristalin'); ?>>Monocristalin</option>
+				<option value="polycristallin"<?php echo valeurRecupSelect('TypePv', 'polycristallin'); ?>>Polycristallin</option>
+			</select> 
+		</div>
+		
+		<div class="form PersoPv">
+			<p>Vous pouvez détailler les caractéristiques techniques de votre panneau : </p>
+			<ul>
+				<li>
+					<label>Puissance maximum (Pmax)  : </label>
+					<input type="number" min="1" max="9999" style="width: 70px;" value="<?php echo valeurRecup('PersoPvW'); ?>"  name="PersoPvW" />Wc
+				</li>
+				<li>
+					<label>Tension : </label>
+					<input type="number" min="1" max="999" style="width: 70px;" value="<?php echo valeurRecup('PersoPvV'); ?>" name="PersoPvV" />V
+				</li>
+				<li>
+					<label>Tension en circuit ouvert (Voc) </label>
+					<input type="number" step="0.01" min="1" max="99" style="width: 70px;" value="<?php echo valeurRecup('PersoPvVdoc'); ?>"  name="PersoPvVdoc" />V
+				</li>
+				<li>
+					<label>Courant de court circuit (Isc)</label>
+					<input type="number" step="0.01" min="0,01" max="99" style="width: 70px;" value="<?php echo valeurRecup('PersoPvIsc'); ?>"  name="PersoPvIsc" />A
+				</li>
+			</ul>
+		</div>
 			
 		<div class="form Rb">
 			<label>Rendement électrique des batteries : </label>
@@ -276,7 +448,7 @@ if (isset($_GET['submit'])) {
 		<div class="form ModBat">
 			<label>Modèle de batterie : </label>
 			<select id="ModBat" name="ModBat">
-				<option value="auto">Auto</option>
+				<option value="auto">Automatique</option>
 				<?php 
 				foreach ($config_ini['batterie'] as $batModele => $batValeur) {
 					echo '<option value="'.$batModele.'"';
@@ -319,32 +491,9 @@ $('#DemandeCalcPvAutonome').click(function() {
 		return confirm("Vous avez commencé à remplir ce formulaire, vous allez perdre ces informations en continuant.");
 	}
 });
-
-/* infobulles http://javascript.developpez.com/tutoriels/javascript/creer-info-bulles-css-et-javascript-simplement-avec-jquery/ */
-$(document).ready(function() {
-    // Sélectionner tous les liens ayant l'attribut rel valant tooltip
-    $('a[rel=tooltip]').mouseover(function(e) {
-		// Récupérer la valeur de l'attribut title et l'assigner à une variable
-		var tip = $(this).attr('title');   
-		// Supprimer la valeur de l'attribut title pour éviter l'infobulle native
-		$(this).attr('title','');
-		// Insérer notre infobulle avec son texte dans la page
-		$(this).append('<div id="tooltip"><div class="tipBody">' + tip + '</div></div>');    
-		// Ajuster les coordonnées de l'infobulle
-		$('#tooltip').css('top', e.pageY + 10 );
-		$('#tooltip').css('left', e.pageX + 20 );
-		// Faire apparaitre l'infobulle avec un effet fadeIn
-	}).mousemove(function(e) {
-		// Ajuster la position de l'infobulle au déplacement de la souris
-		$('#tooltip').css('top', e.pageY + 10 );
-		$('#tooltip').css('left', e.pageX + 20 );
-	}).mouseout(function() {
-		// Réaffecter la valeur de l'attribut title
-		$(this).attr('title',$('.tipBody').html());
-		// Supprimer notre infobulle
-		$(this).children('div#tooltip').remove();
-	});
-}); 
+$( "#ModPv" ).change(function () {
+	modPvChange();
+});
 
 // Bouton Submit activation / désactivation
 function sumbitEnable() {
@@ -357,7 +506,20 @@ function sumbitEnable() {
 $( "#Bj" ).change(function() {
 	sumbitEnable();
 });
-sumbitEnable();
+
+// Changement de modèle de PV
+function modPvChange() {
+	if ($( "#ModPv" ).val() == 'auto') {
+		$( ".form.TypePv" ).show();
+		$( ".form.PersoPv" ).hide();
+	} else if ($( "#ModPv" ).val() == 'perso') {
+		$( ".form.TypePv" ).hide();
+		$( ".form.PersoPv" ).show();
+	} else {
+		$( ".form.TypePv" ).hide();
+		$( ".form.PersoPv" ).hide();
+	}
+}
 
 // Changement de niveau
 $( "#Ni" ).change(function () {
@@ -373,6 +535,8 @@ function changeNiveau() {
 		$( ".form.DD" ).hide();
 		$( ".part.bat" ).hide();
 		$( ".form.ModBat" ).hide();
+		$( ".form.ModPv" ).hide();
+		$( ".form.TypePv" ).hide();
 	// Eclaire (2)
 	} else if  ($( "#Ni" ).val() == 2) {
 		$( ".form.Ri" ).hide();
@@ -382,6 +546,8 @@ function changeNiveau() {
 		$( ".form.DD" ).hide();
 		$( ".part.bat" ).show();
 		$( ".form.ModBat" ).hide();
+		$( ".form.ModPv" ).show();
+		$( ".form.TypePv" ).show();
 	// Expert (3)
 	} else if ($( "#Ni" ).val() == 3) {
 		$( ".form.Ri" ).show();
@@ -391,9 +557,10 @@ function changeNiveau() {
 		$( ".form.DD" ).show();
 		$( ".part.bat" ).show();
 		$( ".form.ModBat" ).show();
+		$( ".form.ModPv" ).show();
+		$( ".form.TypePv" ).show();
 	}
 }
-changeNiveau();
 
 // Onglet carte zone
 // http://dmouronval.developpez.com/tutoriels/javascript/mise-place-navigation-par-onglets-avec-jquery/
@@ -423,6 +590,38 @@ $(function() {
 $( "#Reset" ).click(function() {
 	window.location = 'http://<?php echo $_SERVER["SERVER_NAME"].$_SERVER["SCRIPT_NAME"] ?>';
 });
+
+$(document).ready(function() {
+	// Init formulaire 
+	changeNiveau();
+	modPvChange(); 
+	sumbitEnable();	
+	
+	/* infobulles http://javascript.developpez.com/tutoriels/javascript/creer-info-bulles-css-et-javascript-simplement-avec-jquery/ */
+    // Sélectionner tous les liens ayant l'attribut rel valant tooltip
+    $('a[rel=tooltip]').mouseover(function(e) {
+		// Récupérer la valeur de l'attribut title et l'assigner à une variable
+		var tip = $(this).attr('title');   
+		// Supprimer la valeur de l'attribut title pour éviter l'infobulle native
+		$(this).attr('title','');
+		// Insérer notre infobulle avec son texte dans la page
+		$(this).append('<div id="tooltip"><div class="tipBody">' + tip + '</div></div>');    
+		// Ajuster les coordonnées de l'infobulle
+		$('#tooltip').css('top', e.pageY + 10 );
+		$('#tooltip').css('left', e.pageX + 20 );
+		// Faire apparaitre l'infobulle avec un effet fadeIn
+	}).mousemove(function(e) {
+		// Ajuster la position de l'infobulle au déplacement de la souris
+		$('#tooltip').css('top', e.pageY + 10 );
+		$('#tooltip').css('left', e.pageX + 20 );
+	}).mouseout(function() {
+		// Réaffecter la valeur de l'attribut title
+		$(this).attr('title',$('.tipBody').html());
+		// Supprimer notre infobulle
+		$(this).children('div#tooltip').remove();
+	});
+}); 
+
 
 </script>
 

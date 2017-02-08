@@ -21,11 +21,10 @@
 </head>
 <body>
 	<div id="page-wrap">
-
 		<?php
-		$HelpMe='<p style="font-size: 80%; padding : 5px 10px; background : #FFFF99; border : 1px dotted #FFCC33;">Ce logiciel libre et collaboratif est en recherche de contributeurs dans une optique d\'amélioration de celui-ci. N\'hésitez donc pas à donner votre avis sur la méthode de calcul, les idées de fonctionnalités qui vous manquent, la couleur qui vous pique les yeux, etc... Envoyez tout ça par email à : <a href="http://david.mercereau.info/contact/" target="_blank">calcpvautonome(arobase)zici.fr</a> (changer "(arobase)" par le "@") ou directement sur le <a href="https://github.com/kepon85/CalcPvAutonome">dépôt Github</a></p>';
+		$HelpMe='<p style="padding : 5px 10px; background : #FFFF99; border : 1px dotted #FFCC33;">Ce logiciel libre et colaboratif est en recherche de contributeur. N\'hésitez donc pas à donner votre avis sur la méthode de calucl, l\'orthographe, les idée de fonctionnalités qui vous manque, la couleur qui vous pique les yeux ect... Envoyez tout ça par email à : <a href="http://david.mercereau.info/contact/" target="_blank">calcpvautonome(arobase)zici.fr</a> (changer (arobase par le "@") ou directement sur le <a href="https://github.com/kepon85/CalcPvAutonome">dépôt Github</a></p>';
 		if (isset($_GET['p']) && $_GET['p'] == 'CalcConsommation') {
-			echo '<h1>Calculer ces besoins électriques journaliers</h1>';
+			echo '<h1>Calculer ces besoins électriques journalier</h1>';
 			echo $HelpMe;
 			include('./CalcConsommation.php'); 
 		} else {
@@ -36,11 +35,12 @@
 		?>
 		<div id="footer">
             <p class="footer_right">Par <a href="http://david.mercereau.info/">David Mercereau</a> (<a href="https://github.com/kepon85/CalcPvAutonome">Dépôt github</a>)</p>
-            <p class="footer_left">Cet outil est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
+            <p class="footer_left">CalcPvAutonome version 0.2 est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
         </div>
 	</div>
 	<div id="bg">
-		<img src="./lib/solar-panel-1393880_1280.png" alt="">
+		<img src="http://calcpvautonome.zici.fr/lib/solar-panel-1393880_1280.png" alt="">
 	</div>
+	<?php @include_once('./footer.php'); ?>
 </body>
 </html>

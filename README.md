@@ -19,6 +19,7 @@ Pour l'utilisateur de base :
 	- (simple) Carte par zone
 	- (précis) Valeur du site http://ines.solaire.free.fr/gisesol_1.php (kWh/m²/j)
   - En mode expert, ajuster le degré de décharge, les valeurs de rendement électrique des batteries ou du reste de l'installation, 
+  - Déduction automatique du nombre de panneaux nessésaire (possibilité de forcer un modèle type)
   - Déduction automatique de la tension du parc de batteries à utiliser (possibilité de forcer une valeur en mode expert)
   - Déduction automatique d'une configuration du parc de câblage des batteries et du modèle à utiliser (exemple : "2 batteries 220Ah 12V en série") (possibilité de forcer un modèle de travail en mode expert)
   - Estimation d'une fourchette du coût du parc de batterie & photovoltaïque 
@@ -49,22 +50,43 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
 ### Todos
 
  - Bug info bulle pas bien positionné
- - S'il y a une virgule dans le tableau de consommation, à l'import dans le calcpvautonome ça passe pas...
  
  - Hypotèse câblage PV. 
  - Prévoir d'autres technologie batterie que AGM
  - Générer un beau dessin avec le câblage
  - Sauvegarde du résultat par URL, envoyer à un amis...
  - Responsive
- - Test sans javascript
  - Récup' valeur Ines directement (sans carte de zone)
  - Traduction anglais
  
 CalcConsommation : 
  - Plus de pédagogie sur le calcul
- - Cocher les appareils branchés simultanément
  - Sauvegarder dans les cookies (il manque pas grand chose)
- 
+
+### Changelog
+
+ - 0.2
+	- Déduction automatique du nombre de panneaux (possibilité de forcer un modèle de travail)
+    - Possibilité de privilégier la technologie monocristalin ou polycristalin 
+    - BUG fix CalcConsommation : il y a une virgule dans le tableau de consommation, à l'import dans le calcpvautonome ça passe pas...
+    - Vérification valeur du formulaire
+ - 0.1
+   - 3 mode au formulaire (Débutant, Eclairé, Expert)
+   - Pour déterminer l'ensoleillement : 
+	 - (simple) Carte par zone
+	 - (précis) Valeur du site http://ines.solaire.free.fr/gisesol_1.php (kWh/m²/j)
+   - En mode expert, ajuster le degré de décharge, les valeurs de rendement électrique des batteries ou du reste de l'installation, 
+   - Déduction automatique de la tension du parc de batteries à utiliser (possibilité de forcer une valeur en mode expert)
+   - Déduction automatique de câblage du parc des batteries et du modèle à utiliser (exemple : "2 batteries 220Ah 12V en série") (possibilité de forcer un modèle de travail en mode expert)
+   - Estimation d'une fourchette du coût du parc de batterie & photovoltaïque 
+   - Explication détailé du calcul pour fait pour parvenir au résultat
+   - Intégration sur votre site web
+   - Modifier le fichier config.ini pour changer
+ 	 - Les valeurs par défaut du formulaire
+	 - Les valeurs d'irradiation de la carte par zone
+	 - La fourchette de prix des panneaux photovoltaïque et des batteries
+	 - Les modèles de batteries possible pour la détermination d'une configuration
+
 ### Auteur
 
   - David Mercereau [david #arobase# mercereau #point# info](http://david.mercereau.info/contact/)

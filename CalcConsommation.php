@@ -24,8 +24,8 @@ $config_ini = parse_ini_file('./config.ini', true);
 </table>
 
 <p id="resultatConsoTotal">Consommation quotidienne totale : <b><span id="ConsoTotal">0</span> Wh/j</b>
-<br /><a href="" id="hrefCalcPvAutonome">Indiquer cette valeur comme "Besoins journaliers" pour le <br />
-calcul de votre installation photovoltaïque autonome</a></p>
+<br /><a href="" id="hrefCalcPvAutonome">Cliquer ici pour indiquer cette valeur comme "Besoins journaliers"<br />
+pour le calcul de votre installation photovoltaïque autonome</a></p>
 
 <p><input type="button" class="add" value="Ajouter une ligne vide" /> 
 <select id="addEquiModele" name="addEquiModele">
@@ -149,9 +149,9 @@ function calcTableau() {
 	//console.log('Conso total : ' + ConsoTotal);
 	$( '#ConsoTotal').text(ConsoTotal);
 	if ($('#goCalcPvAutonome').val().indexOf('\?') == '-1') {
-		$('#hrefCalcPvAutonome').attr('href', $('#goCalcPvAutonome').val()+'?Bj='+ConsoTotal);
+		$('#hrefCalcPvAutonome').attr('href', $('#goCalcPvAutonome').val()+'?Bj='+Math.round(ConsoTotal));
 	} else {
-		$('#hrefCalcPvAutonome').attr('href', $('#goCalcPvAutonome').val()+'&Bj='+ConsoTotal);
+		$('#hrefCalcPvAutonome').attr('href', $('#goCalcPvAutonome').val()+'&Bj='+Math.round(ConsoTotal));
 	}
 }
 

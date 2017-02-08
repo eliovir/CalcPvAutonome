@@ -28,5 +28,14 @@ function convertNumber($number, $to = null) {
 	}
 }
 
+function debug($msg) {
+	if (isset($_GET['debug'])) {
+		echo '<span class="debug">'.$msg.'</span>';
+	}
+}
+
+function erreurPrint($id, $msg) {
+	return '<li>'.$msg.'</li>';
+}
 
 ?>
