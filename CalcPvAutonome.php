@@ -41,6 +41,11 @@ if (isset($_GET['submit'])) {
 	if (empty($_GET['DD']) || $_GET['DD'] < 0) {
 		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('DD', 'Le degré de décharge n\'est pas correcte car < 0');
 	}
+	if (empty($_GET['reguMargeIcc']) || $_GET['reguMargeIcc'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('reguMargeIcc', 'La marge de sécurité Icc du régulateur de charge n\'est pas correcte car < 0');
+	}
+	
+	
 	if ($erreurDansLeFormulaire !== null) {
 		echo '<div class="erreurForm">';
 		echo '<p>Il y a des erreurs dans le formulaire qui empêche de continuer, merci de corriger ::</p>';
@@ -130,7 +135,20 @@ if (isset($_GET['submit'])) {
 			debug('Test de config pour '.$pv['W'].' ::: nb pv: '.$nbPv);
 			debug(' | puissance total (W) : '.$PcParcPv);
 			debug(' | diff puissance souhaité : '.$diffPcParc);
-			if ($nbPv < $meilleurParcPv['nbPv'] || $diffPcParc <= $meilleurParcPv['diffPcParc']) {
+			
+			$savMeilleurParcPv = false;
+
+			$diffNbPvAvecMeilleurParc=$meilleurParcPv['nbPv']-$nbPv;
+			
+			// Si la différence de puissance & que le nombre de PV est inférieur 
+			if ($diffPcParc <= $meilleurParcPv['diffPcParc'] && $nbPv < $meilleurParcPv['nbPv']
+			// Si la différence dans le nombre de panneaux avec la meilleur config n'est pas un (même critère que précédent)
+			 || $diffNbPvAvecMeilleurParc != 1 && $diffPcParc <= $meilleurParcPv['diffPcParc']
+			 || $diffNbPvAvecMeilleurParc != 1 && $nbPv < $meilleurParcPv['nbPv']) {
+				$savMeilleurParcPv = true;
+			}
+			
+			if ($savMeilleurParcPv) {
 				# Nouvelle meilleur config
 				// Debug
 				debug(' | * nouvelle meilleur config');
@@ -155,7 +173,7 @@ if (isset($_GET['submit'])) {
 		echo '<p>Avec le panneau '.$meilleurParcPv['type'].' sélectionné de <b>'.$meilleurParcPv['W'].'Wc</b> en '.$meilleurParcPv['V'].'V , une hypothèse serait d\'avoir <b>'.$meilleurParcPv['nbPv'].' de ces panneau(x)</b> (<a rel="tooltip" class="bulles" title="Caractéristique du panneau : <br />P = '.$meilleurParcPv['W'].'W<br />U = '.$meilleurParcPv['V'].'V<br />Vdoc ='.$meilleurParcPv['Vdoc'].'V<br />Isc = '.$meilleurParcPv['Isc'].'A">?</a>) ce qui pousse la capacité du parc à '.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W :</p>';
 	}
 	?>
-	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['pv_bas']*$Pc, 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['pv_haut']*$Pc, 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['pv_bas'] ?>€/Wc en fourchette basse & <?= $config_ini['prix']['pv_haut'] ?>€/Wc en haute">?</a>)</p>
+	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['pv_bas']*$meilleurParcPv['W']*$meilleurParcPv['nbPv'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['pv_haut']*$meilleurParcPv['W']*$meilleurParcPv['nbPv'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['pv_bas'] ?>€/Wc en fourchette basse & <?= $config_ini['prix']['pv_haut'] ?>€/Wc en haute">?</a>)</p>
 	<!-- 
 		Les batteries
 	-->
@@ -254,15 +272,119 @@ if (isset($_GET['submit'])) {
 	} else {
 		echo '<p>Vous avez choisi de travailler avec des batterie(s) de type <b>'.$meilleurParcBatterie['nom'].'</b>. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
 	}
-	echo '<ul><li>'.$meilleurParcBatterie['nbBatterieParallele'].' en parallèle(s) (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah</a>) de '.$meilleurParcBatterie['nbBatterieSerie'].' en série(s) (<a rel="tooltip" class="bulles" title="Tension de la batterie ('.$meilleurParcBatterie['V'].'V) * '.$meilleurParcBatterie['nbBatterieSerie'].' série(s)">pour une tension de '.$U.'V</a>) <a rel="tooltip" class="bulles" target="_blank" title="Pour comprendre le câblage des batteries cliquer ici" href="http://www.solarmad-nrj.com/cablagebatterie.html">?</a></li></ul>';
+	echo '<ul><li><b>'.$meilleurParcBatterie['nbBatterieSerie'].' batterie(s) en série</b> (<a rel="tooltip" class="bulles" title="Tension de la batterie ('.$meilleurParcBatterie['V'].'V) * '.$meilleurParcBatterie['nbBatterieSerie'].' série(s)">pour une tension de '.$U.'V</a>) <b>sur '.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s)</b> (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah</a>)<a rel="tooltip" class="bulles" target="_blank" title="Pour comprendre le câblage des batteries cliquer ici" href="http://www.solarmad-nrj.com/cablagebatterie.html">?</a></li></ul>';
 	?>
 	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas'] ?>€/Ah en fourchette basse & <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut'] ?>€/Ah en haute">?</a>)</p>
+	
+	<!-- 
+		Régulateur
+	-->
+	<h3>Régulateur de charge</h3>
+	<p>Le régulateur de charge est entre les batteries et les panneaux, c'est lui qui gère la charge des batteries en fonction de ce que peuvent fournir les panneaux. </p>
+	<?php 
+	/*
+	 * ####### Recherche d'une Config régulateur : #######
+	*/
+	// D'abord on test avec 1 régulateur
+	// Ensuite on test tout en série
+	// Si on trouve pas, on divise en parallèle
+	// Si ça marche toujours pas on test avec plusieurs régulateur (10  max)
+	for ($nbRegulateur = 1; $nbRegulateur <= 10; $nbRegulateur++) {	
+		// On check toutes les possibilités en série puis en divisant en parallèles
+		if ($meilleurParcPv['nbPv'] == 1) {
+			$nbPvConfigFinal=1;
+		} else {
+			$nbPvConfigFinal=round($meilleurParcPv['nbPv']/$nbRegulateur);
+		}
+		$nbPvSerie = $nbPvConfigFinal;
+		$nbPvParalele = 1;
+		while ($nbPvSerie >= 1) {
+			debug('<p>En considérant '.$nbRegulateur.' régulateur, on test avec '.$nbPvSerie.' panneaux en série sur '.$nbPvParalele.' parallèle</p>');
+			$VdocParcPv=$meilleurParcPv['Vdoc']*$nbPvSerie;
+			$IscParcPv=$meilleurParcPv['Isc']*$nbPvParalele;
+			$parcPvW = $nbPvConfigFinal * $meilleurParcPv['W'];
+			$parcPvV = $VdocParcPv;
+			$parcPvI = $IscParcPv*$_GET['reguMargeIcc']/100+$IscParcPv;
+			$meilleurRegulateur = chercherRegulateur();
+					
+			// Solutaion trouvé
+			if ($meilleurRegulateur['nom']) {
+				break;
+			}
+			
+			// Pour la suite 
+			if ($nbPvSerie != 1) {
+				$nbPvSerie=round($nbPvSerie/2);
+				$nbPvParalele =round($nbPvConfigFinal / $nbPvSerie);
+			} else {
+				$nbPvSerie = 0;
+			}
+		}
+		// Solutaion trouvé
+		if ($meilleurRegulateur['nom']) {
+			break;
+		}
+	}
+
+	if (!$meilleurRegulateur['nom']) {
+		echo '<p>Désolé nous n\'avons pas réussi à faire une hypothèse de câblage panneaux/régulateur. ';
+		if ($_GET['ModRegu'] != 'auto') {
+			echo 'C\'est peut être une conséquence du choix des panneaux '.$meilleurParcPv['W'].'W. ' ;
+			echo 'Nous vous encourageons à passer le modèle du régulateur et/ou les panneaux en automatique. ';
+		}
+		echo '</p>';
+	} else {
+		if ($meilleurParcPv['nbPv'] != $nbPvSerie*$nbPvParalele*$nbRegulateur) {
+			echo '<p><i>Attention : pour cette hypothèse nous sommes passé à '.$nbPvSerie*$nbPvParalele*$nbRegulateur.' panneaux</i></p>';
+		}
+		if ($_GET['ModRegu'] == 'perso') {
+			echo '<p>Avec votre régulateur personélisé, une ';
+			$meilleurRegulateur['nom'] = '';
+		} else if ($_GET['ModRegu'] != 'auto') {
+			echo '<p>Vous forcé la sélection du régulateur '.$meilleurRegulateur['nom'].', une ';
+		} else {
+			echo '<p>Une ';
+		}
+		if ($nbRegulateur != 1) {
+			echo 'hypothèse de câblage serait d\'avoir <b>'.$nbRegulateur.' régulateur type '.$meilleurRegulateur['nom'].'</b> (<a rel="tooltip" class="bulles" title="Avec caractéristiques similaires : <br />Tension de la batterie : '.$meilleurRegulateur['Vbat'].'V<br />Puissance maximale PV : '.$meilleurRegulateur['PmaxPv'].'W<br />Tension PV circuit ouvert : '.$meilleurRegulateur['VmaxPv'].'V<br />Courant PV court circuit : '.$meilleurRegulateur['ImaxPv'].'A">?</a>) et sur chacun d\'entre eux connecter <b>'.$nbPvSerie.' panneau(x) en série';
+			if ($nbPvParalele != 1) {
+				echo ' sur '.$nbPvParalele.' parallèle(s)</b></p>';
+			} else {
+				echo '</b></p>';
+			}
+		} else {
+			echo 'hypothèse de câblage serait d\'avoir un <b>régulateur type '.$meilleurRegulateur['nom'].'</b> (<a rel="tooltip" class="bulles" title="Avec caractéristiques similaires : <br />Tension de la batterie : '.$meilleurRegulateur['Vbat'].'V<br />Puissance maximale PV : '.$meilleurRegulateur['PmaxPv'].'W<br />Tension PV circuit ouvert : '.$meilleurRegulateur['VmaxPv'].'V<br />Courant PV court circuit : '.$meilleurRegulateur['ImaxPv'].'A">?</a>) sur lequel serait connecté(s) <b>'.$nbPvSerie.' panneau(x) en série';
+			if ($nbPvParalele != 1) {
+				echo ' sur '.$nbPvParalele.' parallèle(s)</b></p>';
+			} else {
+				echo '</b></p>';
+			}
+		}
+		?>
+		<div id="resultCalcRegu" class="calcul">
+			<p>Un régulateur type <?= $meilleurRegulateur['nom'] ?>, avec un parc de batterie(s) en <b><?= $meilleurRegulateur['Vbat'] ?>V</b>, accepte  : </p>
+			<ul>
+				<li><b><?= $meilleurRegulateur['PmaxPv'] ?>W</b> de puissance maximum de panneaux : </li>
+					<ul><li>Avec un total de <?= $nbPvSerie*$nbPvParalele ?> panneau(x) en <?= $meilleurParcPv['W'] ?>W, on monte à <b><?= $meilleurParcPv['W']*$nbPvParalele*$nbPvSerie ?>W</b> (<a rel="tooltip" class="bulles" title="<?= $meilleurParcPv['W'] ?>W x <?= $nbPvParalele*$nbPvSerie ?> panneau(x) ">?</a>)</li></ul>
+				<li><b><?= $meilleurRegulateur['VmaxPv'] ?>V</b> de tension PV maximale de circuit ouvert : </li>
+					<ul><li>Avec <?= $nbPvSerie ?> panneau(x) en série ayant une tension (Vdoc) de <?= $meilleurParcPv['Vdoc'] ?>V, on monte à <b><?= $nbPvSerie*$meilleurParcPv['Vdoc'] ?>V</b> (<a rel="tooltip" class="bulles" title="<?= $meilleurParcPv['Vdoc'] ?>V (Vdoc) x <?= $nbPvSerie ?> panneau(x) en série">?</a>)</li></ul>
+				<li><b><?= $meilleurRegulateur['ImaxPv'] ?>A</b> de courant de court-circuit PV maximal : </li>
+					<ul><li>Avec <?= $nbPvParalele ?> panneau(x) en parallèle(s) ayant une intensité (Isc) de <?= $meilleurParcPv['Isc'] ?>A et une marge de sécurité de <?= $_GET['reguMargeIcc'] ?>%, on monte à <b><?= $nbPvParalele*($meilleurParcPv['Isc']+$meilleurParcPv['Isc']*$_GET['reguMargeIcc']/100) ?>A</b> (<a rel="tooltip" class="bulles" title="(<?= $meilleurParcPv['Isc'] ?>A d'Isc * <?= $_GET['reguMargeIcc'] ?>/100 de marge + <?= $meilleurParcPv['Isc'] ?>A d'Isc) x <?= $nbPvParalele ?> panneau(x) en parallèle(s)">?</a>)</li></ul>
+			</ul>
+			<p>Note : La mise en série multiple la tension (V) et la mise en parallèle multiplie l'intensité (I)</p>
+			<p>Toutes ces caractéristiques sont disponibles dans la fiche technique du produit. Vous pouvez personnaliser les caractéristiques de votre régulateur en mode <i>Expert</i>.</p>
+			<p><a class="more" id="resultCalcReguHide">Cacher la démarche</a></p>
+			<p> </p>
+		</div>
+		<p><a id="resultCalcReguShow">Voir, comprendre la démarche</a></p>	
+		<?php
+	}
+	?>
 	<h3>Le reste de l'équipement</h3>
 	<p>Il vous reste encore à choisir :</p>
 	<ul>
-		<li>Le régulateur de charge : il est entre les batteries et les panneaux, c'est lui qui gère la charge des batteries. Pour le choisir il faut connaître le courant et la tension d’arrivée des panneaux ;</li>
-		<li><a href="http://www.solarmad-nrj.com/convertisseur.html">Le convertisseur</a> : il est là pour convertir le signal continu des batteries <?= $U ?>V en signal alternatif 230V. Il se choisit avec le voltage d’entrée (ici <?= $U ?>V venus des batteries) et sa puissance maximum en sortie. Pour la puissance maximum de sortie il faut prendre votre appareil qui consomme le plus ou la somme de la puissance des appareils qui seront allumés en même temps ; </li>
-		<li>Le câblage, les éléments de protection...</li>
+		<li><a href="http://www.solarmad-nrj.com/convertisseur.html">Le convertisseur</a> : il est là pour convertir le signal continu des batteries <?= $U ?>V en signal alternatif 230V. Il se choisit avec le voltage d’entrée (ici <?= $U ?>V venus des batteries) et sa puissance maximum en sortie. Pour la puissance maximum de sortie il faut prendre votre appareil qui consomme le plus ou la somme de la puissance des appareils qui seront allumés en même temps ;</li>
+		<li>Le câblage, les éléments de protection (disjoncteur)...</li>
 	</ul>
 	<!-- Afficher ou non les informations complémentaire du formulaire -->
 	<script type="text/javascript">
@@ -282,8 +404,17 @@ if (isset($_GET['submit'])) {
 			$( "#resultCalcBat" ).hide( "slow" );
 			$( "#resultCalcBatShow" ).show( "slow" );
 		});
+		$( "#resultCalcReguShow" ).click(function() {
+			$( "#resultCalcRegu" ).show( "slow" );
+			$( "#resultCalcReguShow" ).hide( "slow" );
+		});
+		$( "#resultCalcReguHide" ).click(function() {
+			$( "#resultCalcRegu" ).hide( "slow" );
+			$( "#resultCalcReguShow" ).show( "slow" );
+		});
 		$( "#resultCalcPvHide" ).click();
 		$( "#resultCalcBatHide" ).click();
+		$( "#resultCalcReguHide" ).click();
 	</script>
 	<?php
 	} 
@@ -329,7 +460,7 @@ if (isset($_GET['submit'])) {
 		<p>Rayonnement en fonction de votre situation géographique : </p>
 		<ul id="onglets">
 			<li<?php echo ongletActif('carte'); ?>>Carte par zone (simple)</li>
-			<li<?php echo ongletActif('valeur'); ?>>Valeur</li>
+			<li<?php echo ongletActif('valeur'); ?>>Valeur (précis)</li>
 		</ul>
 		<div id="contenu">
 			
@@ -461,6 +592,53 @@ if (isset($_GET['submit'])) {
 		</div>
 	</div>
 	
+	<div class="part regu">
+		<h2 class="titre regu">Regulateur de charge</h2>
+		<div class="form ModRegu">
+			<label>Modèle de régulateur : </label>
+			<select id="ModRegu" name="ModRegu">
+				<option value="auto">Automatique</option>
+				<option value="perso" style="font-weight: bold"<?php echo valeurRecupSelect('ModRegu', 'perso'); ?>>Personnaliser</option>
+				<?php 
+				$ReguModeleDoublonCheck[]=null;
+				foreach ($config_ini['regulateur'] as $ReguModele => $ReguValeur) {
+					if (!in_array(substr($ReguModele, 0, -3), $ReguModeleDoublonCheck)) {	
+						echo '<option value="'.substr($ReguModele, 0, -3).'"';
+						echo valeurRecupSelect('ModRegu', substr($ReguModele, 0, -3));
+						echo '>'.$ReguValeur['nom'].'</option>';
+						echo "\n";
+						$ReguModeleDoublonCheck[]=substr($ReguModele, 0, -3);
+					}
+				}
+				?>
+			</select>
+		</div>
+		<div class="form PersoRegu">
+			<p>Vous pouvez détailler les caractéristiques techniques de votre régulateur solair : </p>
+			<ul>
+				<li>
+					<label>Tension finale des batteries : <a rel="tooltip" class="bulles" title="Cette valeur se change dans 'Dimensionnement du parc batteries'"><span id="PersoReguVbat"></span>V</a></label>
+				</li>
+				<li>
+					<label>Puissance maximale PV : </label>
+					<input type="number" min="1" max="9999" style="width: 70px;" value="<?php echo valeurRecup('PersoReguPmaxPv'); ?>"  name="PersoReguPmaxPv" />W
+				</li>
+				<li>
+					<label>Tension PV maximale de circuit ouvert : </label>
+					<input type="number" min="1" max="9999" style="width: 70px;" value="<?php echo valeurRecup('PersoReguVmaxPv'); ?>" name="PersoReguVmaxPv" />V
+				</li>
+				<li>
+					<label>Max. PV courant de court-circuit :</label>
+					<input type="number" step="0.01" min="0,01" max="999" style="width: 70px;" value="<?php echo valeurRecup('PersoReguImaxPv'); ?>"  name="PersoReguImaxPv" />A
+				</li>
+			</ul>
+		</div>
+		<div class="form reguMargeIcc">
+			<label>Marge de sécurité du courant de court-circuit Icc : </label>
+			<input maxlength="2" size="2" id="reguMargeIcc" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('reguMargeIcc'); ?>" name="reguMargeIcc" /> %
+		</div>
+	</div>
+		
 	<div class="form End">
 		<input id="Reset" type="button" value="Remise à 0" name="reset" />
 		<input id="Submit" type="submit" value="Lancer le calcul" name="submit" />
@@ -494,6 +672,12 @@ $('#DemandeCalcPvAutonome').click(function() {
 $( "#ModPv" ).change(function () {
 	modPvChange();
 });
+$( "#ModRegu" ).change(function () {
+	modReguChange();
+});
+$( "#U" ).change(function () {
+	$( "#PersoReguVbat" ).text($( "#U" ).val());
+});
 
 // Bouton Submit activation / désactivation
 function sumbitEnable() {
@@ -520,6 +704,26 @@ function modPvChange() {
 		$( ".form.PersoPv" ).hide();
 	}
 }
+// Changement modèle régulateur
+function modReguChange() {
+	if ($( "#ModRegu" ).val() == 'auto') {
+		$( ".form.TypeRegu" ).show();
+		$( ".form.PersoRegu" ).hide();
+		$("#U").append('<option value="0">Auto</option>');
+		$("#U").val('0');
+	} else if ($( "#ModRegu" ).val() == 'perso') {
+		$( ".form.TypeRegu" ).hide();
+		$( ".form.PersoRegu" ).show();
+		$("#U option[value='0']").remove();
+		$( "#PersoReguVbat" ).text($( "#U" ).val());
+	} else {
+		$( ".form.TypeRegu" ).hide();
+		$( ".form.PersoRegu" ).hide();
+		$("#U").append('<option value="0">Auto</option>');
+		$("#U").val('0');
+	}
+	
+}
 
 // Changement de niveau
 $( "#Ni" ).change(function () {
@@ -534,6 +738,7 @@ function changeNiveau() {
 		$( ".form.U" ).hide();
 		$( ".form.DD" ).hide();
 		$( ".part.bat" ).hide();
+		$( ".part.regu" ).hide();
 		$( ".form.ModBat" ).hide();
 		$( ".form.ModPv" ).hide();
 		$( ".form.TypePv" ).hide();
@@ -545,6 +750,7 @@ function changeNiveau() {
 		$( ".form.U" ).hide();
 		$( ".form.DD" ).hide();
 		$( ".part.bat" ).show();
+		$( ".part.regu" ).hide();
 		$( ".form.ModBat" ).hide();
 		$( ".form.ModPv" ).show();
 		$( ".form.TypePv" ).show();
@@ -556,6 +762,7 @@ function changeNiveau() {
 		$( ".form.U" ).show();
 		$( ".form.DD" ).show();
 		$( ".part.bat" ).show();
+		$( ".part.regu" ).show();
 		$( ".form.ModBat" ).show();
 		$( ".form.ModPv" ).show();
 		$( ".form.TypePv" ).show();
@@ -595,6 +802,7 @@ $(document).ready(function() {
 	// Init formulaire 
 	changeNiveau();
 	modPvChange(); 
+	modReguChange(); 
 	sumbitEnable();	
 	
 	/* infobulles http://javascript.developpez.com/tutoriels/javascript/creer-info-bulles-css-et-javascript-simplement-avec-jquery/ */

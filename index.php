@@ -2,7 +2,7 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 <head>
-	<title>[CalcPvAutonome] Calculer/dimensionner son installation photovoltaïque en site isolé (autonome)</title>
+	<title>[CalcPvAutonome] Calculer/dimensionner son installation photovoltaïque isolé (autonome)</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<link href="./lib/style.css" media="screen" rel="stylesheet" type="text/css" />	
 	<meta http-equiv="Pragma" content="no-cache">
@@ -28,7 +28,7 @@
 			echo $HelpMe;
 			include('./CalcConsommation.php'); 
 		} else {
-			echo '<h1>Calculer/dimensionner son installation photovoltaïque en site isolé (autonome)</h1>';
+			echo '<h1>Calculer/dimensionner son installation photovoltaïque isolé (autonome)</h1>';
 			echo $HelpMe;
 			include('./CalcPvAutonome.php'); 
 		}

@@ -58,7 +58,8 @@ input {
 .erreurForm {
 	color: #9B0101;
 }
-.form.PersoPv {
+.form.PersoPv,
+.form.PersoRegu {
 	border: 1px solid #C5C5C5;
 	padding: 5px;
 }

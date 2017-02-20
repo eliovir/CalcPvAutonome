@@ -19,7 +19,9 @@ Pour l'utilisateur de base :
 	- (simple) Carte par zone
 	- (précis) Valeur du site http://ines.solaire.free.fr/gisesol_1.php (kWh/m²/j)
   - En mode expert, ajuster le degré de décharge, les valeurs de rendement électrique des batteries ou du reste de l'installation, 
-  - Déduction automatique du nombre de panneaux nessésaire (possibilité de forcer un modèle type)
+  - Déduction automatique du nombre de panneaux nessésaire (possibilité de forcer un modèle type ou de personnaliser ces caractéristiques)
+  - Déduction automatique du régulateur nessésaire (possibilité de forcer un modèle type ou de personnaliser ces caractéristiques)
+  - Hypothèse de câblage panneaux / régulateur (exemple : 3 panneaux en série sur 2 paralèles branché sur un régulateur)
   - Déduction automatique de la tension du parc de batteries à utiliser (possibilité de forcer une valeur en mode expert)
   - Déduction automatique d'une configuration du parc de câblage des batteries et du modèle à utiliser (exemple : "2 batteries 220Ah 12V en série") (possibilité de forcer un modèle de travail en mode expert)
   - Estimation d'une fourchette du coût du parc de batterie & photovoltaïque 
@@ -50,8 +52,11 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
 ### Todos
 
  - Bug info bulle pas bien positionné
+ - Bug plusieurs "auto" appariasse dans le select de tension de batterie en manipulant les régulateurs...
  
- - Hypotèse câblage PV. 
+ - Pouvoir personnaliser ses batteries
+ - Beau dessin du câblage...
+ - Calcul des sections de câbles
  - Prévoir d'autres technologie batterie que AGM
  - Générer un beau dessin avec le câblage
  - Sauvegarde du résultat par URL, envoyer à un amis...
@@ -65,6 +70,9 @@ CalcConsommation :
 
 ### Changelog
 
+ - 0.3
+	- Déduction automatique du régulateur nessésaire (possibilité de forcer un modèle type ou de personnaliser ces caractéristiques)
+	- Déduction automatique du câblage des panneaux (série/parallèle) 
  - 0.2
 	- Déduction automatique du nombre de panneaux (possibilité de forcer un modèle de travail)
     - Possibilité de privilégier la technologie monocristalin ou polycristalin 
