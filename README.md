@@ -54,6 +54,8 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
  - Bug info bulle pas bien positionné
  - Bug plusieurs "auto" appariasse dans le select de tension de batterie en manipulant les régulateurs...
  
+ - Mettre un script de bugtrack
+ - Préciser que l'aide d'un professionel est souhaitable
  - Pouvoir personnaliser ses batteries
  - Beau dessin du câblage...
  - Calcul des sections de câbles

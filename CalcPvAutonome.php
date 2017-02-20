@@ -29,6 +29,17 @@ if (isset($_GET['submit'])) {
 			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvIsc', 'Le courant de court circuit (Isc) du panneau personalisé n\'est pas correcte car < 0');
 		}
 	}
+	if ($_GET['ModRegu'] == 'perso') {
+		if (empty($_GET['PersoReguVmaxPv']) || $_GET['PersoReguVmaxPv'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvV', 'La tension du régulateur personalisé n\'est pas correcte car < 0');
+		}
+		if (empty($_GET['PersoReguPmaxPv']) || $_GET['PersoReguPmaxPv'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvW', 'La puissance du régulateur personalisé n\'est pas correcte car < 0');
+		}
+		if (empty($_GET['PersoReguImaxPv']) || $_GET['PersoReguImaxPv'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvVdoc', 'Le courant de court-circuit du régulateur personalisé n\'est pas correcte car < 0');
+		}
+	}
 	if (empty($_GET['Aut']) || $_GET['Aut'] < 0) {
 		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('Aut', 'Le nombre de jour d\'autonomie n\'est pas correcte car < 0');
 	}
