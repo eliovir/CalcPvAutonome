@@ -46,7 +46,7 @@ function erreurPrint($id, $msg) {
 // Recherche bonne config régulateur
 function chercherRegulateur() {
 	
-	global $parcPvW,$parcPvV,$parcPvI,$config_ini,$U,$_GET;
+	global $parcPvW,$parcPvV,$parcPvI,$config_ini,$U,$meilleurParcBatterie,$_GET,$batICharge;
 	
 	$meilleurRegulateur['nom'] = null;
 	$meilleurRegulateur['diffRegulateurParcPvW'] = 99999;
@@ -61,20 +61,26 @@ function chercherRegulateur() {
 		debug('<li>');
 		debug('Test de config avec le régulateur perso ::: ');
 
-		debug($parcPvW.'&lt;'.$_GET['PersoReguPmaxPv'].'W, ');
-		debug($parcPvV.'&lt;'.$_GET['PersoReguVmaxPv'].'V, ');
-		debug($parcPvI.'&lt;'.$_GET['PersoReguImaxPv'].'A');
+		debug($batICharge.'&lt;'.$_GET['PersoReguIbat'].'A Bat, ');
+		if ($batICharge < $_GET['PersoReguIbat']) {
+			debug($parcPvW.'&lt;'.$_GET['PersoReguPmaxPv'].'W, ');
+			debug($parcPvV.'&lt;'.$_GET['PersoReguVmaxPv'].'V, ');
+			debug($parcPvI.'&lt;'.$_GET['PersoReguImaxPv'].'A');
 
-		if ($parcPvW < $_GET['PersoReguPmaxPv']
-		&& $parcPvV < $_GET['PersoReguVmaxPv']
-		&& $parcPvI < $_GET['PersoReguImaxPv']) {
-			debug(' | ** ça fonctionne ** ');
-			$meilleurRegulateur['nom'] = 'Regulateur Personnalisé';
-			$meilleurRegulateur['Vbat'] = $_GET['U'];
-			$meilleurRegulateur['PmaxPv'] = $_GET['PersoReguPmaxPv'];
-			$meilleurRegulateur['VmaxPv'] = $_GET['PersoReguVmaxPv'];
-			$meilleurRegulateur['ImaxPv'] = $_GET['PersoReguImaxPv'];
-		} 
+			if ($parcPvW < $_GET['PersoReguPmaxPv']
+			&& $parcPvV < $_GET['PersoReguVmaxPv']
+			&& $parcPvI < $_GET['PersoReguImaxPv']) {
+				debug(' | ** ça fonctionne ** ');
+				$meilleurRegulateur['nom'] = 'Regulateur Personnalisé';
+				$meilleurRegulateur['Vbat'] = $_GET['U'];
+				$meilleurRegulateur['Ibat'] = $_GET['PersoReguIbat'];
+				$meilleurRegulateur['PmaxPv'] = $_GET['PersoReguPmaxPv'];
+				$meilleurRegulateur['VmaxPv'] = $_GET['PersoReguVmaxPv'];
+				$meilleurRegulateur['ImaxPv'] = $_GET['PersoReguImaxPv'];
+			} 
+		} else {
+			debug(' | impossible ');
+		}
 		debug('</li>');
 	
 	} else {
@@ -95,10 +101,15 @@ function chercherRegulateur() {
 			debug('<li>');
 			debug('Test de config avec le '.$regulateur['nom'].' ::: ');
 
+			debug($batICharge.'&lt;'.$regulateur['Ibat'].'A Bat, ');
+			if (! $batICharge > $regulateur['Ibat']) {
+				continue;
+			} 
+			
 			debug($parcPvW.'&lt;'.$regulateur['PmaxPv'].'W, ');
 			debug($parcPvV.'&lt;'.$regulateur['VmaxPv'].'V, ');
 			debug($parcPvI.'&lt;'.$regulateur['ImaxPv'].'A');
-
+			
 			if ($parcPvW < $regulateur['PmaxPv']
 			&& $parcPvV < $regulateur['VmaxPv']
 			&& $parcPvI < $regulateur['ImaxPv']) {
@@ -121,6 +132,7 @@ function chercherRegulateur() {
 				$meilleurRegulateur['diffRegulateurParcPvA'] = $diffRegulateurParcPvI;
 				$meilleurRegulateur['nom'] = $regulateur['nom'];
 				$meilleurRegulateur['Vbat'] = $regulateur['Vbat'];
+				$meilleurRegulateur['Ibat'] = $regulateur['Ibat'];
 				$meilleurRegulateur['PmaxPv'] = $regulateur['PmaxPv'];
 				$meilleurRegulateur['VmaxPv'] = $regulateur['VmaxPv'];
 				$meilleurRegulateur['ImaxPv'] = $regulateur['ImaxPv'];

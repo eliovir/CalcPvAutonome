@@ -31,13 +31,16 @@ if (isset($_GET['submit'])) {
 	}
 	if ($_GET['ModRegu'] == 'perso') {
 		if (empty($_GET['PersoReguVmaxPv']) || $_GET['PersoReguVmaxPv'] < 0) {
-			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvV', 'La tension du régulateur personalisé n\'est pas correcte car < 0');
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoReguVmaxPv', 'La tension du régulateur personalisé n\'est pas correcte car < 0');
 		}
 		if (empty($_GET['PersoReguPmaxPv']) || $_GET['PersoReguPmaxPv'] < 0) {
-			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvW', 'La puissance du régulateur personalisé n\'est pas correcte car < 0');
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoReguPmaxPv', 'La puissance du régulateur personalisé n\'est pas correcte car < 0');
 		}
 		if (empty($_GET['PersoReguImaxPv']) || $_GET['PersoReguImaxPv'] < 0) {
-			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvVdoc', 'Le courant de court-circuit du régulateur personalisé n\'est pas correcte car < 0');
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoReguImaxPv', 'Le courant de court-circuit du régulateur personalisé n\'est pas correcte car < 0');
+		}
+		if (empty($_GET['PersoReguIbat']) || $_GET['PersoReguIbat'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoReguIbat', 'Le courant de charge max des batteries du régulateur personalisé n\'est pas correcte car < 0');
 		}
 	}
 	if (empty($_GET['Aut']) || $_GET['Aut'] < 0) {
@@ -296,6 +299,8 @@ if (isset($_GET['submit'])) {
 	/*
 	 * ####### Recherche d'une Config régulateur : #######
 	*/
+	// Courant de charge max avec les batteries
+	$batICharge = $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'] * $_GET['IbatCharge'] / 100;
 	// D'abord on test avec 1 régulateur
 	// Ensuite on test tout en série
 	// Si on trouve pas, on divise en parallèle
@@ -316,6 +321,7 @@ if (isset($_GET['submit'])) {
 			$parcPvW = $nbPvConfigFinal * $meilleurParcPv['W'];
 			$parcPvV = $VdocParcPv;
 			$parcPvI = $IscParcPv*$_GET['reguMargeIcc']/100+$IscParcPv;
+			
 			$meilleurRegulateur = chercherRegulateur();
 					
 			// Solutaion trouvé
@@ -340,7 +346,6 @@ if (isset($_GET['submit'])) {
 	if (!$meilleurRegulateur['nom']) {
 		echo '<p>Désolé nous n\'avons pas réussi à faire une hypothèse de câblage panneaux/régulateur. ';
 		if ($_GET['ModRegu'] != 'auto') {
-			echo 'C\'est peut être une conséquence du choix des panneaux '.$meilleurParcPv['W'].'W. ' ;
 			echo 'Nous vous encourageons à passer le modèle du régulateur et/ou les panneaux en automatique. ';
 		}
 		echo '</p>';
@@ -375,6 +380,8 @@ if (isset($_GET['submit'])) {
 		<div id="resultCalcRegu" class="calcul">
 			<p>Un régulateur type <?= $meilleurRegulateur['nom'] ?>, avec un parc de batterie(s) en <b><?= $meilleurRegulateur['Vbat'] ?>V</b>, accepte  : </p>
 			<ul>
+				<li><b><?= $meilleurRegulateur['Ibat'] ?>A</b> de courant charge des batteries : </li>
+					<ul><li>Avec <?= $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'] ?> Ah, le courant de charge ne doit pas exéder <?= $_GET['IbatCharge'] ?>% soit <b><?= $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele']*$_GET['IbatCharge']/100 ?></b>A (<a rel="tooltip" class="bulles" title="<?= $meilleurParcBatterie['Ah'] ?> Ah * <?= $meilleurParcBatterie['nbBatterieParallele'] ?> batterie(s) en parallèle(s) * <?= $_GET['IbatCharge'] ?> / 100">?</a>)</li></ul>
 				<li><b><?= $meilleurRegulateur['PmaxPv'] ?>W</b> de puissance maximum de panneaux : </li>
 					<ul><li>Avec un total de <?= $nbPvSerie*$nbPvParalele ?> panneau(x) en <?= $meilleurParcPv['W'] ?>W, on monte à <b><?= $meilleurParcPv['W']*$nbPvParalele*$nbPvSerie ?>W</b> (<a rel="tooltip" class="bulles" title="<?= $meilleurParcPv['W'] ?>W x <?= $nbPvParalele*$nbPvSerie ?> panneau(x) ">?</a>)</li></ul>
 				<li><b><?= $meilleurRegulateur['VmaxPv'] ?>V</b> de tension PV maximale de circuit ouvert : </li>
@@ -495,6 +502,7 @@ if (isset($_GET['submit'])) {
 					<label>Donner l'inclinaison des panneaux <a rel="tooltip" class="bulles" title="En site isolé on choisie l'inclinaison optimum pour le pire mois de l'année niveau ensoleillement, en France souvent décembre ~65°">(~65° conseillé)</a></label>
 					
 					<select name="Deg">
+						<option value="0"<?php echo valeurRecupSelect('Deg', 0); ?>>0°</option>
 						<option value="35"<?php echo valeurRecupSelect('Deg', 35); ?>>35°</option>
 						<option value="65"<?php echo valeurRecupSelect('Deg', 65); ?>>65°</option>
 					</select>
@@ -584,8 +592,8 @@ if (isset($_GET['submit'])) {
 			</select> V <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 800Wc : 12V<br />De 800 à 1600 Wc : 24V<br />Au dessus de 1600 Wc : 48V">(?)</a>
 		</div>
 		<div class="form DD">
-			<label>Degré de décharge : </label>
-			<input  maxlength="2" size="2" id="DD" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('DD'); ?>" name="DD" /> %
+			<label>Degré de décharge limite : </label>
+			<input maxlength="2" size="2" id="DD" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('DD'); ?>" name="DD" /> %
 		</div>
 		<div class="form ModBat">
 			<label>Modèle de batterie : </label>
@@ -631,6 +639,10 @@ if (isset($_GET['submit'])) {
 					<label>Tension finale des batteries : <a rel="tooltip" class="bulles" title="Cette valeur se change dans 'Dimensionnement du parc batteries'"><span id="PersoReguVbat"></span>V</a></label>
 				</li>
 				<li>
+					<label>Courant de charge des batteries :</label>
+					<input type="number" step="0.01" min="0,01" max="999" style="width: 70px;" value="<?php echo valeurRecup('PersoReguIbat'); ?>"  name="PersoReguIbat" />A
+				</li>
+				<li>
 					<label>Puissance maximale PV : </label>
 					<input type="number" min="1" max="9999" style="width: 70px;" value="<?php echo valeurRecup('PersoReguPmaxPv'); ?>"  name="PersoReguPmaxPv" />W
 				</li>
@@ -639,15 +651,25 @@ if (isset($_GET['submit'])) {
 					<input type="number" min="1" max="9999" style="width: 70px;" value="<?php echo valeurRecup('PersoReguVmaxPv'); ?>" name="PersoReguVmaxPv" />V
 				</li>
 				<li>
-					<label>Max. PV courant de court-circuit :</label>
+					<label>Max. PV courant (Puissance / Tension) :</label>
 					<input type="number" step="0.01" min="0,01" max="999" style="width: 70px;" value="<?php echo valeurRecup('PersoReguImaxPv'); ?>"  name="PersoReguImaxPv" />A
 				</li>
 			</ul>
 		</div>
 		<div class="form reguMargeIcc">
-			<label>Marge de sécurité du courant de court-circuit Icc : </label>
+			<label>Marge de sécurité du courant de court-circuit Icc des panneaux : </label>
 			<input maxlength="2" size="2" id="reguMargeIcc" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('reguMargeIcc'); ?>" name="reguMargeIcc" /> %
 		</div>
+		<div class="form IbatCharge">
+			<label>Pourcentage de courant de charge max des batteries : </label>
+			<input maxlength="2" size="2" id="IbatCharge" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('IbatCharge'); ?>" name="IbatCharge" /> %
+		</div>
+		<!--
+		<div class="form IbatDecharge">
+			<label>Pourcentage de courant de décharge max : </label>
+			<input  maxlength="2" size="2" id="IbatDecharge" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('IbatDecharge'); ?>" name="IbatDecharge" /> %
+		</div>
+		-->
 	</div>
 		
 	<div class="form End">
