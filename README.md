@@ -55,10 +55,6 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
  - Bug plusieurs "auto" appariasse dans le select de tension de batterie en manipulant les régulateurs...
  - Bug : virer "1 série" quand il n'y a que des paralèles...
  - Préciser que les valeurs des batteries c'est pour du C20 - faire un lien pour explication  : http://www.batterie-solaire.com/batterie-delestage-electrique.htm
- - ERREUR Régulateur : 
-	Ajouter le courant PV max
-	sur un 100/30 le 30 c'est le courant de sortie des batterie (pas des panneaux) et ça ne doit pas être > 19% de la capacité des batterie
-		http://forum-photovoltaique.fr/viewtopic.php?p=407128#p407128
  - Truc du frigo 24/24 mais qui consomem pas tout le temps... A affiner...
  - Pîque de conso qui fait varier le choix de l'onduleur et donc la tension du parc de batterie...
 		12V:  de 150 à 1500VA, 24V : de 400 à 5000VA, 48V : 1000 à 10000VA...  (voir mail de guillaume)
@@ -86,6 +82,9 @@ CalcConsommation :
 
 ### Changelog
 
+ - 0.3.1
+	- Prise en compte du courant de charge max des batteries (dans le régulateur)
+	- Ajout de l'angle 0° dans la carte d'iradiation solaire
  - 0.3
 	- Déduction automatique du régulateur nécessaire (possibilité de forcer un modèle type ou de personnaliser ces caractéristiques)
 	- Déduction automatique du câblage des panneaux (série/parallèle) 
