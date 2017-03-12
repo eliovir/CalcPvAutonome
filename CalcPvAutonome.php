@@ -29,6 +29,14 @@ if (isset($_GET['submit'])) {
 			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvIsc', 'Le courant de court circuit (Isc) du panneau personalisé n\'est pas correcte car < 0');
 		}
 	}
+	if ($_GET['ModBat'] == 'perso') {
+		if (empty($_GET['PersoBatV']) || $_GET['PersoBatV'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoBatV', 'La tension de la batterie personalisée n\'est pas correcte car < 0');
+		}
+		if (empty($_GET['PersoBatAh']) || $_GET['PersoBatAh'] < 0) {
+			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoBatAh', 'La capacité de la batterie personalisée n\'est pas correcte car < 0');
+		}
+	}
 	if ($_GET['ModRegu'] == 'perso') {
 		if (empty($_GET['PersoReguVmaxPv']) || $_GET['PersoReguVmaxPv'] < 0) {
 			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoReguVmaxPv', 'La tension du régulateur personalisé n\'est pas correcte car < 0');
@@ -70,7 +78,7 @@ if (isset($_GET['submit'])) {
 	?>
 
 	<h2 class="titre">Résultat du dimensionnement</h2>
-	<p><b>Avertissement</b>: Les résultats sont donnés à titre indicatif. </p>
+	<p><b>Avertissement</b>: Les résultats sont donnés à titre indicatif, nous vous conseillons de vous rapprocher d'un professionnel pour l'achat du matériel, celui-ci pourra valider votre installation. </p>
 	<!-- 
 		Les PV
 	-->
@@ -241,8 +249,13 @@ if (isset($_GET['submit'])) {
 	$meilleurParcBatterie['Ah'] = 0;
 	debug('<ul type="1">');
 	foreach ($config_ini['batterie'] as $idBat => $batterie) {
+		// En mode personnalisé on force et on stop la boucle à la fin 
+		if ($_GET['ModBat'] == 'perso') {
+			// plus loin, la même condition avec un break
+			$batterie['Ah'] = $_GET['PersoBatAh'];
+			$batterie['V'] = $_GET['PersoBatV'];
 		// En mode auto on utilise les batteires 2V si on est au dessus des 550Ah
-		if ($_GET['ModBat'] == 'auto') {
+		} else if ($_GET['ModBat'] == 'auto') {
 			if ($Cap > 550 && $batterie['V'] >= 12) {
 				continue;
 			} else if ($Cap < 550 && $batterie['V'] < 12) {
@@ -264,7 +277,8 @@ if (isset($_GET['submit'])) {
 		debug('Test de config pour '.$batterie['nom'].' ::: nb de batterie: '.$nbBatterie);
 		debug(' | total (Ah) : '.$capParcBatterie);
 		debug(' | diff capacité souhaité : '.$diffCap);
-		if ($nbBatterie < $meilleurParcBatterie['nbBatterieParallele']
+		if ($_GET['ModBat'] == 'perso' 
+		|| $nbBatterie < $meilleurParcBatterie['nbBatterieParallele']
 		|| $nbBatterie == $meilleurParcBatterie['nbBatterieParallele'] && $diffCap <= $meilleurParcBatterie['diffCap']) {
 			# Nouvelle meilleur config
 			// Debug
@@ -276,13 +290,18 @@ if (isset($_GET['submit'])) {
 			$meilleurParcBatterie['nbBatterieParallele'] = $nbBatterie;
 			$meilleurParcBatterie['nbBatterieSerie'] = $U/$meilleurParcBatterie['V'];
 			$meilleurParcBatterie['nbBatterieTotal'] = $meilleurParcBatterie['nbBatterieSerie'] * $meilleurParcBatterie['nbBatterieParallele'];
-
 		}
 		debug('</li>');
+		// En mode personnalisé stop la boucle après avoir forcé 
+		if ($_GET['ModBat'] == 'perso') {
+			break;
+		}
 	}
 	debug('</ul>');
 	if ($_GET['ModBat'] == 'auto') {
 		echo '<p>Une hypothèse de câblage serait d\'avoir <b>'.$meilleurParcBatterie['nbBatterieTotal'].' batterie(s)</b> de type <b>'.$meilleurParcBatterie['nom'].'</b> ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
+	} else if ($_GET['ModBat'] == 'perso') {
+		echo '<p>Vous avez choisi de travailler avec des batterie(s) personnalisé à '.$meilleurParcBatterie['Ah'].'Ah en '.$meilleurParcBatterie['V'].'V. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
 	} else {
 		echo '<p>Vous avez choisi de travailler avec des batterie(s) de type <b>'.$meilleurParcBatterie['nom'].'</b>. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
 	}
@@ -402,7 +421,7 @@ if (isset($_GET['submit'])) {
 	<p>Il vous reste encore à choisir :</p>
 	<ul>
 		<li><a href="http://www.solarmad-nrj.com/convertisseur.html">Le convertisseur</a> : il est là pour convertir le signal continu des batteries <?= $U ?>V en signal alternatif 230V. Il se choisit avec le voltage d’entrée (ici <?= $U ?>V venus des batteries) et sa puissance maximum en sortie. Pour la puissance maximum de sortie il faut prendre votre appareil qui consomme le plus ou la somme de la puissance des appareils qui seront allumés en même temps ;</li>
-		<li>Le câblage, les éléments de protection (disjoncteur)...</li>
+		<li>Le câblage, les éléments de protection (disjoncteur, coup circuit)...</li>
 	</ul>
 	<!-- Afficher ou non les informations complémentaire du formulaire -->
 	<script type="text/javascript">
@@ -583,7 +602,7 @@ if (isset($_GET['submit'])) {
 			<input maxlength="2" size="2" id="Aut" type="number" step="1" min="0" max="50" style="width: 50px" value="<?php echo valeurRecup('Aut'); ?>" name="Aut" />
 		</div>
 		<div class="form U">
-			<label>Tension finale des batteries : </label>
+			<label>Tension finale du parc de batteries : </label>
 			<select id="U" name="U">
 				<option value="0"<?php echo valeurRecupSelect('U', 0); ?>>Auto</option>
 				<option value="12"<?php echo valeurRecupSelect('U', 12); ?>>12</option>
@@ -596,9 +615,10 @@ if (isset($_GET['submit'])) {
 			<input maxlength="2" size="2" id="DD" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('DD'); ?>" name="DD" /> %
 		</div>
 		<div class="form ModBat">
-			<label>Modèle de batterie : </label>
+			<label>Modèle de batterie (<a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">donné en C20</a>) : </label>
 			<select id="ModBat" name="ModBat">
 				<option value="auto">Automatique</option>
+				<option value="perso" style="font-weight: bold"<?php echo valeurRecupSelect('ModBat', 'perso'); ?>>Personnaliser</option>
 				<?php 
 				foreach ($config_ini['batterie'] as $batModele => $batValeur) {
 					echo '<option value="'.$batModele.'"';
@@ -609,6 +629,23 @@ if (isset($_GET['submit'])) {
 				?>
 			</select> <a rel="tooltip" class="bulles" title="En mode automatique, au dessus de 550A, il sera utilisé des batteries GEL OPzV 2V">(?)</a>
 		</div>
+		<div class="form PersoBat">
+			<p>Vous pouvez détailler les caractéristiques techniques de votre batterie : </p>
+			<ul>
+				<li>
+					<label>Capacité  : </label>
+					<input type="number" min="1" max="9999" style="width: 70px;" value="<?php echo valeurRecup('PersoBatAh'); ?>"  name="PersoBatAh" />Ah
+				</li>
+				<li>
+					<label>Tension : </label>
+					<select id="PersoBatV" name="PersoBatV">
+						<option value="2"<?php echo valeurRecupSelect('PersoBatV', 2); ?>>2</option>
+						<option value="12"<?php echo valeurRecupSelect('PersoBatV', 12); ?>>12</option>
+					</select> V
+				</li>
+			</ul>
+		</div>
+		
 	</div>
 	
 	<div class="part regu">
@@ -705,6 +742,9 @@ $('#DemandeCalcPvAutonome').click(function() {
 $( "#ModPv" ).change(function () {
 	modPvChange();
 });
+$( "#ModBat" ).change(function () {
+	modBatChange();
+});
 $( "#ModRegu" ).change(function () {
 	modReguChange();
 });
@@ -735,6 +775,16 @@ function modPvChange() {
 	} else {
 		$( ".form.TypePv" ).hide();
 		$( ".form.PersoPv" ).hide();
+	}
+}
+// Changement de modèle de batterie
+function modBatChange() {
+	if ($( "#ModBat" ).val() == 'auto') {
+		$( ".form.PersoBat" ).hide();
+	} else if ($( "#ModBat" ).val() == 'perso') {
+		$( ".form.PersoBat" ).show();
+	} else {
+		$( ".form.PersoBat" ).hide();
 	}
 }
 // Changement modèle régulateur
@@ -835,6 +885,7 @@ $(document).ready(function() {
 	// Init formulaire 
 	changeNiveau();
 	modPvChange(); 
+	modBatChange();
 	modReguChange(); 
 	sumbitEnable();	
 	
