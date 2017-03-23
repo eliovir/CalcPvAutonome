@@ -47,9 +47,6 @@ if (isset($_GET['submit'])) {
 		if (empty($_GET['PersoReguImaxPv']) || $_GET['PersoReguImaxPv'] < 0) {
 			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoReguImaxPv', 'Le courant de court-circuit du régulateur personalisé n\'est pas correcte car < 0');
 		}
-		if (empty($_GET['PersoReguIbat']) || $_GET['PersoReguIbat'] < 0) {
-			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoReguIbat', 'Le courant de charge max des batteries du régulateur personalisé n\'est pas correcte car < 0');
-		}
 	}
 	if (empty($_GET['Aut']) || $_GET['Aut'] < 0) {
 		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('Aut', 'Le nombre de jour d\'autonomie n\'est pas correcte car < 0');
@@ -109,8 +106,9 @@ if (isset($_GET['submit'])) {
 		<p>Pc = <?= $_GET['Bj'] ?> / (<?= $_GET['Rb'] ?> * <?= $_GET['Ri'] ?> * <?= $Ej ?>) = <b><?= convertNumber($Pc, 'print') ?> Wc</b></p>
 	</div>
 	
-	<p>Vous avez donc besoin d'une puissance de panneau photovoltaïque équivalente à <b><?= convertNumber($Pc, 'print') ?>Wc</b>.</p>
+	<p>Vous auriez besoin d'une puissance de panneau photovoltaïque équivalente à <b><?= convertNumber($Pc, 'print') ?>Wc</b>.</p>
 	<p><a id="resultCalcPvShow">Voir, comprendre la démarche, le calcul</a></p>
+	
 	<?php
 	/*
 	 * ####### Recherche d'une Config panneux : #######
@@ -236,8 +234,26 @@ if (isset($_GET['submit'])) {
 		<p><a class="more" id="resultCalcBatHide">Cacher le calcul</a></p>
 		<p>Cap = (<?= $_GET['Bj'] ?> x <?= $_GET['Aut'] ?>) / (<?= $_GET['DD']*0.01 ?> x <?= $U ?>) = <b><?= convertNumber($Cap, 'print') ?> Ah</b></p>
 	</div>
-	<p>Vous avez donc besoin d'un parc de batteries de <b><?= convertNumber($Cap, 'print') ?> Ah en <?= $U ?> V</b>.</p>
+	<p>Vous auriez besoin d'un parc de batteries de <b><?= convertNumber($Cap, 'print') ?> Ah en <?= $U ?> V</b>.</p>
 	<p><a id="resultCalcBatShow">Voir, comprendre la démarche, le calcul</a></p>	
+	
+	<?php
+	$CourantChargeDesPanneaux=$meilleurParcPv['W']*$meilleurParcPv['nbPv']/$U;
+	$CourantChargeMax = $Cap*$_GET['IbatCharge']/100;
+	$CourantDechargeMax = $Cap*$_GET['IbatDecharge']/100;
+	// Si le courant de charge n'est pas respecté par rapport à la taille de la batterie
+	if ($CourantChargeDesPanneaux > $CourantChargeMax) {
+		echo '<p>Le courant de charge d\'une batterie ne doit pas dépasser '.$_GET['IbatCharge'].'%, ce qui fait <a rel="tooltip" class="bulles" title="'.convertNumber($Cap, 'print').'Ah * '.$_GET['IbatCharge'].'/100">'.convertNumber($CourantChargeMax, 'print').'A</a> dans notre cas. Hors vos panneaux peuvent monter jusqu`à un courant de charge de <a rel="tooltip" class="bulles" title="'.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W / '.$U.'V">'.convertNumber($CourantChargeDesPanneaux, 'print').'A</a>. Si votre régulateur le permet vous pouvez le brider ou augmenter votre parc de batterie à ';
+		$Cap=$CourantChargeDesPanneaux*100/$_GET['IbatCharge'];
+		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>.';
+	}
+	echo $CourantDechargeMax;
+	?>
+	
+	
+	
+		
+	
 	<?php 
 	/*
 	 * ####### Recherche d'une Config batterie : #######
@@ -399,8 +415,6 @@ if (isset($_GET['submit'])) {
 		<div id="resultCalcRegu" class="calcul">
 			<p>Un régulateur type <?= $meilleurRegulateur['nom'] ?>, avec un parc de batterie(s) en <b><?= $meilleurRegulateur['Vbat'] ?>V</b>, accepte  : </p>
 			<ul>
-				<li><b><?= $meilleurRegulateur['Ibat'] ?>A</b> de courant charge des batteries : </li>
-					<ul><li>Avec <?= $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'] ?> Ah, le courant de charge ne doit pas exéder <?= $_GET['IbatCharge'] ?>% soit <b><?= $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele']*$_GET['IbatCharge']/100 ?></b>A (<a rel="tooltip" class="bulles" title="<?= $meilleurParcBatterie['Ah'] ?> Ah * <?= $meilleurParcBatterie['nbBatterieParallele'] ?> batterie(s) en parallèle(s) * <?= $_GET['IbatCharge'] ?> / 100">?</a>)</li></ul>
 				<li><b><?= $meilleurRegulateur['PmaxPv'] ?>W</b> de puissance maximum de panneaux : </li>
 					<ul><li>Avec un total de <?= $nbPvSerie*$nbPvParalele ?> panneau(x) en <?= $meilleurParcPv['W'] ?>W, on monte à <b><?= $meilleurParcPv['W']*$nbPvParalele*$nbPvSerie ?>W</b> (<a rel="tooltip" class="bulles" title="<?= $meilleurParcPv['W'] ?>W x <?= $nbPvParalele*$nbPvSerie ?> panneau(x) ">?</a>)</li></ul>
 				<li><b><?= $meilleurRegulateur['VmaxPv'] ?>V</b> de tension PV maximale de circuit ouvert : </li>
@@ -615,7 +629,7 @@ if (isset($_GET['submit'])) {
 			<input maxlength="2" size="2" id="DD" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('DD'); ?>" name="DD" /> %
 		</div>
 		<div class="form ModBat">
-			<label>Modèle de batterie (<a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">donné en C20</a>) : </label>
+			<label>Modèle de batterie (<a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">donné en C10</a>) : </label>
 			<select id="ModBat" name="ModBat">
 				<option value="auto">Automatique</option>
 				<option value="perso" style="font-weight: bold"<?php echo valeurRecupSelect('ModBat', 'perso'); ?>>Personnaliser</option>
@@ -633,7 +647,7 @@ if (isset($_GET['submit'])) {
 			<p>Vous pouvez détailler les caractéristiques techniques de votre batterie : </p>
 			<ul>
 				<li>
-					<label>Capacité  : </label>
+					<label>Capacité (C10) : </label>
 					<input type="number" min="1" max="9999" style="width: 70px;" value="<?php echo valeurRecup('PersoBatAh'); ?>"  name="PersoBatAh" />Ah
 				</li>
 				<li>
@@ -645,7 +659,14 @@ if (isset($_GET['submit'])) {
 				</li>
 			</ul>
 		</div>
-		
+		<div class="form IbatCharge">
+			<label>Capacité de courant de charge max : </label>
+			<input maxlength="2" size="2" id="IbatCharge" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('IbatCharge'); ?>" name="IbatCharge" /> %
+		</div>
+		<div class="form IbatDecharge">
+			<label>Capacité de courant de décharge max : </label>
+			<input  maxlength="2" size="2" id="IbatDecharge" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('IbatDecharge'); ?>" name="IbatDecharge" /> %
+		</div>
 	</div>
 	
 	<div class="part regu">
@@ -676,10 +697,6 @@ if (isset($_GET['submit'])) {
 					<label>Tension finale des batteries : <a rel="tooltip" class="bulles" title="Cette valeur se change dans 'Dimensionnement du parc batteries'"><span id="PersoReguVbat"></span>V</a></label>
 				</li>
 				<li>
-					<label>Courant de charge des batteries :</label>
-					<input type="number" step="0.01" min="0,01" max="999" style="width: 70px;" value="<?php echo valeurRecup('PersoReguIbat'); ?>"  name="PersoReguIbat" />A
-				</li>
-				<li>
 					<label>Puissance maximale PV : </label>
 					<input type="number" min="1" max="9999" style="width: 70px;" value="<?php echo valeurRecup('PersoReguPmaxPv'); ?>"  name="PersoReguPmaxPv" />W
 				</li>
@@ -697,16 +714,6 @@ if (isset($_GET['submit'])) {
 			<label>Marge de sécurité du courant de court-circuit Icc des panneaux : </label>
 			<input maxlength="2" size="2" id="reguMargeIcc" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('reguMargeIcc'); ?>" name="reguMargeIcc" /> %
 		</div>
-		<div class="form IbatCharge">
-			<label>Pourcentage de courant de charge max des batteries : </label>
-			<input maxlength="2" size="2" id="IbatCharge" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('IbatCharge'); ?>" name="IbatCharge" /> %
-		</div>
-		<!--
-		<div class="form IbatDecharge">
-			<label>Pourcentage de courant de décharge max : </label>
-			<input  maxlength="2" size="2" id="IbatDecharge" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('IbatDecharge'); ?>" name="IbatDecharge" /> %
-		</div>
-		-->
 	</div>
 		
 	<div class="form End">
@@ -823,6 +830,8 @@ function changeNiveau() {
 		$( ".part.bat" ).hide();
 		$( ".part.regu" ).hide();
 		$( ".form.ModBat" ).hide();
+		$( ".form.IbatCharge" ).hide();
+		$( ".form.IbatDecharge" ).hide();
 		$( ".form.ModPv" ).hide();
 		$( ".form.TypePv" ).hide();
 	// Eclaire (2)
@@ -835,7 +844,9 @@ function changeNiveau() {
 		$( ".part.bat" ).show();
 		$( ".part.regu" ).hide();
 		$( ".form.ModBat" ).hide();
-		$( ".form.ModPv" ).show();
+		$( ".form.IbatCharge" ).hide();
+		$( ".form.IbatDecharge" ).hide();
+		$( ".form.ModPv" ).hide();
 		$( ".form.TypePv" ).show();
 	// Expert (3)
 	} else if ($( "#Ni" ).val() == 3) {
@@ -847,6 +858,8 @@ function changeNiveau() {
 		$( ".part.bat" ).show();
 		$( ".part.regu" ).show();
 		$( ".form.ModBat" ).show();
+		$( ".form.IbatCharge" ).show();
+		$( ".form.IbatDecharge" ).show();
 		$( ".form.ModPv" ).show();
 		$( ".form.TypePv" ).show();
 	}
