@@ -247,12 +247,7 @@ if (isset($_GET['submit'])) {
 		$Cap=$CourantChargeDesPanneaux*100/$_GET['IbatCharge'];
 		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>.';
 	}
-	echo $CourantDechargeMax;
 	?>
-	
-	
-	
-		
 	
 	<?php 
 	/*
@@ -353,12 +348,12 @@ if (isset($_GET['submit'])) {
 			debug('<p>En considérant '.$nbRegulateur.' régulateur, on test avec '.$nbPvSerie.' panneaux en série sur '.$nbPvParalele.' parallèle</p>');
 			$VdocParcPv=$meilleurParcPv['Vdoc']*$nbPvSerie;
 			$IscParcPv=$meilleurParcPv['Isc']*$nbPvParalele;
-			$parcPvW = $nbPvConfigFinal * $meilleurParcPv['W'];
+			$parcPvW = $nbPvSerie*$nbPvParalele * $meilleurParcPv['W'];
 			$parcPvV = $VdocParcPv;
 			$parcPvI = $IscParcPv*$_GET['reguMargeIcc']/100+$IscParcPv;
 			
 			$meilleurRegulateur = chercherRegulateur();
-					
+			
 			// Solutaion trouvé
 			if ($meilleurRegulateur['nom']) {
 				break;
