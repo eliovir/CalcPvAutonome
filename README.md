@@ -21,6 +21,7 @@ Pour l'utilisateur de base :
   - En mode expert, ajuster le degré de décharge, les valeurs de rendement électrique des batteries ou du reste de l'installation, 
   - Déduction automatique du nombre de panneaux, batteries et régulateur nessésaire (possibilité de forcer un modèle type ou de personnaliser ces caractéristiques)
   - Hypothèse de câblage panneaux / régulateur (exemple : 3 panneaux en série sur 2 paralèles branché sur un régulateur)
+  - Schéma de câblage
   - Déduction automatique de la tension du parc de batteries à utiliser (possibilité de forcer une valeur en mode expert)
   - Estimation d'une fourchette du coût du parc de batterie & photovoltaïque 
   - Explication détailé du calcul pour fait pour parvenir au résultat
