@@ -38,7 +38,7 @@ Pour les utilisateurs avancés :
 
 #### Requis pour le fonctionnement / l'installation du 
 
-  * PHP (5.5-5.6 recomended)
+  * PHP (5.5-5.6 recomended) + lib gd
   * Lighttpd/Apache (ou autre serveur web, service d'hébergement mutualisé...)
 
 #### Installation
@@ -51,18 +51,15 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
 
  - Bug info bulle pas bien positionné
  - Bug plusieurs "auto" appariasse dans le select de tension de batterie en manipulant les régulateurs...
- - Bug : virer "1 série" quand il n'y a que des paralèles...
  - Truc du frigo 24/24 mais qui consomem pas tout le temps... A affiner...
  - Pîque de conso qui fait varier le choix de l'onduleur et donc la tension du parc de batterie...
 		12V:  de 150 à 1500VA, 24V : de 400 à 5000VA, 48V : 1000 à 10000VA...  (voir mail de guillaume)
 	- considère tout les appareils 24/24 + les sélectionné par exemple
- - BAT : Toujours respecter le paramètre de 15% de charge 20% de décharge max.
  - Prendre en considération l'énergie hybride (éolienne, groupe, hydrolienne...)
  - Mettre un script de bugtrack
  - Prendre en compte l'autodécharge
- - Beau dessin du câblage...
  - Calcul des sections de câbles
- - Prévoir d'autres technologie batterie que AGM
+ - Prévoir d'autres technologie batterie que AGM (
  - Générer un beau dessin avec le câblage
  - Sauvegarde du résultat par URL, envoyer à un amis...
  - Responsive
@@ -76,6 +73,10 @@ CalcConsommation :
 
 ### Changelog
 
+ - 0.4
+	- Schéma de câblage
+	- Batteries : prise en compte et personnalisation du courant de charge max (0,2 C)
+	- Panneaux : recommandation de pose de boîtier de raccordement au delas de 2 parallèles ( http://forum-photovoltaique.fr/viewtopic.php?p=409170&sid=1ac1384c932b26d382144e0d5c558d04#p409170 )
  - 0.3.2
     - Personnalisation des caractéristiques des batteries de travails
  - 0.3.1

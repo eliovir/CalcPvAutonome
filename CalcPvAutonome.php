@@ -1,9 +1,7 @@
 <?php 
 include('./lib/Fonction.php');
 $config_ini = parse_ini_file('./config.ini', true); 
-?>
-<script src="./lib/jquery-3.1.1.slim.min.js"></script> 
-<?php
+
 /*
  * ####### Résultat #######
 */
@@ -245,7 +243,7 @@ if (isset($_GET['submit'])) {
 	if ($CourantChargeDesPanneaux > $CourantChargeMax) {
 		echo '<p>Le courant de charge d\'une batterie ne doit pas dépasser '.$_GET['IbatCharge'].'%, ce qui fait <a rel="tooltip" class="bulles" title="'.convertNumber($Cap, 'print').'Ah * '.$_GET['IbatCharge'].'/100">'.convertNumber($CourantChargeMax, 'print').'A</a> dans notre cas. Hors vos panneaux peuvent monter jusqu`à un courant de charge de <a rel="tooltip" class="bulles" title="'.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W / '.$U.'V">'.convertNumber($CourantChargeDesPanneaux, 'print').'A</a>. Si votre régulateur le permet vous pouvez le brider ou augmenter votre parc de batterie à ';
 		$Cap=$CourantChargeDesPanneaux*100/$_GET['IbatCharge'];
-		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>.';
+		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>.</p>';
 	}
 	?>
 	
@@ -253,7 +251,7 @@ if (isset($_GET['submit'])) {
 	/*
 	 * ####### Recherche d'une Config batterie : #######
 	*/
-	$meilleurParcBatterie['nbBatterieParallele'] = 99999;
+	$meilleurParcBatterie['nbBatterieParalle'] = 99999;
 	$meilleurParcBatterie['diffCap'] = 99999;
 	$meilleurParcBatterie['nom'] = 'Impossible à déterminer';
 	$meilleurParcBatterie['V'] = 0;
@@ -289,8 +287,8 @@ if (isset($_GET['submit'])) {
 		debug(' | total (Ah) : '.$capParcBatterie);
 		debug(' | diff capacité souhaité : '.$diffCap);
 		if ($_GET['ModBat'] == 'perso' 
-		|| $nbBatterie < $meilleurParcBatterie['nbBatterieParallele']
-		|| $nbBatterie == $meilleurParcBatterie['nbBatterieParallele'] && $diffCap <= $meilleurParcBatterie['diffCap']) {
+		|| $nbBatterie < $meilleurParcBatterie['nbBatterieParalle']
+		|| $nbBatterie == $meilleurParcBatterie['nbBatterieParalle'] && $diffCap <= $meilleurParcBatterie['diffCap']) {
 			# Nouvelle meilleur config
 			// Debug
 			debug(' | * nouvelle meilleur config');
@@ -298,9 +296,9 @@ if (isset($_GET['submit'])) {
 			$meilleurParcBatterie['nom'] = $batterie['nom'];
 			$meilleurParcBatterie['V'] = $batterie['V'];
 			$meilleurParcBatterie['Ah'] = $batterie['Ah'];
-			$meilleurParcBatterie['nbBatterieParallele'] = $nbBatterie;
+			$meilleurParcBatterie['nbBatterieParalle'] = $nbBatterie;
 			$meilleurParcBatterie['nbBatterieSerie'] = $U/$meilleurParcBatterie['V'];
-			$meilleurParcBatterie['nbBatterieTotal'] = $meilleurParcBatterie['nbBatterieSerie'] * $meilleurParcBatterie['nbBatterieParallele'];
+			$meilleurParcBatterie['nbBatterieTotal'] = $meilleurParcBatterie['nbBatterieSerie'] * $meilleurParcBatterie['nbBatterieParalle'];
 		}
 		debug('</li>');
 		// En mode personnalisé stop la boucle après avoir forcé 
@@ -310,15 +308,21 @@ if (isset($_GET['submit'])) {
 	}
 	debug('</ul>');
 	if ($_GET['ModBat'] == 'auto') {
-		echo '<p>Une hypothèse de câblage serait d\'avoir <b>'.$meilleurParcBatterie['nbBatterieTotal'].' batterie(s)</b> de type <b>'.$meilleurParcBatterie['nom'].'</b> ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
+		echo '<p>Une hypothèse de câblage serait d\'avoir <b>'.$meilleurParcBatterie['nbBatterieTotal'].' batterie(s)</b> de type <b>'.$meilleurParcBatterie['nom'].'</b> ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah.</p>';
 	} else if ($_GET['ModBat'] == 'perso') {
-		echo '<p>Vous avez choisi de travailler avec des batterie(s) personnalisé à '.$meilleurParcBatterie['Ah'].'Ah en '.$meilleurParcBatterie['V'].'V. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
+		echo '<p>Vous avez choisi de travailler avec des batterie(s) personnalisé à '.$meilleurParcBatterie['Ah'].'Ah en '.$meilleurParcBatterie['V'].'V. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah.</p>';
 	} else {
-		echo '<p>Vous avez choisi de travailler avec des batterie(s) de type <b>'.$meilleurParcBatterie['nom'].'</b>. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah :</p>';
+		echo '<p>Vous avez choisi de travailler avec des batterie(s) de type <b>'.$meilleurParcBatterie['nom'].'</b>. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah.</p>';
 	}
-	echo '<ul><li><b>'.$meilleurParcBatterie['nbBatterieSerie'].' batterie(s) en série</b> (<a rel="tooltip" class="bulles" title="Tension de la batterie ('.$meilleurParcBatterie['V'].'V) * '.$meilleurParcBatterie['nbBatterieSerie'].' série(s)">pour une tension de '.$U.'V</a>) <b>sur '.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s)</b> (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParallele'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'].'Ah</a>)<a rel="tooltip" class="bulles" target="_blank" title="Pour comprendre le câblage des batteries cliquer ici" href="http://www.solarmad-nrj.com/cablagebatterie.html">?</a></li></ul>';
+	
+		echo '<ul><li><b>'.$meilleurParcBatterie['nbBatterieSerie'].' batterie(s) en série</b> (<a rel="tooltip" class="bulles" title="Tension de la batterie ('.$meilleurParcBatterie['V'].'V) * '.$meilleurParcBatterie['nbBatterieSerie'].' série(s)">pour une tension de '.$U.'V</a>) ';
+		if ($meilleurParcBatterie['nbBatterieParalle'] != 1) {
+			echo 'sur <b>'.$meilleurParcBatterie['nbBatterieParalle'].' parallèle(s)</b> (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParalle'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah</a>)';
+		} 
+		echo '<a rel="tooltip" class="bulles" target="_blank" title="Pour comprendre le câblage des batteries cliquer ici" href="http://www.solarmad-nrj.com/cablagebatterie.html">?</a></li></ul>';
+	
 	?>
-	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas'] ?>€/Ah en fourchette basse & <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut'] ?>€/Ah en haute">?</a>)</p>
+	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas'] ?>€/Ah en fourchette basse & <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut'] ?>€/Ah en haute">?</a>)</p>
 	
 	<!-- 
 		Régulateur
@@ -330,7 +334,7 @@ if (isset($_GET['submit'])) {
 	 * ####### Recherche d'une Config régulateur : #######
 	*/
 	// Courant de charge max avec les batteries
-	$batICharge = $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParallele'] * $_GET['IbatCharge'] / 100;
+	$batICharge = $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'] * $_GET['IbatCharge'] / 100;
 	// D'abord on test avec 1 régulateur
 	// Ensuite on test tout en série
 	// Si on trouve pas, on divise en parallèle
@@ -399,12 +403,19 @@ if (isset($_GET['submit'])) {
 				echo '</b></p>';
 			}
 		} else {
-			echo 'hypothèse de câblage serait d\'avoir un <b>régulateur type '.$meilleurRegulateur['nom'].'</b> (<a rel="tooltip" class="bulles" title="Avec caractéristiques similaires : <br />Tension de la batterie : '.$meilleurRegulateur['Vbat'].'V<br />Puissance maximale PV : '.$meilleurRegulateur['PmaxPv'].'W<br />Tension PV circuit ouvert : '.$meilleurRegulateur['VmaxPv'].'V<br />Courant PV court circuit : '.$meilleurRegulateur['ImaxPv'].'A">?</a>) sur lequel serait connecté(s) <b>'.$nbPvSerie.' panneau(x) en série';
-			if ($nbPvParalele != 1) {
-				echo ' sur '.$nbPvParalele.' parallèle(s)</b></p>';
+			echo 'hypothèse de câblage serait d\'avoir un <b>régulateur type '.$meilleurRegulateur['nom'].'</b> (<a rel="tooltip" class="bulles" title="Avec caractéristiques similaires : <br />Tension de la batterie : '.$meilleurRegulateur['Vbat'].'V<br />Puissance maximale PV : '.$meilleurRegulateur['PmaxPv'].'W<br />Tension PV circuit ouvert : '.$meilleurRegulateur['VmaxPv'].'V<br />Courant PV court circuit : '.$meilleurRegulateur['ImaxPv'].'A">?</a>) sur lequel serait connecté ';
+			if ($nbPvSerie == 1 && $nbPvParalele == 1) {
+				echo '<b>'.$nbPvSerie.' panneau';
 			} else {
-				echo '</b></p>';
+				echo '<b>'.$nbPvSerie.' panneau(x) en série';
+				if ($nbPvParalele != 1) {
+					echo ' sur '.$nbPvParalele.' parallèle(s)';
+				} 
 			}
+			echo '</b></p>';
+		}
+		if ($nbPvParalele > 2) {
+			echo 'Au delas de 2 parallèles il est recommander de poser un boitier de raccordement avec des fusibles sur chaques branches pour protéger les panneaux contre un courant inverse.';
 		}
 		?>
 		<div id="resultCalcRegu" class="calcul">
@@ -426,6 +437,31 @@ if (isset($_GET['submit'])) {
 		<?php
 	}
 	?>
+	<h3>Schéma de câblage</h3>
+	<p>Un schéma de câblage a été établie en fonction des hypothèses émises précédemment :</p>
+	<?php 
+	$batType=1;
+	if ($meilleurParcBatterie['V'] == 2) {
+		$batType=2;
+	}
+	$SchemaUrl='./lib/ImgSchemaCablage.php?nbPvS='.$nbPvSerie.'&nbPvP='.$nbPvParalele.'&batType='.$batType.'&nbBatS='.$meilleurParcBatterie['nbBatterieSerie'].'&nbBatP='.$meilleurParcBatterie['nbBatterieParalle'].'&nbRegu='.$nbRegulateur;
+	$widthImage=20;
+	if ($nbPvSerie > 1 || $meilleurParcBatterie['nbBatterieSerie'] > 1) {
+		$widthImage=40;
+	}
+	if ($nbPvSerie > 3 || $meilleurParcBatterie['nbBatterieSerie'] > 3) {
+		$widthImage=70;
+	}
+	if ($nbPvSerie > 5 || $meilleurParcBatterie['nbBatterieSerie'] > 5) {
+		$widthImage=100;
+	}
+	?>
+	
+	<p>
+		<a target="_blank" href="<?= $SchemaUrl ?>">
+			<img width="<?= $widthImage ?>%"  src="<?= $SchemaUrl ?>" />
+		</a>
+	</p>
 	<h3>Le reste de l'équipement</h3>
 	<p>Il vous reste encore à choisir :</p>
 	<ul>

@@ -18,6 +18,7 @@
 	try {document.addEventListener("DOMContentLoaded", $buo_f,false)}
 	catch(e){window.attachEvent("onload", $buo_f)}
 	</script>
+	<script src="./lib/jquery-3.1.1.slim.min.js"></script> 
 </head>
 <body>
 	<div id="page-wrap">
@@ -35,7 +36,7 @@
 		?>
 		<div id="footer">
             <p class="footer_right">Par <a href="http://david.mercereau.info/">David Mercereau</a> (<a href="https://github.com/kepon85/CalcPvAutonome">Dépôt github</a>)</p>
-            <p class="footer_left">CalcPvAutonome version 0.2 est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
+            <p class="footer_left">CalcPvAutonome version 0.4 est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
         </div>
 	</div>
 	<div id="bg">
