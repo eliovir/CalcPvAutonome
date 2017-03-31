@@ -438,30 +438,32 @@ if (isset($_GET['submit'])) {
 	}
 	?>
 	<h3>Schéma de câblage</h3>
-	<p>Un schéma de câblage a été établie en fonction des hypothèses émises précédemment :</p>
+	
 	<?php 
-	$batType=1;
-	if ($meilleurParcBatterie['V'] == 2) {
-		$batType=2;
-	}
-	$SchemaUrl='./lib/ImgSchemaCablage.php?nbPvS='.$nbPvSerie.'&nbPvP='.$nbPvParalele.'&batType='.$batType.'&nbBatS='.$meilleurParcBatterie['nbBatterieSerie'].'&nbBatP='.$meilleurParcBatterie['nbBatterieParalle'].'&nbRegu='.$nbRegulateur;
-	$widthImage=20;
-	if ($nbPvSerie > 1 || $meilleurParcBatterie['nbBatterieSerie'] > 1) {
-		$widthImage=40;
-	}
-	if ($nbPvSerie > 3 || $meilleurParcBatterie['nbBatterieSerie'] > 3) {
-		$widthImage=70;
-	}
-	if ($nbPvSerie > 5 || $meilleurParcBatterie['nbBatterieSerie'] > 5) {
-		$widthImage=100;
+	if ($meilleurRegulateur['nom'] == '' || $meilleurParcBatterie['nbBatterieParalle'] == 99999) {
+		echo '<p>Les hypothèses de câblages n\'ont pas toutes abouties, il n\'est donc pas possible de présenter un schéma de câblage.</p>';
+	} else {
+		$batType=1;
+		if ($meilleurParcBatterie['V'] == 2) {
+			$batType=2;
+		}	
+		$SchemaUrl='./lib/ImgSchemaCablage.php?nbPvS='.$nbPvSerie.'&nbPvP='.$nbPvParalele.'&batType='.$batType.'&nbBatS='.$meilleurParcBatterie['nbBatterieSerie'].'&nbBatP='.$meilleurParcBatterie['nbBatterieParalle'].'&nbRegu='.$nbRegulateur;
+		$widthImage=20;
+		if ($nbPvSerie > 1 || $meilleurParcBatterie['nbBatterieSerie'] > 1) {
+			$widthImage=40;
+		}
+		if ($nbPvSerie > 3 || $meilleurParcBatterie['nbBatterieSerie'] > 3) {
+			$widthImage=70;
+		}
+		if ($nbPvSerie > 5 || $meilleurParcBatterie['nbBatterieSerie'] > 5) {
+			$widthImage=100;
+		}
+		echo '<p>Un schéma de câblage a été établie en fonction des hypothèses émises précédemment :</p>';
+		echo '<p><a target="_blank" href="'.$SchemaUrl.'"><img width="'.$widthImage.'%"  src="'.$SchemaUrl.'" /></a></p>';
 	}
 	?>
 	
-	<p>
-		<a target="_blank" href="<?= $SchemaUrl ?>">
-			<img width="<?= $widthImage ?>%"  src="<?= $SchemaUrl ?>" />
-		</a>
-	</p>
+	
 	<h3>Le reste de l'équipement</h3>
 	<p>Il vous reste encore à choisir :</p>
 	<ul>
