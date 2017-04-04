@@ -231,6 +231,10 @@ function shcema_cablage_generer_part($type, $nbSerie, $nbParallele, $batType) {
 	return $nomImage;
 }
 
+if (empty($_GET['nbPvS']) || empty($_GET['nbPvP']) || empty($_GET['batType']) || empty($_GET['nbBatP']) || empty($_GET['nbBatS']) || empty($_GET['nbRegu'])) {
+	exit('No hack !');
+}
+
 if (!isset($_GET['debug'])) {
 	header ("Content-type: image/png");
 }

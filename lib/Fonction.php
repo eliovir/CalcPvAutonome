@@ -70,7 +70,7 @@ function chercherRegulateur() {
 		&& $parcPvV < $_GET['PersoReguVmaxPv']
 		&& $parcPvI < $_GET['PersoReguImaxPv']) {
 			debug(' | ** ça fonctionne ** ');
-			$meilleurRegulateur['nom'] = 'Regulateur Personnalisé';
+			$meilleurRegulateur['nom'] = '(personnalisé)';
 			$meilleurRegulateur['Vbat'] = $_GET['U'];
 			$meilleurRegulateur['PmaxPv'] = $_GET['PersoReguPmaxPv'];
 			$meilleurRegulateur['VmaxPv'] = $_GET['PersoReguVmaxPv'];

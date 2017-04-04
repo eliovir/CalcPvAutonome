@@ -389,7 +389,6 @@ if (isset($_GET['submit'])) {
 		}
 		if ($_GET['ModRegu'] == 'perso') {
 			echo '<p>Avec votre régulateur personélisé, une ';
-			$meilleurRegulateur['nom'] = '';
 		} else if ($_GET['ModRegu'] != 'auto') {
 			echo '<p>Vous forcé la sélection du régulateur '.$meilleurRegulateur['nom'].', une ';
 		} else {
@@ -414,9 +413,7 @@ if (isset($_GET['submit'])) {
 			}
 			echo '</b></p>';
 		}
-		if ($nbPvParalele > 2) {
-			echo 'Au delas de 2 parallèles il est recommander de poser un boitier de raccordement avec des fusibles sur chaques branches pour protéger les panneaux contre un courant inverse.';
-		}
+		
 		?>
 		<div id="resultCalcRegu" class="calcul">
 			<p>Un régulateur type <?= $meilleurRegulateur['nom'] ?>, avec un parc de batterie(s) en <b><?= $meilleurRegulateur['Vbat'] ?>V</b>, accepte  : </p>
@@ -435,12 +432,15 @@ if (isset($_GET['submit'])) {
 		</div>
 		<p><a id="resultCalcReguShow">Voir, comprendre la démarche</a></p>	
 		<?php
+		if ($nbPvParalele > 2) {
+			echo 'Au delas de 2 parallèles il est recommander de poser un boitier de raccordement avec des fusibles sur chaques branches pour protéger les panneaux contre un courant inverse.';
+		}
 	}
 	?>
 	<h3>Schéma de câblage</h3>
 	
 	<?php 
-	if ($meilleurRegulateur['nom'] == '' || $meilleurParcBatterie['nbBatterieParalle'] == 99999) {
+	if (empty($meilleurRegulateur['nom']) || $meilleurParcBatterie['nbBatterieParalle'] == 99999) {
 		echo '<p>Les hypothèses de câblages n\'ont pas toutes abouties, il n\'est donc pas possible de présenter un schéma de câblage.</p>';
 	} else {
 		$batType=1;
