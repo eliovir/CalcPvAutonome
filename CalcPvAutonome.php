@@ -197,7 +197,7 @@ if (isset($_GET['submit'])) {
 	-->
 	<h3>Les batteries</h3>
 	<div id="resultCalcBat" class="calcul">
-		<p>On cherche ici la capacité nominale des batteries exprimée en ampères heure (Ah)</p>
+		<p>On cherche ici la capacité nominale des batteries exprimée en ampères heure (Ah, donné en <a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">C10</a>)</p>
 		<?php 
 		// Si le niveau est débutant on choisie pour lui
 		if ($_GET['Ni'] == 1) {
@@ -219,7 +219,7 @@ if (isset($_GET['submit'])) {
 		?>
 		<p>Cap = (Bj x Aut) / (DD x U)</p>
 		<ul>
-			<li>Cap (Ah) : Capacité nominale des batteries</li>
+			<li>Cap (Ah) : Capacité nominale des batteries (en <a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">C10</a>))</li>
 			<li>Bj (Wh/j) : Besoins journaliers</li>
 			<li>Aut : Nombre de jour d'autonomie (sans soleil)</li>
 			<li>DD (%) : <a rel="tooltip" class="bulles" title="Avec la technologie AGM il ne faut pas passer sous le seuil critique des 50%">Degré de décharge maximum</a></li>
@@ -587,7 +587,7 @@ if (isset($_GET['submit'])) {
 		</div>
 		
 		<div class="form ModPv">
-			<label>Modèle de panneau : </label>
+			<label><a onclick="window.open('<?= $config_ini['formulaire']['UrlModeles'] ?>&data=pv','Les modèles de panneaux','directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=600,fullscreen=no');">Modèle de panneau</a> : </label>
 			<select id="ModPv" name="ModPv">
 				<option value="auto">Automatique</option>
 				<option value="perso" style="font-weight: bold"<?php echo valeurRecupSelect('ModPv', 'perso'); ?>>Personnaliser</option>
@@ -662,7 +662,7 @@ if (isset($_GET['submit'])) {
 			<input maxlength="2" size="2" id="DD" type="number" step="1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('DD'); ?>" name="DD" /> %
 		</div>
 		<div class="form ModBat">
-			<label>Modèle de batterie (<a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">donné en C10</a>) : </label>
+			<label><a onclick="window.open('<?= $config_ini['formulaire']['UrlModeles'] ?>&data=batterie','Les modèles des batteries','directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=600,fullscreen=no');">Modèle de batterie</a> (<a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">donné en C10</a>) : </label>
 			<select id="ModBat" name="ModBat">
 				<option value="auto">Automatique</option>
 				<option value="perso" style="font-weight: bold"<?php echo valeurRecupSelect('ModBat', 'perso'); ?>>Personnaliser</option>
@@ -705,7 +705,7 @@ if (isset($_GET['submit'])) {
 	<div class="part regu">
 		<h2 class="titre regu">Regulateur de charge</h2>
 		<div class="form ModRegu">
-			<label>Modèle de régulateur : </label>
+			<label><a onclick="window.open('<?= $config_ini['formulaire']['UrlModeles'] ?>&data=regulateur','Les modèles de régulateur','directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=670,fullscreen=no');">Modèle de régulateur</a> : </label>
 			<select id="ModRegu" name="ModRegu">
 				<option value="auto">Automatique</option>
 				<option value="perso" style="font-weight: bold"<?php echo valeurRecupSelect('ModRegu', 'perso'); ?>>Personnaliser</option>
