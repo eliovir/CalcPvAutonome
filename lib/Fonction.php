@@ -75,6 +75,7 @@ function chercherRegulateur() {
 			$meilleurRegulateur['PmaxPv'] = $_GET['PersoReguPmaxPv'];
 			$meilleurRegulateur['VmaxPv'] = $_GET['PersoReguVmaxPv'];
 			$meilleurRegulateur['ImaxPv'] = $_GET['PersoReguImaxPv'];
+			$meilleurRegulateur['Prix'] = $regulateur['Prix'];
 		} 
 	
 	debug('</li>');
@@ -126,6 +127,7 @@ function chercherRegulateur() {
 				$meilleurRegulateur['PmaxPv'] = $regulateur['PmaxPv'];
 				$meilleurRegulateur['VmaxPv'] = $regulateur['VmaxPv'];
 				$meilleurRegulateur['ImaxPv'] = $regulateur['ImaxPv'];
+				$meilleurRegulateur['Prix'] = $regulateur['Prix'];
 			}
 			debug('</li>');
 		}

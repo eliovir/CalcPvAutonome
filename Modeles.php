@@ -48,6 +48,7 @@ switch ($_GET['data']) {
 			echo '<th>Puissance PV max</th>';
 			echo '<th>Tension PV max</th>';
 			echo '<th>Courant PV max</th>';
+			echo '<th>Estimation prix</th>';
 		echo '</tr>';
 		foreach ($config_ini['regulateur'] as $modele => $valeur) {
 			echo '<tr>';
@@ -56,6 +57,7 @@ switch ($_GET['data']) {
 				echo '<td>'.$valeur['PmaxPv'].' W</td>';
 				echo '<td>'.$valeur['VmaxPv'].' V</td>';
 				echo '<td>'.$valeur['ImaxPv'].' A</td>';
+				echo '<td>~'.$valeur['Prix'].' €</td>';
 			echo '</tr>';
 		}	
 	break;

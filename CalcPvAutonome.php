@@ -432,9 +432,12 @@ if (isset($_GET['submit'])) {
 		</div>
 		<p><a id="resultCalcReguShow">Voir, comprendre la démarche</a></p>	
 		<?php
-		if ($nbPvParalele > 2) {
-			echo 'Au delas de 2 parallèles il est recommander de poser un boitier de raccordement avec des fusibles sur chaques branches pour protéger les panneaux contre un courant inverse.';
+		if ($nbPvParalele > 1) {
+			echo 'Quand il y a des parallèles il est recommander de poser un boitier de raccordement avec des fusibles sur chaques branches pour protéger les panneaux contre un courant inverse.';
 		}
+		?>
+		<p>Le budget est d'environ <?= convertNumber($meilleurRegulateur['Prix']*$nbRegulateur, 'print') ?>€</p>
+		<?php
 	}
 	?>
 	<h3>Schéma de câblage</h3>
@@ -832,8 +835,9 @@ function modReguChange() {
 	if ($( "#ModRegu" ).val() == 'auto') {
 		$( ".form.TypeRegu" ).show();
 		$( ".form.PersoRegu" ).hide();
-		$("#U").append('<option value="0">Auto</option>');
-		$("#U").val('0');
+		if ($("#U option").length == 3) {
+			$("#U").append('<option value="0">Auto</option>');
+		}
 	} else if ($( "#ModRegu" ).val() == 'perso') {
 		$( ".form.TypeRegu" ).hide();
 		$( ".form.PersoRegu" ).show();
@@ -842,8 +846,9 @@ function modReguChange() {
 	} else {
 		$( ".form.TypeRegu" ).hide();
 		$( ".form.PersoRegu" ).hide();
-		$("#U").append('<option value="0">Auto</option>');
-		$("#U").val('0');
+		if ($("#U option").length == 3) {
+			$("#U").append('<option value="0">Auto</option>');
+		}
 	}
 	
 }
