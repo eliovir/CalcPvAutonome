@@ -22,6 +22,7 @@ Pour l'utilisateur de base :
   - Déduction automatique du nombre de panneaux, batteries et régulateur nessésaire (possibilité de forcer un modèle type ou de personnaliser ces caractéristiques)
   - Hypothèse de câblage panneaux / régulateur (exemple : 3 panneaux en série sur 2 paralèles branché sur un régulateur)
   - Schéma de câblage
+  - Calcul des sections de câblage
   - Déduction automatique de la tension du parc de batteries à utiliser (possibilité de forcer une valeur en mode expert)
   - Estimation d'une fourchette du coût du parc de batterie & photovoltaïque 
   - Explication détailé du calcul pour fait pour parvenir au résultat
@@ -50,16 +51,16 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
 
 ### Todos
 
- - Bug info bulle pas bien positionné
- - Bug plusieurs "auto" appariasse dans le select de tension de batterie en manipulant les régulateurs...
+ - BjMax pour déterminer : Convertisseur de tension
+ - Pouvoir choisir le type de batterie AGM, GEL, OPvZ...
  - Truc du frigo 24/24 mais qui consomem pas tout le temps... A affiner...
+ - Bug info bulle pas bien positionné
  - Pîque de conso qui fait varier le choix de l'onduleur et donc la tension du parc de batterie...
 		12V:  de 150 à 1500VA, 24V : de 400 à 5000VA, 48V : 1000 à 10000VA...  (voir mail de guillaume)
 	- considère tout les appareils 24/24 + les sélectionné par exemple
  - Prendre en considération l'énergie hybride (éolienne, groupe, hydrolienne...)
  - Mettre un script de bugtrack
  - Prendre en compte l'autodécharge
- - Calcul des sections de câbles
  - Prévoir d'autres technologie batterie que AGM (
  - Générer un beau dessin avec le câblage
  - Sauvegarde du résultat par URL, envoyer à un amis...
@@ -74,6 +75,16 @@ CalcConsommation :
 
 ### Changelog
 
+ - 0.5
+	- Calcul des sections de câble partant du régulateur
+		http://solarsud.blogspot.fr/2014/11/calcul-de-la-section-du-cable.html
+		http://www.plaisance-pratique.com/calcul-de-la-section-des-cables?lang=fr
+		http://www.sigma-tec.fr/textes/texte_cables.html
+	- Popup d'affichage des modèles
+ - 0.4.1
+	- Bug FIX plusieurs "auto" appariasse dans le select de tension de batterie en manipulant les régulateurs...
+	- Pas plus de 2 bat en paralèle : 
+		http://forum-photovoltaique.fr/viewtopic.php?f=84&t=36009#p411019
  - 0.4
 	- Schéma de câblage
 	- Batteries : prise en compte et personnalisation du courant de charge max (0,2 C)

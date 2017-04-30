@@ -138,4 +138,22 @@ function chercherRegulateur() {
 	
 }
 
+function chercherCable($sectionMinimum) {
+	
+	global $config_ini;
+	
+	foreach ($config_ini['cablage'] as $idCable => $cable) {
+		debug('<p>Pour une section minimum de '.$sectionMinimum.', on test '.$cable['diametre'].'</p>');
+		if ($sectionMinimum < $cable['diametre']) {
+			$meilleurCable['nom']=$cable['nom'];
+			$meilleurCable['diametre']=$cable['diametre'];
+			$meilleurCable['prix']=$cable['prix'];
+			break;
+		}
+	}
+
+	return $meilleurCable;
+	
+}
+
 ?>
