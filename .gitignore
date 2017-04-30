@@ -1,4 +1,5 @@
 dev
+var
 favicon.ico
 .htaccess
 stats
