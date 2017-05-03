@@ -23,7 +23,7 @@
 <body>
 	<div id="page-wrap">
 		<?php
-		$HelpMe='<p style="padding : 5px 10px; background : #FFFF99; border : 1px dotted #FFCC33;">Ce logiciel libre et colaboratif est en recherche de contributeur. N\'hésitez donc pas à donner votre avis sur la méthode de calucl, l\'orthographe, les idée de fonctionnalités qui vous manque, la couleur qui vous pique les yeux ect... Envoyez tout ça par email à : <a href="http://david.mercereau.info/contact/" target="_blank">calcpvautonome(arobase)zici.fr</a> (changer (arobase par le "@") ou directement sur le <a href="https://github.com/kepon85/CalcPvAutonome">dépôt Github</a></p>';
+		$HelpMe='<p style="padding : 5px 10px; background : #FFFF99; border : 1px dotted #FFCC33;">Ce logiciel libre et colaboratif est en recherche de contributeur. N\'hésitez donc pas à donner votre avis sur la méthode de calucl, l\'orthographe, les idée de fonctionnalités qui vous manque, la couleur qui vous pique les yeux ect... <a href="http://david.mercereau.info/contact/" target="_blank">Envoyez tout ça par email</a> ou directement sur le <a href="https://github.com/kepon85/CalcPvAutonome">dépôt Github</a></p>';
 		$footer=true;
 		if (isset($_GET['p']) && $_GET['p'] == 'CalcConsommation') {
 			echo '<h1>Calculer ces besoins électriques journalier</h1>';
