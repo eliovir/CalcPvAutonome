@@ -137,7 +137,7 @@ function chercherRegulateur() {
 	return $meilleurRegulateur;
 	
 }
-
+// On cherche le bon câble
 function chercherCable($sectionMinimum) {
 	
 	global $config_ini;
@@ -156,4 +156,23 @@ function chercherCable($sectionMinimum) {
 	
 }
 
+// On cherche le bon convertisseur
+function chercherConvertisseur($U,$Pmax) {
+	global $config_ini;
+	
+	foreach ($config_ini['convertisseur'] as $convertisseur) {
+		if ($U != $convertisseur['Vbat']) {
+			$meilleurConvertisseur['nom']=$convertisseur['nom'];
+			debug('<p>Test pour le convertisseur '.$convertisseur['nom'].'</p>');
+			if ($Pmax <= $convertisseur['Pmax']) {
+				$meilleurConvertisseur['nom']=$convertisseur['nom'];
+				$meilleurConvertisseur['Pmax']=$convertisseur['Pmax'];
+				$meilleurConvertisseur['Ppointe']=$convertisseur['Ppointe'];
+				$meilleurConvertisseur['VA']=$convertisseur['VA'];
+				break;
+			}
+		}
+	}
+	return $meilleurConvertisseur;
+}
 ?>

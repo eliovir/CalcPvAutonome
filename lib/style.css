@@ -105,7 +105,7 @@ input {
 }
 
 .debug {
-	font-size: 80%;
+	font-size: 90%;
 	color: #980808;
 }
 #resultatConsoTotal {
@@ -113,6 +113,10 @@ input {
 	margin-right: 30px;
 	color: #A11810;
 	text-align: right;
+}
+#ConsoTotal,
+#PmaxTotal {
+	font-size: 150%;
 }
 /* Read more */
 .more {
@@ -185,6 +189,7 @@ a.bulles {
 	cursor:hand;
 }
 #tooltip {
+	text-align: left;
     position:absolute;
     z-index:9999;
     color:#fff;
@@ -196,5 +201,3 @@ a.bulles {
     background-color:#000;
     padding:5px;
 }
-
-

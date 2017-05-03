@@ -13,6 +13,9 @@ if (isset($_GET['submit'])) {
 	if (empty($_GET['Bj']) || $_GET['Bj'] < 0) {
 		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('Bj', 'Le besoin journalier n\'est pas correcte car < 0');
 	}
+	if (empty($_GET['Pmax']) || $_GET['Pmax'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('Pmax', 'Le besoin en puissance maximum n\'est pas correcte car < 0');
+	}
 	if ($_GET['ModPv'] == 'perso') {
 		if (empty($_GET['PersoPvV']) || $_GET['PersoPvV'] < 0) {
 			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoPvV', 'La tension du panneau personalisé n\'est pas correcte car < 0');
@@ -61,6 +64,18 @@ if (isset($_GET['submit'])) {
 	if (empty($_GET['reguMargeIcc']) || $_GET['reguMargeIcc'] < 0) {
 		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('reguMargeIcc', 'La marge de sécurité Icc du régulateur de charge n\'est pas correcte car < 0');
 	}
+	if (empty($_GET['distancePvRegu']) || $_GET['distancePvRegu'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('distancePvRegu', 'La distance entre les panneaux et le régulateur n\'est pas correcte car < 0');
+	}
+	if (empty($_GET['distanceReguBat']) || $_GET['distanceReguBat'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('distanceReguBat', 'La distance entre le régulateur et les batteries n\'est pas correcte car < 0');
+	}
+	if (empty($_GET['cablageRho']) || $_GET['cablageRho'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('cablageRho', 'La résistivité du conducteur n\'est pas correcte car < 0');
+	}
+	if (empty($_GET['cablagePtPourcent']) || $_GET['cablagePtPourcent'] < 0) {
+		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('cablagePtPourcent', 'La chute de tension tolérable n\'est pas correcte car < 0');
+	}
 	
 	
 	if ($erreurDansLeFormulaire !== null) {
@@ -77,7 +92,7 @@ if (isset($_GET['submit'])) {
 	<!-- 
 		Les PV
 	-->
-	<h3>Les panneaux photovoltaïques</h3>
+	<h3>Panneaux photovoltaïques</h3>
 	<div id="resultCalcPv" class="calcul">
 		<p>On cherche ici la puissance (crête exprimée en W) des panneaux photovoltaïques à installer pour satisfaire vos besoins en fonction de votre situation géographique. La formule est la suivante : </p>
 		<p>Pc = Bj / (Rb X Ri X Ej)</p>
@@ -104,7 +119,7 @@ if (isset($_GET['submit'])) {
 		<p>Pc = <?= $_GET['Bj'] ?> / (<?= $_GET['Rb'] ?> * <?= $_GET['Ri'] ?> * <?= $Ej ?>) = <b><?= convertNumber($Pc, 'print') ?> Wc</b></p>
 	</div>
 	
-	<p>Vous auriez besoin d'une puissance de panneau photovoltaïque équivalente à <b><?= convertNumber($Pc, 'print') ?>Wc</b>.</p>
+	<p>Les panneaux photovoltaïques produisent de l'électricité à partir des rayonnements du soleil Vous auriez besoin d'une puissance de panneau photovoltaïque équivalente à <b><?= convertNumber($Pc, 'print') ?>Wc</b>.</p>
 	<p><a id="resultCalcPvShow">Voir, comprendre la démarche, le calcul</a></p>
 	
 	<?php
@@ -195,7 +210,7 @@ if (isset($_GET['submit'])) {
 	<!-- 
 		Les batteries
 	-->
-	<h3>Les batteries</h3>
+	<h3>Batteries</h3>
 	<div id="resultCalcBat" class="calcul">
 		<p>On cherche ici la capacité nominale des batteries exprimée en ampères heure (Ah, donné en <a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">C10</a>)</p>
 		<?php 
@@ -232,18 +247,25 @@ if (isset($_GET['submit'])) {
 		<p><a class="more" id="resultCalcBatHide">Cacher le calcul</a></p>
 		<p>Cap = (<?= $_GET['Bj'] ?> x <?= $_GET['Aut'] ?>) / (<?= $_GET['DD']*0.01 ?> x <?= $U ?>) = <b><?= convertNumber($Cap, 'print') ?> Ah</b></p>
 	</div>
-	<p>Vous auriez besoin d'un parc de batteries de <b><?= convertNumber($Cap, 'print') ?> Ah en <?= $U ?> V</b>.</p>
+	<p>Les batteries servent à stocker l'énergie électrique produite par les panneaux. Vous auriez besoin d'un parc de batteries de <b><?= convertNumber($Cap, 'print') ?> Ah en <?= $U ?> V</b>.</p>
 	<p><a id="resultCalcBatShow">Voir, comprendre la démarche, le calcul</a></p>	
 	
 	<?php
+	$CourantDechargBesoinPmax=$_GET['Pmax']/$U;
+	$CourantDechargeMax = $Cap*$_GET['IbatDecharge']/100;
+	// Si le courant de décharge n'est pas respecté par rapport à la taille de la batterie
+	if ($CourantDechargBesoinPmax > $CourantDechargeMax) {
+		echo '<p>Le courant de décharge d\'une batterie ne doit pas dépasser '.$_GET['IbatDecharge'].'%, ce qui fait <a rel="tooltip" class="bulles" title="'.convertNumber($Cap, 'print').'Ah * '.$_GET['IbatDecharge'].'/100">'.convertNumber($CourantDechargeMax, 'print').'A</a> dans notre cas. Hors avec un besoin en puissance max de '.$_GET['Pmax'].'W de panneau le courant de décharge est de <a rel="tooltip" class="bulles" title="'.$_GET['Pmax'].'W / '.$U.'V">'.convertNumber($CourantDechargBesoinPmax, 'print').'A</a>. Pour répondre au besoin de puissance maximum de '.$_GET['Pmax'].'W, il vous faut augmenter le parc de batterie à ';
+		$Cap=$CourantDechargBesoinPmax*100/$_GET['IbatDecharge'];
+		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>.</p>';
+	}
 	$CourantChargeDesPanneaux=$meilleurParcPv['W']*$meilleurParcPv['nbPv']/$U;
 	$CourantChargeMax = $Cap*$_GET['IbatCharge']/100;
-	$CourantDechargeMax = $Cap*$_GET['IbatDecharge']/100;
 	// Si le courant de charge n'est pas respecté par rapport à la taille de la batterie
 	if ($CourantChargeDesPanneaux > $CourantChargeMax) {
-		echo '<p>Le courant de charge d\'une batterie ne doit pas dépasser '.$_GET['IbatCharge'].'%, ce qui fait <a rel="tooltip" class="bulles" title="'.convertNumber($Cap, 'print').'Ah * '.$_GET['IbatCharge'].'/100">'.convertNumber($CourantChargeMax, 'print').'A</a> dans notre cas. Hors vos panneaux peuvent monter jusqu`à un courant de charge de <a rel="tooltip" class="bulles" title="'.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W / '.$U.'V">'.convertNumber($CourantChargeDesPanneaux, 'print').'A</a>. Si votre régulateur le permet vous pouvez le brider ou augmenter votre parc de batterie à ';
+		echo '<p>Le courant de charge d\'une batterie ne doit pas dépasser '.$_GET['IbatCharge'].'%, ce qui fait <a rel="tooltip" class="bulles" title="'.convertNumber($Cap, 'print').'Ah * '.$_GET['IbatCharge'].'/100">'.convertNumber($CourantChargeMax, 'print').'A</a> dans notre cas. Hors avec '.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'Wc de panneau le courant de charge est de <a rel="tooltip" class="bulles" title="'.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W / '.$U.'V">'.convertNumber($CourantChargeDesPanneaux, 'print').'A</a>. Si votre régulateur le permet vous pouvez le brider ou augmenter votre parc de batterie à ';
 		$Cap=$CourantChargeDesPanneaux*100/$_GET['IbatCharge'];
-		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>.</p>';
+		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>. Nous allons partir sur l\'augmentation du parc de batterie.</p>';
 	}
 	?>
 	
@@ -330,6 +352,9 @@ if (isset($_GET['submit'])) {
 	<?php
 	} else {
 		echo '<p>Désolé nous n\'avons pas réussi à faire une hypothèse de câblage pour les batteries. </p>';
+		if ($_GET['ModBat'] != 'auto') {
+			echo '<p>Nous vous conseillons de repasser en mode automatique, un câblage n\'est peut être pas préférable avec ce modèle.</p>';
+		}
 	}
 	?>
 	<!-- 
@@ -473,7 +498,13 @@ if (isset($_GET['submit'])) {
 		echo '<p><a target="_blank" href="'.$SchemaUrl.'"><img width="'.$widthImage.'%"  src="'.$SchemaUrl.'" /></a></p>';
 	}
 	?>
-
+	<h3>Convertisseur</h3>
+	<p>Le convertisseur est là pour transformer le courant continue (ici <?= $U ?>V) des batteries en courant alternatif assimilable par les appareils standard du marché. Il vous faut un convertisseur capable de délivrer les <?= $_GET['Pmax'] ?>W de puissance électrique maximum dont vous avez besoin.</p>
+	<?php
+	$meilleurConvertisseur=chercherConvertisseur($U,$_GET['Pmax']);
+	?>
+	<p>Une hypothèse serait d'opter pour un <b>convertisseur type <?= $meilleurConvertisseur['nom'] ?></b> qui monte en puissance maximum de sortie à <?= $meilleurConvertisseur['Pmax'] ?>W avec des pointes possible à  <?= $meilleurConvertisseur['Ppointe'] ?>W.</p>
+	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['conv_bas']*$meilleurConvertisseur['VA'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['conv_haut']*$meilleurConvertisseur['VA'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['conv_bas'] ?>€/VA en fourchette basse & <?= $config_ini['prix']['conv_haut'] ?>€/VA en haute">?</a>)</p>
 	<h3>Le câblage</h3>
 	<p>Le choix (<a href="http://solarsud.blogspot.fr/2014/11/calcul-de-la-section-du-cable.html" target="_blank">calcul</a>) des sections de câbles est important pour éviter les pertes :</p>
 	<ul>
@@ -526,11 +557,7 @@ if (isset($_GET['submit'])) {
 	</ul>
 	<p>D'autres calculateurs de sections de câbles sont disponibles sur <a href="http://www.plaisance-pratique.com/calcul-de-la-section-des-cables?lang=fr" target="_blank">plaisance-pratique.com</a> ou sur <a href="http://www.sigma-tec.fr/textes/texte_cables.html" target="_blank">sigma-tec</a>.</p>
 	<h3>Le reste de l'équipement</h3>
-	<p>Il vous reste encore à choisir :</p>
-	<ul>
-		<li><a href="http://www.solarmad-nrj.com/convertisseur.html">Le convertisseur</a> : il est là pour convertir le signal continu des batteries <?= $U ?>V en signal alternatif 230V. Il se choisit avec le voltage d’entrée (ici <?= $U ?>V venus des batteries) et sa puissance maximum en sortie. Pour la puissance maximum de sortie il faut prendre votre appareil qui consomme le plus ou la somme de la puissance des appareils qui seront allumés en même temps ;</li>
-		<li>Les éléments de protection (fusible, coup circuit)...</li>
-	</ul>
+	<p>Il vous reste encore à choisir les éléments de protection (fusible, coup circuit)...</p>
 	<!-- Afficher ou non les informations complémentaire du formulaire -->
 	<script type="text/javascript">
 		$( "#resultCalcPvShow" ).click(function() {
@@ -607,6 +634,12 @@ if (isset($_GET['submit'])) {
 			<label>Vos besoins électriques journaliers :</label>
 			<input id="Bj" type="number" min="1" max="99999" style="width: 100px;" value="<?php echo valeurRecup('Bj'); ?>" name="Bj" />  Wh/j
 		</div>
+		
+		<div class="form Pmax">
+			<label>Votre besoin en puissance électrique maximum :</label>
+			<input id="Pmax" type="number" min="1" max="99999" style="width: 100px;" value="<?php echo valeurRecup('Pmax'); ?>" name="Pmax" />  W <a rel="tooltip" class="bulles" title="Il s'agit de la somme des puissances des appareils branché au même moment. <br />Par exemple si vous aviez un réfrégirateur de (70W), une scie sauteuse (500W) et une ampoule (7W) qui sont suceptibles d'être allumés en même temps votre besoin en puissance max est de 577W (70+500+7)">?</a>
+		</div>
+		
 		<?php
 		function ongletActif($id) {
 			if ($_GET['Ej'] != '' && $id == 'valeur') {
@@ -853,6 +886,7 @@ if (isset($_GET['submit'])) {
 		<input id="Reset" type="button" value="Remise à 0" name="reset" />
 		<input id="Submit" type="submit" value="Lancer le calcul" name="submit" />
 	</div>
+	<div class="form BoutonDebug" style="display: none;"><input type="checkbox" name="debug" <?php if (isset($_GET['debug'])) echo 'checked="checked"'; ?> />Mode transparent / debug</div>
 </form>
 
 <div id="CarteZone">
@@ -894,13 +928,16 @@ $( "#U" ).change(function () {
 
 // Bouton Submit activation / désactivation
 function sumbitEnable() {
-	if ($( "#Bj" ).val() > 0) {
+	if (($( "#Bj" ).val() > 0) && $( "#Pmax" ).val() > 0) {
 		$( "#Submit" ).prop('disabled', false);
 	} else {
 		$( "#Submit" ).prop('disabled', true);
 	}
 }
 $( "#Bj" ).change(function() {
+	sumbitEnable();
+});
+$( "#Pmax" ).change(function() {
 	sumbitEnable();
 });
 
@@ -1043,30 +1080,6 @@ $(document).ready(function() {
 	modBatChange();
 	modReguChange(); 
 	sumbitEnable();	
-	
-	/* infobulles http://javascript.developpez.com/tutoriels/javascript/creer-info-bulles-css-et-javascript-simplement-avec-jquery/ */
-    // Sélectionner tous les liens ayant l'attribut rel valant tooltip
-    $('a[rel=tooltip]').mouseover(function(e) {
-		// Récupérer la valeur de l'attribut title et l'assigner à une variable
-		var tip = $(this).attr('title');   
-		// Supprimer la valeur de l'attribut title pour éviter l'infobulle native
-		$(this).attr('title','');
-		// Insérer notre infobulle avec son texte dans la page
-		$(this).append('<div id="tooltip"><div class="tipBody">' + tip + '</div></div>');    
-		// Ajuster les coordonnées de l'infobulle
-		$('#tooltip').css('top', e.pageY + 10 );
-		$('#tooltip').css('left', e.pageX + 20 );
-		// Faire apparaitre l'infobulle avec un effet fadeIn
-	}).mousemove(function(e) {
-		// Ajuster la position de l'infobulle au déplacement de la souris
-		$('#tooltip').css('top', e.pageY + 10 );
-		$('#tooltip').css('left', e.pageX + 20 );
-	}).mouseout(function() {
-		// Réaffecter la valeur de l'attribut title
-		$(this).attr('title',$('.tipBody').html());
-		// Supprimer notre infobulle
-		$(this).children('div#tooltip').remove();
-	});
 }); 
 
 

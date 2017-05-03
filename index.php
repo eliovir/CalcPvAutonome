@@ -41,7 +41,7 @@
 		?>
 		<div id="footer">
             <p class="footer_right">Par <a href="http://david.mercereau.info/">David Mercereau</a> (<a href="https://github.com/kepon85/CalcPvAutonome">Dépôt github</a>)</p>
-            <p class="footer_left">CalcPvAutonome version 0.5 est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
+            <p class="footer_left">CalcPvAutonome version 1.0 est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
         </div>
         <?php 
 		}
@@ -52,4 +52,32 @@
 	</div>
 	<?php @include_once('./footer.php'); ?>
 </body>
+<script type="text/javascript">
+$(document).ready(function() {	
+	/* infobulles http://javascript.developpez.com/tutoriels/javascript/creer-info-bulles-css-et-javascript-simplement-avec-jquery/ */
+    // Sélectionner tous les liens ayant l'attribut rel valant tooltip
+    $('a[rel=tooltip]').mouseover(function(e) {
+		// Récupérer la valeur de l'attribut title et l'assigner à une variable
+		var tip = $(this).attr('title');   
+		// Supprimer la valeur de l'attribut title pour éviter l'infobulle native
+		$(this).attr('title','');
+		// Insérer notre infobulle avec son texte dans la page
+		$(this).append('<div id="tooltip"><div class="tipBody">' + tip + '</div></div>');    
+		// Ajuster les coordonnées de l'infobulle
+		$('#tooltip').css('top', e.pageY - 30 );
+		$('#tooltip').css('left', e.pageX - 145 );
+		// Faire apparaitre l'infobulle avec un effet fadeIn
+	}).mousemove(function(e) {
+		// Ajuster la position de l'infobulle au déplacement de la souris
+		$('#tooltip').css('top', e.pageY - 30 );
+		$('#tooltip').css('left', e.pageX - 145 );
+	}).mouseout(function() {
+		// Réaffecter la valeur de l'attribut title
+		$(this).attr('title',$('.tipBody').html());
+		// Supprimer notre infobulle
+		$(this).children('div#tooltip').remove();
+	});
+}); 
+
+</script>
 </html>
