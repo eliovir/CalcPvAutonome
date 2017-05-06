@@ -566,7 +566,7 @@ if (isset($_GET['submit'])) {
 		<?php $meilleurCable = chercherCable($cableDistanceReguBat); ?>
 		<ul><li>Section de câble proposé <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distanceReguBat']*$meilleurCable['prix'] ?>€</li></ul>
 	</ul>
-	<p>D'autres calculateurs de sections de câbles sont disponibles sur <a href="http://www.plaisance-pratique.com/calcul-de-la-section-des-cables?lang=fr" target="_blank">plaisance-pratique.com</a> ou sur <a href="http://www.sigma-tec.fr/textes/texte_cables.html" target="_blank">sigma-tec</a>.</p>
+	<p>Un autre calculateur (plus complet) de sections de câbles est disponible sur <a href="http://www.sigma-tec.fr/textes/texte_cables.html" target="_blank">sigma-tec</a>.</p>
 	<h3>Le reste de l'équipement</h3>
 	<p>Il vous reste encore à choisir les éléments de protection (fusible, coup circuit)...</p>
 	<!-- Afficher ou non les informations complémentaire du formulaire -->
