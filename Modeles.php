@@ -27,6 +27,7 @@ switch ($_GET['data']) {
 	case 'batterie':
 		echo '<tr>';
 			echo '<th>Nom</th>';
+			echo '<th>Type</th>';
 			echo '<th>Capacité (C10)</th>';
 			echo '<th>Tension</th>';
 			echo '<th>Estimation prix</th>';
@@ -34,10 +35,11 @@ switch ($_GET['data']) {
 		foreach ($config_ini['batterie'] as $modele => $valeur) {
 			echo '<tr>';
 				echo '<td>'.ucfirst($valeur['nom']).'</td>';
+				echo '<td>'.$valeur['type'].'</td>';
 				echo '<td>'.$valeur['Ah'].' Ah</td>';
 				echo '<td>'.$valeur['V'].' V</td>';
-				echo '<td>'.round($config_ini['prix']['bat'.$valeur['V'].'V_bas']*$valeur['Ah']).'
-				 - '.round($config_ini['prix']['bat'.$valeur['V'].'V_haut']*$valeur['Ah']).' €</td>';
+				echo '<td>'.round($config_ini['prix']['bat_'.$valeur['type'].'_bas']*$valeur['Ah']*$valeur['V']).'
+				 - '.round($config_ini['prix']['bat_'.$valeur['type'].'_haut']*$valeur['Ah']*$valeur['V']).' €</td>';
 			echo '</tr>';
 		}	
 	break;

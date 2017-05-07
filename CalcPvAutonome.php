@@ -37,6 +37,11 @@ if (isset($_GET['submit'])) {
 		if (empty($_GET['PersoBatAh']) || $_GET['PersoBatAh'] < 0) {
 			$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('PersoBatAh', 'La capacité de la batterie personalisée n\'est pas correcte car < 0');
 		}
+	} elseif ($_GET['ModBat'] == 'auto') {
+		// Assure la compatibilité avant cette fonctionnalitée
+		if (empty($_GET['TypeBat'])) {
+			$_GET['TypeBat'] = 'auto';
+		}
 	}
 	if ($_GET['ModRegu'] == 'perso') {
 		if (empty($_GET['PersoReguVmaxPv']) || $_GET['PersoReguVmaxPv'] < 0) {
@@ -76,7 +81,10 @@ if (isset($_GET['submit'])) {
 	if (empty($_GET['cablagePtPourcent']) || $_GET['cablagePtPourcent'] < 0) {
 		$erreurDansLeFormulaire=$erreurDansLeFormulaire.erreurPrint('cablagePtPourcent', 'La chute de tension tolérable n\'est pas correcte car < 0');
 	}
-	
+	// Assure la compatibilité avant cette fonctionnalitée
+	if (empty($_GET['cablageRegleAparMm'])) {
+		$_GET['cablageRegleAparMm'] = $config_ini['formulaire']['cablageRegleAparMm'];
+	}
 	
 	if ($erreurDansLeFormulaire !== null) {
 		echo '<div class="erreurForm">';
@@ -268,7 +276,7 @@ if (isset($_GET['submit'])) {
 		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>. Nous allons partir sur l\'augmentation du parc de batterie.</p>';
 	}
 	?>
-	
+
 	<?php 
 	/*
 	 * ####### Recherche d'une Config batterie : #######
@@ -285,13 +293,30 @@ if (isset($_GET['submit'])) {
 			// plus loin, la même condition avec un break
 			$batterie['Ah'] = $_GET['PersoBatAh'];
 			$batterie['V'] = $_GET['PersoBatV'];
-		// En mode auto on utilise les batteires 2V si on est au dessus des 500Ah
+		// En mode auto on utilise le type de batterie préféré (GEL par défaut)
 		} else if ($_GET['ModBat'] == 'auto') {
-			if ($Cap > 500 && $batterie['V'] >= 12) {
-				continue;
-			} else if ($Cap < 500 && $batterie['V'] < 12) {
+			if ($_GET['TypeBat'] == 'auto') {
+				// Si on est inférieur à 50Ah ce met en AGM
+				if ($Cap < 50) {
+					if ($batterie['type'] != 'AGM') {
+						continue;
+					}
+				// Si inférieur à 500Ah on ce met en GEL
+				} if ($Cap < 500) {
+					// Sinon on reste en GEL
+					if ($batterie['type'] != 'GEL') {
+						continue;
+					}
+				// Sinon on ce met en OPzV
+				} else {
+					if ($batterie['type'] != 'OPzV') {
+						continue;
+					}
+				}
+			} elseif ($_GET['TypeBat'] != $batterie['type']) {
 				continue;
 			}
+			
 		// Si on est en mode manuel on fait le calcul uniquement sur le bon modèl 
 		} else if ($_GET['ModBat'] != $idBat) {
 			continue;
@@ -320,6 +345,7 @@ if (isset($_GET['submit'])) {
 				$meilleurParcBatterie['nom'] = $batterie['nom'];
 				$meilleurParcBatterie['V'] = $batterie['V'];
 				$meilleurParcBatterie['Ah'] = $batterie['Ah'];
+				$meilleurParcBatterie['type'] = $batterie['type'];
 				$meilleurParcBatterie['nbBatterieParalle'] = $nbBatterie;
 				$meilleurParcBatterie['nbBatterieSerie'] = $U/$meilleurParcBatterie['V'];
 				$meilleurParcBatterie['nbBatterieTotal'] = $meilleurParcBatterie['nbBatterieSerie'] * $meilleurParcBatterie['nbBatterieParalle'];
@@ -346,9 +372,8 @@ if (isset($_GET['submit'])) {
 				echo 'sur <b>'.$meilleurParcBatterie['nbBatterieParalle'].' parallèle(s)</b> (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParalle'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah</a>)';
 			} 
 			echo '<a rel="tooltip" class="bulles" target="_blank" title="Pour comprendre le câblage des batteries cliquer ici" href="http://www.solarmad-nrj.com/cablagebatterie.html">?</a></li></ul>';
-		
 		?>
-		<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_bas'] ?>€/Ah en fourchette basse & <?= $config_ini['prix']['bat'.$meilleurParcBatterie['V'].'V_haut'] ?>€/Ah en haute">?</a>)</p>
+		<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['V']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['V']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_bas']*$meilleurParcBatterie['V'] ?>€/Ah en fourchette basse & <?= $config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_haut']*$meilleurParcBatterie['V'] ?>€/Ah en haute">?</a>)</p>
 	<?php
 	} else {
 		echo '<p>Désolé nous n\'avons pas réussi à faire une hypothèse de câblage pour les batteries. </p>';
@@ -479,9 +504,9 @@ if (isset($_GET['submit'])) {
 	if (empty($meilleurRegulateur['nom']) || $meilleurParcBatterie['nbBatterieParalle'] == 99999) {
 		echo '<p>Les hypothèses de câblages n\'ont pas toutes abouties, il n\'est donc pas possible de présenter un schéma de câblage.</p>';
 	} else {
-		$batType=1;
-		if ($meilleurParcBatterie['V'] == 2) {
-			$batType=2;
+		$batType=2;
+		if ($meilleurParcBatterie['V'] == 12) {
+			$batType=1;
 		}	
 		$SchemaUrl='./lib/ImgSchemaCablage.php?nbPvS='.$nbPvSerie.'&nbPvP='.$nbPvParalele.'&batType='.$batType.'&nbBatS='.$meilleurParcBatterie['nbBatterieSerie'].'&nbBatP='.$meilleurParcBatterie['nbBatterieParalle'].'&nbRegu='.$nbRegulateur;
 		$widthImage=20;
@@ -521,11 +546,20 @@ if (isset($_GET['submit'])) {
 	<ul>
 		<?php
 			$PT=($nbPvSerie*$meilleurParcPv['Vdoc'])*$_GET['cablagePtPourcent']/100;
-			$cableDistancePvRegu=round($_GET['cablageRho']*($_GET['distancePvRegu']*2)*($nbPvParalele*$meilleurParcPv['Isc'])/$PT,2);	
+			# formule de calcul avec la distance et la chute de tension
+			$cableDistancePvRegu_Calc=round($_GET['cablageRho']*($_GET['distancePvRegu']*2)*($nbPvParalele*$meilleurParcPv['Isc'])/$PT,2);
+			# règle des 5A par mm² 
+			$cableDistancePvRegu_AparMm=round(($nbPvParalele*$meilleurParcPv['Isc'])/$_GET['cablageRegleAparMm'],2);
+			if ($cableDistancePvRegu_Calc < $cableDistancePvRegu_AparMm) {
+				$cableDistancePvRegu_Final=$cableDistancePvRegu_AparMm;
+			} else {
+				$cableDistancePvRegu_Final=$cableDistancePvRegu_Calc;
+			}
 		?>
-		<li>Entre les panneaux et le régulateur, pour une distance de <?= $_GET['distancePvRegu'] ?>m, il vous est conseillé un câble d'une section minimum de <?= $cableDistancePvRegu ?>mm² 
+		<li>Entre les panneaux et le régulateur, pour une distance de <?= $_GET['distancePvRegu'] ?>m, il vous est conseillé un câble d'une section minimum de <?= $cableDistancePvRegu_Final ?>mm² 
 		<a id="resultCalcCablePvReguShow">(voir, comprendre la démarche)</a></li>
 		<div id="resultCalcCablePvRegu" class="calcul">
+			<p><a class="more" id="resultCalcCablePvReguHide">Cacher la démarche</a></p>
 			<p>La formule pour calculer une seciton de câble pour éviter les pertes est :</p>
 			<p>S = Rho x L x I / PT</p>
 			<ul>
@@ -537,34 +571,65 @@ if (isset($_GET['submit'])) {
 					<ul><li>(La tension des panneaux x le nombre de série) x <?= $_GET['cablagePtPourcent']?>/100</li></ul>
 			</ul>
 			<p>Dans votre cas ça nous fait : </p>
-			<p><a class="more" id="resultCalcCablePvReguHide">Cacher la démarche</a></p>
-			<p>S = <?php echo $_GET['cablageRho'].' x ('.$_GET['distancePvRegu'].'x2) x '.$nbPvParalele*$meilleurParcPv['Isc'].' / '.$PT.' = <b>'.$cableDistancePvRegu.'</b>'; ?>mm²</p>
+			<p>S = <?php echo $_GET['cablageRho'].' x ('.$_GET['distancePvRegu'].'x2) x '.$nbPvParalele*$meilleurParcPv['Isc'].' / '.$PT.' = <b>'.$cableDistancePvRegu_Calc.'</b>'; ?>mm²</p>
+			<?php 
+			if ($cableDistancePvRegu_Calc < $cableDistancePvRegu_AparMm) {
+				echo '<p>Mais cette section ne respecte pas la rêgle des '.$_GET['cablageRegleAparMm'].'A/mm² qui permet de se prémunir des échauffements. ';
+				echo 'Pour respecter cette règle, il faut donc passer à une section de <b>'.$cableDistancePvRegu_Final.'</b>mm² <a rel="tooltip" class="bulles" title="'.$nbPvParalele*$meilleurParcPv['Isc'].'A / '.$_GET['cablageRegleAparMm'].'A/mm² = '.$cableDistancePvRegu_Final.'mm²">?</a></p>';
+			}
+			?>
 		</div>
-		<?php $meilleurCable = chercherCable($cableDistancePvRegu); ?>
-		<ul><li>Section de câble minimum proposé <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distancePvRegu']*$meilleurCable['prix'] ?>€</li></ul>
+		<ul>
+		<?php $meilleurCable = chercherCable($cableDistancePvRegu_Final); 
+		if (empty($meilleurCable)) {
+			echo '<li>Impossible de proposer une section de câble réaliste. Vous deviez peut être envisager de diminuer la distance entre les appareils.';
+		} else { ?>
+		<li>Section de câble minimum proposé <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distancePvRegu']*$meilleurCable['prix'] ?>€</li>
+		<?php } ?>
+		</ul>
 		<?php
 			$PT=$U*$_GET['cablagePtPourcent']/100;
-			$cableDistanceReguBat=round($_GET['cablageRho']*($_GET['distanceReguBat']*2)*($parcPvW/$U)/$PT,2);
+			# formule de calcul avec la distance et la chute de tension
+			$cableDistanceReguBat_Calc=round($_GET['cablageRho']*($_GET['distanceReguBat']*2)*($parcPvW/$U)/$PT,2);
+			# règle des 5A par mm² 
+			$cableDistanceReguBat_AparMm=round(($parcPvW/$U)/$_GET['cablageRegleAparMm'],2);
+			if ($cableDistanceReguBat_Calc < $cableDistanceReguBat_AparMm) {
+				$cableDistanceReguBat_Final=$cableDistanceReguBat_AparMm;
+			} else {
+				$cableDistanceReguBat_Final=$cableDistanceReguBat_Calc;
+			}
 		?>
-		<li>Entre le régulateur et les batteries, pour une distance de <?= $_GET['distanceReguBat'] ?>m, il vous est conseillé un câble d'une section minimum de <?= $cableDistanceReguBat ?>mm²
+		<li>Entre le régulateur et les batteries, pour une distance de <?= $_GET['distanceReguBat'] ?>m, il vous est conseillé un câble d'une section minimum de <?= $cableDistanceReguBat_Final ?>mm²
 		<a id="resultCalcCableReguBatShow">(voir, comprendre la démarche)</a></li>
 		<div id="resultCalcCableReguBat" class="calcul">
+			<p><a class="more" id="resultCalcCableReguBatHide">Cacher la démarche</a></p>
 			<p>La formule pour calculer une seciton de câble pour éviter les pertes est :</p>
 			<p>S = Rho x L x I / PT</p>
 			<ul>
 				<li>S (mm²) : Section du conducteur</li>
 				<li>Rho (ohm) : <a href="https://fr.wikipedia.org/wiki/R%C3%A9sistivit%C3%A9" target="_blank">Résistivité</a> du conducteur (0,017ohm pour le cuivre)</li>
-				<li>L (m) : Longueur aller + retour du conducteur</li>
+				<li>L (m) : LocableDistanceReguBat_Calcngueur aller + retour du conducteur</li>
 				<li>I (A) : L’intensité (ici la puissance des panneaux / la tension des batteries)</li>
 				<li>PT (V) : Perte de tension acceptée au niveau des câbles (<?= $_GET['cablagePtPourcent']?>% de la tension)</li>
 					<ul><li>La tension des batteries (soit <?= $U ?>V) x <?= $_GET['cablagePtPourcent']?>/100</li></ul>
 			</ul>
 			<p>Dans votre cas ça nous fait : </p>
-			<p><a class="more" id="resultCalcCableReguBatHide">Cacher la démarche</a></p>
-			<p>S = <?php echo $_GET['cablageRho'].' x ('.$_GET['distanceReguBat'].'x2) x ('.$parcPvW.' / '.$U.') / '.$PT.' = <b>'.$cableDistanceReguBat.'</b>'; ?>mm²</p>
+			<p>S = <?php echo $_GET['cablageRho'].' x ('.$_GET['distanceReguBat'].'x2) x ('.$parcPvW.' / '.$U.') / '.$PT.' = <b>'.$cableDistanceReguBat_Calc.'</b>'; ?>mm²</p>
+			<?php 
+			if ($cableDistanceReguBat_Calc < $cableDistanceReguBat_AparMm) {
+				echo '<p>Mais cette section ne respecte pas la rêgle des '.$_GET['cablageRegleAparMm'].'A/mm² qui permet de se prémunir des échauffements. ';
+				echo 'Pour respecter cette règle, il  faut donc passer à une section de <b>'.$cableDistanceReguBat_Final.'</b>mm² <a rel="tooltip" class="bulles" title="'.$parcPvW.'W / '.$U.'V = '.$parcPvW/$U.'A<br />'.$parcPvW/$U.'A  / '.$_GET['cablageRegleAparMm'].'A/mm² = '.$cableDistanceReguBat_Final.'mm²">?</a></p>';
+			}
+			?>
 		</div>
-		<?php $meilleurCable = chercherCable($cableDistanceReguBat); ?>
-		<ul><li>Section de câble proposé <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distanceReguBat']*$meilleurCable['prix'] ?>€</li></ul>
+		<ul>
+		<?php $meilleurCable = chercherCable($cableDistanceReguBat_Final); 
+		if (empty($meilleurCable)) {
+			echo '<li>Impossible de proposer une section de câble réaliste. Vous deviez peut être envisager de diminuer la distance entre les appareils.';
+		} else { ?>
+		<li>Section de câble proposé <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distanceReguBat']*$meilleurCable['prix'] ?>€</li>
+		<?php } ?>
+		</ul>
 	</ul>
 	<p>Un autre calculateur (plus complet) de sections de câbles est disponible sur <a href="http://www.sigma-tec.fr/textes/texte_cables.html" target="_blank">sigma-tec</a>.</p>
 	<h3>Le reste de l'équipement</h3>
@@ -766,7 +831,7 @@ if (isset($_GET['submit'])) {
 	
 	<div class="part bat">
 		<h2 class="titre bat">Dimensionnement du parc de batteries</h2>
-		<p>Cette application est pré-paramétrée pour des batteries plomb AGM/Gel/OPzV</p>
+		<p>Cette application est pré-paramétrée pour des batteries plomb (AGM/Gel/OPvS/OPzV)</p>
 		<div class="form Aut">
 			<label>Nombre de jours d'autonomie : </label>
 			<input maxlength="2" size="2" id="Aut" type="number" step="1" min="0" max="50" style="width: 50px" value="<?php echo valeurRecup('Aut'); ?>" name="Aut" />
@@ -799,6 +864,16 @@ if (isset($_GET['submit'])) {
 				?>
 			</select> <a rel="tooltip" class="bulles" title="En mode automatique, au dessus de 500A, il sera utilisé des batteries GEL OPzV 2V">(?)</a>
 		</div>
+		<div class="form TypeBat">
+			<label>Technologie de batteries préféré : </label>
+			<select id="TypeBat" name="TypeBat">
+				<option value="auto"<?php echo valeurRecupSelect('TypeBat', 'auto'); ?>>Auto.</option>
+				<option value="AGM"<?php echo valeurRecupSelect('TypeBat', 'AGM'); ?>>AGM</option>
+				<option value="GEL"<?php echo valeurRecupSelect('TypeBat', 'GEL'); ?>>Gel</option>
+				<option value="OPzV"<?php echo valeurRecupSelect('TypeBat', 'OPzV'); ?>>OPzV</option>
+				<option value="OPzS"<?php echo valeurRecupSelect('TypeBat', 'OPzS'); ?>>OPzS</option>
+			</select> 
+		</div>
 		<div class="form PersoBat">
 			<p>Vous pouvez détailler les caractéristiques techniques de votre batterie : </p>
 			<ul>
@@ -810,6 +885,8 @@ if (isset($_GET['submit'])) {
 					<label>Tension : </label>
 					<select id="PersoBatV" name="PersoBatV">
 						<option value="2"<?php echo valeurRecupSelect('PersoBatV', 2); ?>>2</option>
+						<option value="4"<?php echo valeurRecupSelect('PersoBatV', 4); ?>>4</option>
+						<option value="6"<?php echo valeurRecupSelect('PersoBatV', 6); ?>>6</option>
 						<option value="12"<?php echo valeurRecupSelect('PersoBatV', 12); ?>>12</option>
 					</select> V
 				</li>
@@ -890,7 +967,11 @@ if (isset($_GET['submit'])) {
 		<div class="form cablagePtPourcent">
 			<label>Chute de tension tolérable : </label>
 			<input maxlength="2" size="2" id="cablagePtPourcent" type="number" step="0.1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('cablagePtPourcent'); ?>" name="cablagePtPourcent" /> %
-		</div>		
+		</div>
+		<div class="form cablageRegleAparMm">
+			<label>Ratio pour se pérmunir de l'échauffement du câble : </label>
+			<input maxlength="2" size="2" id="cablageRegleAparMm" type="number" step="0.1" min="0" max="100" style="width: 70px" value="<?php echo valeurRecup('cablageRegleAparMm'); ?>" name="cablageRegleAparMm" /> A/mm²
+		</div>
 	</div>
 		
 	<div class="form End">
@@ -968,10 +1049,13 @@ function modPvChange() {
 // Changement de modèle de batterie
 function modBatChange() {
 	if ($( "#ModBat" ).val() == 'auto') {
+		$( ".form.TypeBat" ).show();
 		$( ".form.PersoBat" ).hide();
 	} else if ($( "#ModBat" ).val() == 'perso') {
+		$( ".form.TypeBat" ).hide();
 		$( ".form.PersoBat" ).show();
 	} else {
+		$( ".form.TypeBat" ).hide();
 		$( ".form.PersoBat" ).hide();
 	}
 }

@@ -51,11 +51,11 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
 
 ### Todos
 
+ - Gérer le  litium (avec ces contraintes techniques)
  - Ecrire l'algo
  - Prix boîter de jonction
  - Prendre en considération l'énergie hybride (éolienne, groupe, hydrolienne...)
  - Prendre en compte l'autodécharge
- - Prévoir d'autres technologie batterie que AGM avec leur contrainte technique (litium par exemple)
  - Responsive
  - Récup' valeur Ines directement (sans carte de zone)
  - Traduction anglais
@@ -65,6 +65,13 @@ CalcConsommation :
 
 ### Changelog
 
+ - 1.1
+	- Ajout de modèles types OPvS (en 2, 4, 6V)
+	- Découpage des modèles type de batteries par technologie
+	- Câblage, suite à : http://forum.apper-solaire.org/viewtopic.php?f=16&t=9242&p=122109#p122098
+		- Passage de la tolérence de chute de tension à 1% par défaut
+		- Ajout de la règle 6A/mm² (la valeur est personnalisable en mode expert)
+		- Rhô à 0,019 pour prendre le "pire" (cuivre à 50°) 
  - 1.0
 	- Prise en compte de la puissance électrique maximum nessécaire 
 		- Ajout de la contrainte 0,2C maximum du courant de la batterie
