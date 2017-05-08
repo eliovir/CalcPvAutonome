@@ -65,20 +65,24 @@ CalcConsommation :
 
 ### Changelog
 
+ - 1.1.1
+	- Petit bug sur la tension du convertisseur qui n'était pas la bonne
+	- Modification des sections de câble pour arriver "au plus prêt" et non pas "au plus haut" : http://forum.apper-solaire.org/viewtopic.php?f=16&t=9242&start=15#p122113
  - 1.1
-	- Ajout de modèles types OPvS (en 2, 4, 6V)
-	- Découpage des modèles type de batteries par technologie
+	- Batteries : 
+		- Ajout de modèles types OPvS (en 2, 4, 6V)
+		- Découpage des modèles type de batteries par technologie
 	- Câblage, suite à : http://forum.apper-solaire.org/viewtopic.php?f=16&t=9242&p=122109#p122098
-		- Passage de la tolérence de chute de tension à 1% par défaut
+		- Passage de la tolérance de chute de tension à 1% par défaut
 		- Ajout de la règle 6A/mm² (la valeur est personnalisable en mode expert)
 		- Rhô à 0,019 pour prendre le "pire" (cuivre à 50°) 
  - 1.0
-	- Prise en compte de la puissance électrique maximum nessécaire 
+	- Prise en compte de la puissance électrique maximum nécessaire 
 		- Ajout de la contrainte 0,2C maximum du courant de la batterie
 	- Déduction automatique d'un convertisseur / onduleur avec estimation du prix
 	Calcconso : 
 		- Amélioration des modèles 24/24, possibilité d'entrée une valeur Wh/j manuelement 
-		- Déterminer la puissance électrique maximum nessécaire à votre installation
+		- Déterminer la puissance électrique maximum nécessaire à votre installation
  - 0.5
 	- Calcul des sections de câble partant du régulateur
 		http://solarsud.blogspot.fr/2014/11/calcul-de-la-section-du-cable.html

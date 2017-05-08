@@ -556,7 +556,7 @@ if (isset($_GET['submit'])) {
 				$cableDistancePvRegu_Final=$cableDistancePvRegu_Calc;
 			}
 		?>
-		<li>Entre les panneaux et le régulateur, pour une distance de <?= $_GET['distancePvRegu'] ?>m, il vous est conseillé un câble d'une section minimum de <?= $cableDistancePvRegu_Final ?>mm² 
+		<li>Entre les panneaux et le régulateur, pour une distance de <?= $_GET['distancePvRegu'] ?>m, il vous est conseillé un câble d'une section de <?= $cableDistancePvRegu_Final ?>mm² 
 		<a id="resultCalcCablePvReguShow">(voir, comprendre la démarche)</a></li>
 		<div id="resultCalcCablePvRegu" class="calcul">
 			<p><a class="more" id="resultCalcCablePvReguHide">Cacher la démarche</a></p>
@@ -574,17 +574,22 @@ if (isset($_GET['submit'])) {
 			<p>S = <?php echo $_GET['cablageRho'].' x ('.$_GET['distancePvRegu'].'x2) x '.$nbPvParalele*$meilleurParcPv['Isc'].' / '.$PT.' = <b>'.$cableDistancePvRegu_Calc.'</b>'; ?>mm²</p>
 			<?php 
 			if ($cableDistancePvRegu_Calc < $cableDistancePvRegu_AparMm) {
-				echo '<p>Mais cette section ne respecte pas la rêgle des '.$_GET['cablageRegleAparMm'].'A/mm² qui permet de se prémunir des échauffements. ';
-				echo 'Pour respecter cette règle, il faut donc passer à une section de <b>'.$cableDistancePvRegu_Final.'</b>mm² <a rel="tooltip" class="bulles" title="'.$nbPvParalele*$meilleurParcPv['Isc'].'A / '.$_GET['cablageRegleAparMm'].'A/mm² = '.$cableDistancePvRegu_Final.'mm²">?</a></p>';
+				echo '<p>Mais cette section ne respecte pas la règle des '.$_GET['cablageRegleAparMm'].'A/mm² qui permet de se prémunir des échauffements. ';
+				echo 'Pour respecter cette règle, il faudrait s\'approcher d\'une section de <b>'.$cableDistancePvRegu_Final.'</b>mm² <a rel="tooltip" class="bulles" title="'.$nbPvParalele*$meilleurParcPv['Isc'].'A / '.$_GET['cablageRegleAparMm'].'A/mm² = '.$cableDistancePvRegu_Final.'mm²">?</a></p>';
 			}
 			?>
 		</div>
 		<ul>
-		<?php $meilleurCable = chercherCable($cableDistancePvRegu_Final); 
+		<?php
+		if ($cableDistancePvRegu_Calc < $cableDistancePvRegu_AparMm) {
+			$meilleurCable = chercherCable_SecionPlusProche($cableDistancePvRegu_Final); 
+		} else {
+			$meilleurCable = chercherCable_SecionAudessus($cableDistancePvRegu_Final); 
+		}
 		if (empty($meilleurCable)) {
 			echo '<li>Impossible de proposer une section de câble réaliste. Vous deviez peut être envisager de diminuer la distance entre les appareils.';
 		} else { ?>
-		<li>Section de câble minimum proposé <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distancePvRegu']*$meilleurCable['prix'] ?>€</li>
+		<li>Section de câble la plus proche proposé : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distancePvRegu']*$meilleurCable['prix'] ?>€</li>
 		<?php } ?>
 		</ul>
 		<?php
@@ -599,7 +604,7 @@ if (isset($_GET['submit'])) {
 				$cableDistanceReguBat_Final=$cableDistanceReguBat_Calc;
 			}
 		?>
-		<li>Entre le régulateur et les batteries, pour une distance de <?= $_GET['distanceReguBat'] ?>m, il vous est conseillé un câble d'une section minimum de <?= $cableDistanceReguBat_Final ?>mm²
+		<li>Entre le régulateur et les batteries, pour une distance de <?= $_GET['distanceReguBat'] ?>m, il vous est conseillé un câble d'une section de <?= $cableDistanceReguBat_Final ?>mm²
 		<a id="resultCalcCableReguBatShow">(voir, comprendre la démarche)</a></li>
 		<div id="resultCalcCableReguBat" class="calcul">
 			<p><a class="more" id="resultCalcCableReguBatHide">Cacher la démarche</a></p>
@@ -617,17 +622,22 @@ if (isset($_GET['submit'])) {
 			<p>S = <?php echo $_GET['cablageRho'].' x ('.$_GET['distanceReguBat'].'x2) x ('.$parcPvW.' / '.$U.') / '.$PT.' = <b>'.$cableDistanceReguBat_Calc.'</b>'; ?>mm²</p>
 			<?php 
 			if ($cableDistanceReguBat_Calc < $cableDistanceReguBat_AparMm) {
-				echo '<p>Mais cette section ne respecte pas la rêgle des '.$_GET['cablageRegleAparMm'].'A/mm² qui permet de se prémunir des échauffements. ';
-				echo 'Pour respecter cette règle, il  faut donc passer à une section de <b>'.$cableDistanceReguBat_Final.'</b>mm² <a rel="tooltip" class="bulles" title="'.$parcPvW.'W / '.$U.'V = '.$parcPvW/$U.'A<br />'.$parcPvW/$U.'A  / '.$_GET['cablageRegleAparMm'].'A/mm² = '.$cableDistanceReguBat_Final.'mm²">?</a></p>';
+				echo '<p>Mais cette section ne respecte pas la règle des '.$_GET['cablageRegleAparMm'].'A/mm² qui permet de se prémunir des échauffements. ';
+				echo 'Pour respecter cette règle, il faudrait s\'approcher d\'une section de <b>'.$cableDistanceReguBat_Final.'</b>mm² <a rel="tooltip" class="bulles" title="'.$parcPvW.'W / '.$U.'V = '.$parcPvW/$U.'A<br />'.$parcPvW/$U.'A  / '.$_GET['cablageRegleAparMm'].'A/mm² = '.$cableDistanceReguBat_Final.'mm²">?</a></p>';
 			}
 			?>
 		</div>
 		<ul>
-		<?php $meilleurCable = chercherCable($cableDistanceReguBat_Final); 
+		<?php
+		if ($cableDistanceReguBat_Calc < $cableDistanceReguBat_AparMm) {
+			$meilleurCable = chercherCable_SecionPlusProche($cableDistanceReguBat_Final); 
+		} else {
+			$meilleurCable = chercherCable_SecionAudessus($cableDistanceReguBat_Final); 
+		}
 		if (empty($meilleurCable)) {
 			echo '<li>Impossible de proposer une section de câble réaliste. Vous deviez peut être envisager de diminuer la distance entre les appareils.';
 		} else { ?>
-		<li>Section de câble proposé <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distanceReguBat']*$meilleurCable['prix'] ?>€</li>
+		<li>Section de câble la plus proche proposé : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distanceReguBat']*$meilleurCable['prix'] ?>€</li>
 		<?php } ?>
 		</ul>
 	</ul>
@@ -1119,6 +1129,7 @@ function changeNiveau() {
 		$( ".part.cable" ).show();
 		$( ".form.cablageRho" ).hide();
 		$( ".form.cablagePtPourcent" ).hide();
+		$( ".form.cablageRegleAparMm" ).hide();
 	// Expert (3)
 	} else if ($( "#Ni" ).val() == 3) {
 		$( ".form.Ri" ).show();
@@ -1136,6 +1147,7 @@ function changeNiveau() {
 		$( ".part.cable" ).show();
 		$( ".form.cablageRho" ).show();
 		$( ".form.cablagePtPourcent" ).show();
+		$( ".form.cablageRegleAparMm" ).show();
 	}
 }
 

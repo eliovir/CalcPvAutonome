@@ -138,10 +138,8 @@ function chercherRegulateur() {
 	
 }
 // On cherche le bon câble
-function chercherCable($sectionMinimum) {
-	
+function chercherCable_SecionAudessus($sectionMinimum) {
 	global $config_ini;
-	
 	foreach ($config_ini['cablage'] as $idCable => $cable) {
 		debug('<p>Pour une section minimum de '.$sectionMinimum.', on test '.$cable['diametre'].'</p>');
 		if ($sectionMinimum < $cable['diametre']) {
@@ -151,6 +149,27 @@ function chercherCable($sectionMinimum) {
 			break;
 		}
 	}
+	return $meilleurCable;
+}
+function chercherCable_SecionPlusProche($sectionMinimum) {
+	global $config_ini;
+	$meilleurCable['diffSection']=9999;
+	foreach ($config_ini['cablage'] as $idCable => $cable) {
+		$diffSection=$sectionMinimum-$cable['diametre'];
+		// Si la différence est négative on la met positive pour pouvoir la comparer
+		if ($diffSection < 0) {
+			$diffSection=$diffSection*-1;
+		}
+		debug('<p>Pour une section la plus proche de '.$sectionMinimum.', on test '.$cable['diametre'].', il y a une différence de '.$diffSection);
+		if ($diffSection <= $meilleurCable['diffSection']) {
+			$meilleurCable['nom']=$cable['nom'];
+			$meilleurCable['diametre']=$cable['diametre'];
+			$meilleurCable['prix']=$cable['prix'];
+			$meilleurCable['diffSection']=$diffSection;
+			debug(' : *** Nouvelle bonne config');
+		}
+		debug('</p>');
+	}
 
 	return $meilleurCable;
 	
@@ -159,9 +178,9 @@ function chercherCable($sectionMinimum) {
 // On cherche le bon convertisseur
 function chercherConvertisseur($U,$Pmax) {
 	global $config_ini;
-	
+	debug('<p>Tension '.$U.'</p>');
 	foreach ($config_ini['convertisseur'] as $convertisseur) {
-		if ($U != $convertisseur['Vbat']) {
+		if ($U == $convertisseur['Vbat']) {
 			$meilleurConvertisseur['nom']=$convertisseur['nom'];
 			debug('<p>Test pour le convertisseur '.$convertisseur['nom'].'</p>');
 			if ($Pmax <= $convertisseur['Pmax']) {
