@@ -277,7 +277,6 @@ $(document).ready(function() {
 					// On cherche l'ID de l'équipement
 					preg_match("/[0-9]+$/", $getkey, $idEqui);
 					echo '$("#AutoEquiTotal'.$idEqui[0].'").prop(\'checked\', false);';
-					echo '//console.log("#'.$idEqui[0].'");';
 				}
 				if (preg_match('#^EquiPmax#', $getkey)) {
 					// On cherche l'ID de l'équipement
