@@ -528,18 +528,21 @@ if (isset($_GET['submit'])) {
 	<p>Le convertisseur est là pour transformer le courant continue (ici <?= $U ?>V) des batteries en courant alternatif assimilable par les appareils standard du marché. Il vous faut un convertisseur capable de délivrer les <?= $_GET['Pmax'] ?>W de puissance électrique maximum dont vous avez besoin.</p>
 	<?php
 	$meilleurConvertisseur=chercherConvertisseur($U,$_GET['Pmax']);
-	// Annoncer limite batterie
-	$CourantDechargeMaxParcBatterieHypothetique=$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle']*$_GET['IbatDecharge']/100;
-	$PuissanceMaxDechargeBatterie=$CourantDechargeMaxParcBatterieHypothetique*$U;
-	?>
-	<p>Une hypothèse serait d'opter pour un <b>convertisseur type <?= $meilleurConvertisseur['nom'] ?></b> qui monte en puissance maximum de sortie à <?= $meilleurConvertisseur['Pmax'] ?>W avec des pointes possible à  <?= $meilleurConvertisseur['Ppointe'] ?>W.
-	<?php
-	if ($PuissanceMaxDechargeBatterie < $meilleurConvertisseur['Pmax']) {
-		echo 'Ceci dit, pour ne pas endommager vos batteries, vous ne pourrez aller au delas des '.$PuissanceMaxDechargeBatterie.'W <a rel="tooltip" class="bulles" title="('.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah de batterie * '.$_GET['IbatDecharge'].'/100 de courant max de décharge des batterie) * '.$U.'V">?</a>';
-	}
-	?></p>
-	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['conv_bas']*$meilleurConvertisseur['VA'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['conv_haut']*$meilleurConvertisseur['VA'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['conv_bas'] ?>€/VA en fourchette basse & <?= $config_ini['prix']['conv_haut'] ?>€/VA en haute">?</a>)</p>
-	
+	if ($meilleurConvertisseur['nom'] == '') {
+		echo '<p>Désolé nous n\'avons pas réussi à trouver un convertisseur pour une telle puissance.</p> ';
+	} else {
+		// Annoncer limite batterie
+		$CourantDechargeMaxParcBatterieHypothetique=$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle']*$_GET['IbatDecharge']/100;
+		$PuissanceMaxDechargeBatterie=$CourantDechargeMaxParcBatterieHypothetique*$U;
+		?>
+		<p>Une hypothèse serait d'opter pour un <b>convertisseur type <?= $meilleurConvertisseur['nom'] ?></b> qui monte en puissance maximum de sortie à <?= $meilleurConvertisseur['Pmax'] ?>W avec des pointes possible à  <?= $meilleurConvertisseur['Ppointe'] ?>W.
+		<?php
+		if ($PuissanceMaxDechargeBatterie < $meilleurConvertisseur['Pmax']) {
+			echo 'Ceci dit, pour ne pas endommager vos batteries, vous ne pourrez aller au delas des '.$PuissanceMaxDechargeBatterie.'W <a rel="tooltip" class="bulles" title="('.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah de batterie * '.$_GET['IbatDecharge'].'/100 de courant max de décharge des batterie) * '.$U.'V">?</a>';
+		}
+		?></p>
+		<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['conv_bas']*$meilleurConvertisseur['VA'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['conv_haut']*$meilleurConvertisseur['VA'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['conv_bas'] ?>€/VA en fourchette basse & <?= $config_ini['prix']['conv_haut'] ?>€/VA en haute">?</a>)</p>
+	<?php } ?>
 	
 	<h3>Le câblage</h3>
 	<p>Le choix (<a href="http://solarsud.blogspot.fr/2014/11/calcul-de-la-section-du-cable.html" target="_blank">calcul</a>) des sections de câbles est important pour éviter les pertes :</p>

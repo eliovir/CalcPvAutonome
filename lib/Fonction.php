@@ -181,7 +181,6 @@ function chercherConvertisseur($U,$Pmax) {
 	debug('<p>Tension '.$U.'</p>');
 	foreach ($config_ini['convertisseur'] as $convertisseur) {
 		if ($U == $convertisseur['Vbat']) {
-			$meilleurConvertisseur['nom']=$convertisseur['nom'];
 			debug('<p>Test pour le convertisseur '.$convertisseur['nom'].'</p>');
 			if ($Pmax <= $convertisseur['Pmax']) {
 				$meilleurConvertisseur['nom']=$convertisseur['nom'];
