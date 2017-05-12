@@ -65,6 +65,8 @@ CalcConsommation :
 
 ### Changelog
 
+ - 1.2
+	- Estimation de budget groupé et totalisé
  - 1.1.1
 	- Petit bug sur la tension du convertisseur qui n'était pas la bonne
 	- Modification des sections de câble pour arriver "au plus prêt" et non pas "au plus haut" : http://forum.apper-solaire.org/viewtopic.php?f=16&t=9242&start=15#p122113

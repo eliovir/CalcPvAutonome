@@ -100,7 +100,7 @@ if (isset($_GET['submit'])) {
 	<!-- 
 		Les PV
 	-->
-	<h3>Panneaux photovoltaïques</h3>
+	<h3>Panneau photovoltaïque</h3>
 	<div id="resultCalcPv" class="calcul">
 		<p>On cherche ici la puissance (crête exprimée en W) des panneaux photovoltaïques à installer pour satisfaire vos besoins en fonction de votre situation géographique. La formule est la suivante : </p>
 		<p>Pc = Bj / (Rb X Ri X Ej)</p>
@@ -214,11 +214,10 @@ if (isset($_GET['submit'])) {
 		echo '<p>Avec le panneau '.$meilleurParcPv['type'].' sélectionné de <b>'.$meilleurParcPv['W'].'Wc</b> en '.$meilleurParcPv['V'].'V , une hypothèse serait d\'avoir <b>'.$meilleurParcPv['nbPv'].' de ces panneau(x)</b> (<a rel="tooltip" class="bulles" title="Caractéristique du panneau : <br />P = '.$meilleurParcPv['W'].'W<br />U = '.$meilleurParcPv['V'].'V<br />Vdoc ='.$meilleurParcPv['Vdoc'].'V<br />Isc = '.$meilleurParcPv['Isc'].'A">?</a>) ce qui pousse la capacité du parc à '.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W :</p>';
 	}
 	?>
-	<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['pv_bas']*$meilleurParcPv['W']*$meilleurParcPv['nbPv'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['pv_haut']*$meilleurParcPv['W']*$meilleurParcPv['nbPv'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['pv_bas'] ?>€/Wc en fourchette basse & <?= $config_ini['prix']['pv_haut'] ?>€/Wc en haute">?</a>)</p>
 	<!-- 
 		Les batteries
 	-->
-	<h3>Batteries</h3>
+	<h3>Batterie</h3>
 	<div id="resultCalcBat" class="calcul">
 		<p>On cherche ici la capacité nominale des batteries exprimée en ampères heure (Ah, donné en <a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">C10</a>)</p>
 		<?php 
@@ -286,6 +285,14 @@ if (isset($_GET['submit'])) {
 	$meilleurParcBatterie['nom'] = 'Impossible à déterminer';
 	$meilleurParcBatterie['V'] = 0;
 	$meilleurParcBatterie['Ah'] = 0;
+	// Choix de la technologie en fonction de la capacitée (pour le mode automatique)
+	if ($Cap < 50) {
+		$BatType = 'AGM';
+	} elseif ($Cap < 500) {
+		$BatType = 'GEL';
+	} else {
+		$BatType = 'OPzV';
+	}
 	debug('<ul type="1">');
 	foreach ($config_ini['batterie'] as $idBat => $batterie) {
 		// En mode personnalisé on force et on stop la boucle à la fin 
@@ -296,22 +303,8 @@ if (isset($_GET['submit'])) {
 		// En mode auto on utilise le type de batterie préféré (GEL par défaut)
 		} else if ($_GET['ModBat'] == 'auto') {
 			if ($_GET['TypeBat'] == 'auto') {
-				// Si on est inférieur à 50Ah ce met en AGM
-				if ($Cap < 50) {
-					if ($batterie['type'] != 'AGM') {
-						continue;
-					}
-				// Si inférieur à 500Ah on ce met en GEL
-				} if ($Cap < 500) {
-					// Sinon on reste en GEL
-					if ($batterie['type'] != 'GEL') {
-						continue;
-					}
-				// Sinon on ce met en OPzV
-				} else {
-					if ($batterie['type'] != 'OPzV') {
-						continue;
-					}
+				if ($batterie['type'] != $BatType) {
+					continue;
 				}
 			} elseif ($_GET['TypeBat'] != $batterie['type']) {
 				continue;
@@ -372,9 +365,6 @@ if (isset($_GET['submit'])) {
 				echo 'sur <b>'.$meilleurParcBatterie['nbBatterieParalle'].' parallèle(s)</b> (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParalle'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah</a>)';
 			} 
 			echo '<a rel="tooltip" class="bulles" target="_blank" title="Pour comprendre le câblage des batteries cliquer ici" href="http://www.solarmad-nrj.com/cablagebatterie.html">?</a></li></ul>';
-		?>
-		<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['V']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['V']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_bas']*$meilleurParcBatterie['V'] ?>€/Ah en fourchette basse & <?= $config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_haut']*$meilleurParcBatterie['V'] ?>€/Ah en haute">?</a>)</p>
-	<?php
 	} else {
 		echo '<p>Désolé nous n\'avons pas réussi à faire une hypothèse de câblage pour les batteries. </p>';
 		if ($_GET['ModBat'] != 'auto') {
@@ -493,9 +483,6 @@ if (isset($_GET['submit'])) {
 		if ($nbPvParalele > 1) {
 			echo 'Quand il y a des parallèles il est recommander de poser un boitier de raccordement avec des fusibles sur chaques branches pour protéger les panneaux contre un courant inverse.';
 		}
-		?>
-		<p>Le budget est d'environ <?= convertNumber($meilleurRegulateur['Prix']*$nbRegulateur, 'print') ?>€</p>
-		<?php
 	}
 	?>
 	<h3>Schéma de câblage</h3>
@@ -534,17 +521,16 @@ if (isset($_GET['submit'])) {
 		// Annoncer limite batterie
 		$CourantDechargeMaxParcBatterieHypothetique=$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle']*$_GET['IbatDecharge']/100;
 		$PuissanceMaxDechargeBatterie=$CourantDechargeMaxParcBatterieHypothetique*$U;
-		?>
-		<p>Une hypothèse serait d'opter pour un <b>convertisseur type <?= $meilleurConvertisseur['nom'] ?></b> qui monte en puissance maximum de sortie à <?= $meilleurConvertisseur['Pmax'] ?>W avec des pointes possible à  <?= $meilleurConvertisseur['Ppointe'] ?>W.
-		<?php
+		echo '<p>Une hypothèse serait d\'opter pour un <b>convertisseur type '.$meilleurConvertisseur['nom'].'</b> qui monte en puissance maximum de sortie à '.$meilleurConvertisseur['Pmax'].'W avec des pointes possible à '.$meilleurConvertisseur['Ppointe'].'W.';
 		if ($PuissanceMaxDechargeBatterie < $meilleurConvertisseur['Pmax']) {
 			echo 'Ceci dit, pour ne pas endommager vos batteries, vous ne pourrez aller au delas des '.$PuissanceMaxDechargeBatterie.'W <a rel="tooltip" class="bulles" title="('.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah de batterie * '.$_GET['IbatDecharge'].'/100 de courant max de décharge des batterie) * '.$U.'V">?</a>';
 		}
-		?></p>
-		<p>Le budget est estimé entre <?= convertNumber($config_ini['prix']['conv_bas']*$meilleurConvertisseur['VA'], 'print') ; ?>€ et <?= convertNumber($config_ini['prix']['conv_haut']*$meilleurConvertisseur['VA'], 'print') ; ?>€ (<a rel="tooltip" class="bulles" title="Pour du matériel neuf, avec un coût estimé de <?= $config_ini['prix']['conv_bas'] ?>€/VA en fourchette basse & <?= $config_ini['prix']['conv_haut'] ?>€/VA en haute">?</a>)</p>
-	<?php } ?>
+		echo '</p>';
+	}
+	?>
 	
 	<h3>Le câblage</h3>
+	<?php $BudgetCable=0; ?>
 	<p>Le choix (<a href="http://solarsud.blogspot.fr/2014/11/calcul-de-la-section-du-cable.html" target="_blank">calcul</a>) des sections de câbles est important pour éviter les pertes :</p>
 	<ul>
 		<?php
@@ -591,8 +577,10 @@ if (isset($_GET['submit'])) {
 		}
 		if (empty($meilleurCable)) {
 			echo '<li>Impossible de proposer une section de câble réaliste. Vous deviez peut être envisager de diminuer la distance entre les appareils.';
-		} else { ?>
-		<li>Section de câble la plus proche proposé : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distancePvRegu']*$meilleurCable['prix'] ?>€</li>
+		} else { 
+			$BudgetCable=$BudgetCable+$_GET['distancePvRegu']*$meilleurCable['prix'];
+			?>
+			<li>Section de câble la plus proche proposé : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distancePvRegu']*$meilleurCable['prix'] ?>€</li>
 		<?php } ?>
 		</ul>
 		<?php
@@ -639,14 +627,52 @@ if (isset($_GET['submit'])) {
 		}
 		if (empty($meilleurCable)) {
 			echo '<li>Impossible de proposer une section de câble réaliste. Vous deviez peut être envisager de diminuer la distance entre les appareils.';
-		} else { ?>
-		<li>Section de câble la plus proche proposé : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distanceReguBat']*$meilleurCable['prix'] ?>€</li>
+		} else { 
+			$BudgetCable=$BudgetCable+$_GET['distanceReguBat']*$meilleurCable['prix'];
+			?>
+			<li>Section de câble la plus proche proposé : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distanceReguBat']*$meilleurCable['prix'] ?>€</li>
 		<?php } ?>
 		</ul>
 	</ul>
 	<p>Un autre calculateur (plus complet) de sections de câbles est disponible sur <a href="http://www.sigma-tec.fr/textes/texte_cables.html" target="_blank">sigma-tec</a>.</p>
-	<h3>Le reste de l'équipement</h3>
-	<p>Il vous reste encore à choisir les éléments de protection (fusible, coup circuit)...</p>
+	<h3>Budget</h3>
+	<p>Ceci est une estimation grossière pour du matériel neuf, elle ne fait en aucun cas office de devis ;
+	<ul>
+		<?php
+		$BudgetPvBas=$config_ini['prix']['pv_bas']*$meilleurParcPv['W']*$meilleurParcPv['nbPv'];
+		$BudgetPvHaut=$config_ini['prix']['pv_haut']*$meilleurParcPv['W']*$meilleurParcPv['nbPv'];
+		echo '<li>Panneaux photovoltaïque : entre '.convertNumber($BudgetPvBas, 'print').'€ et '.convertNumber($BudgetPvHaut, 'print').'€ (<a rel="tooltip" class="bulles" title="Coût estimé de '.$config_ini['prix']['pv_bas'] .'€/Wc en fourchette basse & '.$config_ini['prix']['pv_haut'] .'€/Wc en haute">?</a>)</li>';
+		if ($meilleurParcBatterie['nbBatterieParalle'] != 99999) { 
+			$BudgetBarBas=$config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_bas']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['V']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'];
+			$BudgetBarHaut=$config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_haut']*$meilleurParcBatterie['Ah']*$meilleurParcBatterie['V']*$meilleurParcBatterie['nbBatterieParalle']*$meilleurParcBatterie['nbBatterieSerie'];
+		} else { 
+			$BudgetBarBas=$config_ini['prix']['bat_'.$BatType.'_bas']*$Cap*$U;
+			$BudgetBarHaut=$config_ini['prix']['bat_'.$BatType.'_haut']*$Cap*$U;
+		} 
+		echo '<li>Batterie : entre '.convertNumber($BudgetBarBas, 'print').'€ et '.convertNumber($BudgetBarHaut, 'print').'€ (<a rel="tooltip" class="bulles" title="Avec un coût estimé de '.$config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_bas']*$meilleurParcBatterie['V'] .'€/Ah en fourchette basse & '.$config_ini['prix']['bat_'.$meilleurParcBatterie['type'].'_haut']*$meilleurParcBatterie['V'] .'€/Ah en haute">?</a>)</li>';
+		if (!$meilleurRegulateur['nom']) {
+			$budgetRegulateur=0;
+			echo '<li>Régulateur : désolé nous n\'avons pas réussi à faire une hypothèse pour le régulateur.</li>';
+		} else {
+			$budgetRegulateur=$meilleurRegulateur['Prix']*$nbRegulateur;
+			echo '<li>Régulateur : environ '.convertNumber($budgetRegulateur, 'print') .'€</li>';
+		}
+		if ($meilleurConvertisseur['nom'] == '') {
+			$budgetConvertisseurBas=0;
+			$budgetConvertisseurHaut=0;
+			echo '<li>Convertisseur : désolé nous n\'avons pas réussi à faire une hypothèse pour un convertisseur.</li> ';
+		} else {
+			$budgetConvertisseurBas=$config_ini['prix']['conv_bas']*$meilleurConvertisseur['VA'];
+			$budgetConvertisseurHaut=$config_ini['prix']['conv_haut']*$meilleurConvertisseur['VA'];
+			echo '<li>Convertisseur : entre '.convertNumber($budgetConvertisseurBas, 'print').'€ et '.convertNumber($budgetConvertisseurHaut, 'print').'€ (<a rel="tooltip" class="bulles" title="Avec un coût estimé de '.$config_ini['prix']['conv_bas'].'€/VA en fourchette basse & '.$config_ini['prix']['conv_haut'].'€/VA en haute">?</a>)</li>';
+		}
+		echo '<li>Câblage : environ '.convertNumber($BudgetCable, 'print') .'€</li>';
+		$budgetTotalBas=$BudgetPvBas+$BudgetBarBas+$budgetRegulateur+$budgetConvertisseurBas+$BudgetCable;
+		$budgetTotalHaut=$BudgetPvHaut+$BudgetBarHaut+$budgetRegulateur+$budgetConvertisseurHaut+$BudgetCable;
+		?>
+	</ul>
+	<p>Ce qui nous fait un budget total <b>entre <?= convertNumber($budgetTotalBas, 'print') ?> et <?= convertNumber($budgetTotalHaut, 'print') ?>€</b>. A ça il faut ajouter le prix des supports de panneau, du câblage/cosse ainsi des éléments de protecions (fusible, coup batterie...).</p>
+	
 	<!-- Afficher ou non les informations complémentaire du formulaire -->
 	<script type="text/javascript">
 		$( "#resultCalcPvShow" ).click(function() {

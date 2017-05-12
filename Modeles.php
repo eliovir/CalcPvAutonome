@@ -82,6 +82,18 @@ switch ($_GET['data']) {
 			echo '</tr>';
 		}	
 	break;
+	case 'cable':
+		echo '<tr>';
+			echo '<th>Section</th>';
+			echo '<th>Estimation prix</th>';
+		echo '</tr>';
+		foreach ($config_ini['cablage'] as $modele => $valeur) {
+			echo '<tr>';
+				echo '<td>'.ucfirst($valeur['nom']).'</td>';
+				echo '<td>'.$valeur['prix'].' €/m</td>';
+			echo '</tr>';
+		}	
+	break;
 	default:
        echo 'no hack';
 }

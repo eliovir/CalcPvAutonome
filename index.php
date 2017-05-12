@@ -1,3 +1,4 @@
+<?php $CalcPvAutonomeVersion='1.1.2'; ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -41,7 +42,7 @@
 		?>
 		<div id="footer">
             <p class="footer_right">Par <a href="http://david.mercereau.info/">David Mercereau</a> (<a href="https://github.com/kepon85/CalcPvAutonome">Dépôt github</a>)</p>
-            <p class="footer_left">CalcPvAutonome version 1.1.1 est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
+            <p class="footer_left">CalcPvAutonome version <?php $CalcPvAutonomeVersion ?> est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
         </div>
         <?php 
 		}
