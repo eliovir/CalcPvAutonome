@@ -559,7 +559,7 @@ if (isset($_GET['submit'])) {
 	?>
 	
 	<h3 id="resultatBatControleur">Contrôleur de batterie</h3>
-	<p>Il vous est conseillé d'avoir un contrôleur de batterie afin de savoir dans quel état de charge se trouve votre parc de batterie
+	<p>Il vous est conseillé d'avoir un contrôleur de batterie afin de connaître l'état de charge de votre parc de batterie.
 	<?php if ($Cap > 100 || $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'] > 100) {  
 		// type BMV
 		$BudgetBatControleur = 150;
