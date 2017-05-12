@@ -100,7 +100,7 @@ if (isset($_GET['submit'])) {
 	<!-- 
 		Les PV
 	-->
-	<h3>Panneau photovoltaïque</h3>
+	<h3 id="resultatPv">Panneau photovoltaïque</h3>
 	<div id="resultCalcPv" class="calcul">
 		<p>On cherche ici la puissance (crête exprimée en W) des panneaux photovoltaïques à installer pour satisfaire vos besoins en fonction de votre situation géographique. La formule est la suivante : </p>
 		<p>Pc = Bj / (Rb X Ri X Ej)</p>
@@ -217,7 +217,7 @@ if (isset($_GET['submit'])) {
 	<!-- 
 		Les batteries
 	-->
-	<h3>Batterie</h3>
+	<h3 id="resultatBat">Batterie</h3>
 	<div id="resultCalcBat" class="calcul">
 		<p>On cherche ici la capacité nominale des batteries exprimée en ampères heure (Ah, donné en <a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">C10</a>)</p>
 		<?php 
@@ -228,9 +228,9 @@ if (isset($_GET['submit'])) {
 		} 
 		// Si la tension U à été mise en automatique ou que le niveau n'est pas expert
 		if ($_GET['U'] == 0 || $_GET['Ni'] != 3) {
-			if (convertNumber($Pc) < 800) {
+			if (convertNumber($Pc) < 500) {
 				$U = 12;
-			} elseif (convertNumber($Pc) > 1600) {
+			} elseif (convertNumber($Pc) > 1500) {
 				$U = 48;
 			} else {	
 				$U = 24;
@@ -245,7 +245,7 @@ if (isset($_GET['submit'])) {
 			<li>Bj (Wh/j) : Besoins journaliers</li>
 			<li>Aut : Nombre de jour d'autonomie (sans soleil)</li>
 			<li>DD (%) : <a rel="tooltip" class="bulles" title="Avec la technologie AGM il ne faut pas passer sous le seuil critique des 50%">Degré de décharge maximum</a></li>
-			<li>U (V) : <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 800Wc : 12V<br />De 800 à 1600 Wc : 24V<br />Au dessus de 1600 Wc : 48V">Tension finale du parc de batterie</a></li>
+			<li>U (V) : <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 500Wc : 12V<br />De 500 à 1500 Wc : 24V<br />Au dessus de 1500 Wc : 48V">Tension finale du parc de batterie</a></li>
 		</ul>
 		<p>Dans votre cas ça nous fait : </p>
 		<?php 
@@ -359,7 +359,6 @@ if (isset($_GET['submit'])) {
 		} else {
 			echo '<p>Vous avez choisi de travailler avec des batterie(s) de type <b>'.$meilleurParcBatterie['nom'].'</b>. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah.</p>';
 		}
-		
 			echo '<ul><li><b>'.$meilleurParcBatterie['nbBatterieSerie'].' batterie(s) en série</b> (<a rel="tooltip" class="bulles" title="Tension de la batterie ('.$meilleurParcBatterie['V'].'V) * '.$meilleurParcBatterie['nbBatterieSerie'].' série(s)">pour une tension de '.$U.'V</a>) ';
 			if ($meilleurParcBatterie['nbBatterieParalle'] != 1) {
 				echo 'sur <b>'.$meilleurParcBatterie['nbBatterieParalle'].' parallèle(s)</b> (<a rel="tooltip" class="bulles" title="Capacité de la batterie ('.$meilleurParcBatterie['Ah'].'Ah) * '.$meilleurParcBatterie['nbBatterieParalle'].' parallèle(s)">pour une la capacité à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah</a>)';
@@ -372,10 +371,40 @@ if (isset($_GET['submit'])) {
 		}
 	}
 	?>
+	
+	<p>Vous pouvez simuler l'état de vos batteries grâce à <a href="http://re.jrc.ec.europa.eu/pvgis/apps4/pvest.php?lang=fr&map=europe" target="_blank">PVGIS</a> : <a id="aidePvgisShow">aide à la simulation</a></p>
+	<div id="aidePvgis" class="calcul">
+		<a class="more" id="aidePvgisHide">Cacher l'aide</a>
+		<ul>
+			<li>Cliquer sur ce lien : <a href="http://re.jrc.ec.europa.eu/pvgis/apps4/pvest.php?lang=fr&map=europe" target="_blank">http://re.jrc.ec.europa.eu/pvgis/apps4/pvest.php?lang=fr&map=europe</a></li>
+			<li>Indiquer la ville d'implantation à gauche au dessus de la carte</li>
+			<li>Cliquer sur l'onglet "PV hors-réseau" à droite</li>
+			<li>Puis indiquer les valeurs :</li>
+			<ul>
+				<li>Puissance PV crête : <?=  $meilleurParcPv['W']*$meilleurParcPv['nbPv'] ?></li>
+				<li>Voltage de la batterie : <?= $U ?></li>
+				<?php if ($meilleurParcBatterie['nbBatterieParalle'] != 99999) { ?>
+					<li>Capacité de la batterie : <?= $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'] ?></li>
+				<?php } else { ?>
+					<li>Capacité de la batterie : <?= $Cap ?> en </li>
+				<?php } ?>
+				<li>Consommation journalière : <?= $_GET['Bj'] ?></li>
+				<?php if (isset($_GET['Ej'])) { ?>
+					<li>Inclinaison du module</li>
+					<li>Orientation</li>
+				<?php } else { ?>
+					<li>Inclinaison du module : <?= $_GET['Deg'] ?></li>
+					<li>Orientation : 0° (plein sud)</li>
+				<?php } ?>
+			</ul>
+			<li>Puis cliquer sur calculer</li>
+		</ul>
+		<p>Pour maximiser la durée de vie de vos batteries il est conseillé de ne pas descendre sous les 80% de charge (donc 20% de décharge) trop fréquement..</p>
+	</div>
 	<!-- 
 		Régulateur
 	-->
-	<h3>Régulateur de charge</h3>
+	<h3 id="resultatRegu">Régulateur de charge</h3>
 	<p>Le régulateur de charge est entre les batteries et les panneaux, c'est lui qui gère la charge des batteries en fonction de ce que peuvent fournir les panneaux. </p>
 	<?php 
 	/*
@@ -485,7 +514,7 @@ if (isset($_GET['submit'])) {
 		}
 	}
 	?>
-	<h3>Schéma de câblage</h3>
+	<h3 id="resultatSchema">Schéma de câblage</h3>
 	
 	<?php 
 	if (empty($meilleurRegulateur['nom']) || $meilleurParcBatterie['nbBatterieParalle'] == 99999) {
@@ -506,12 +535,12 @@ if (isset($_GET['submit'])) {
 		if ($nbPvSerie > 5 || $meilleurParcBatterie['nbBatterieSerie'] > 5) {
 			$widthImage=100;
 		}
-		echo '<p>Un schéma de câblage a été établie en fonction des hypothèses émises précédemment :</p>';
+		echo '<p>Un schéma de câblage a été établie en fonction des hypothèses panneau/régulateur/batterie émises précédemment :</p>';
 		echo '<p><a target="_blank" href="'.$SchemaUrl.'"><img width="'.$widthImage.'%"  src="'.$SchemaUrl.'" /></a></p>';
 	}
 	?>
 	
-	<h3>Convertisseur</h3>
+	<h3  id="resultatConv">Convertisseur</h3>
 	<p>Le convertisseur est là pour transformer le courant continue (ici <?= $U ?>V) des batteries en courant alternatif assimilable par les appareils standard du marché. Il vous faut un convertisseur capable de délivrer les <?= $_GET['Pmax'] ?>W de puissance électrique maximum dont vous avez besoin.</p>
 	<?php
 	$meilleurConvertisseur=chercherConvertisseur($U,$_GET['Pmax']);
@@ -529,7 +558,18 @@ if (isset($_GET['submit'])) {
 	}
 	?>
 	
-	<h3>Le câblage</h3>
+	<h3 id="resultatBatControleur">Contrôleur de batterie</h3>
+	<p>Il vous est conseillé d'avoir un contrôleur de batterie afin de savoir dans quel état de charge se trouve votre parc de batterie
+	<?php if ($Cap > 100 || $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'] > 100) {  
+		// type BMV
+		$BudgetBatControleur = 150;
+	 } else {  
+		// type voltmètre
+		$BudgetBatControleur = 15; 
+		echo 'Ceci étant dit, au vu de votre petite installation, un voltmètre parait plus raisonnable / approprié. Grâce à un <a href="https://www.solariflex.com/smartblog/19/comment-interpreter-voltage-batteries.html">tableau de correspondance</a> vous pouvez, de façon grossière et incertaine, déterminer le pourcentage de charge .';
+	} ?>
+	</p>
+	<h3 id="resultatCablage">Le câblage</h3>
 	<?php $BudgetCable=0; ?>
 	<p>Le choix (<a href="http://solarsud.blogspot.fr/2014/11/calcul-de-la-section-du-cable.html" target="_blank">calcul</a>) des sections de câbles est important pour éviter les pertes :</p>
 	<ul>
@@ -635,7 +675,7 @@ if (isset($_GET['submit'])) {
 		</ul>
 	</ul>
 	<p>Un autre calculateur (plus complet) de sections de câbles est disponible sur <a href="http://www.sigma-tec.fr/textes/texte_cables.html" target="_blank">sigma-tec</a>.</p>
-	<h3>Budget</h3>
+	<h3 id="resultatBudget">Budget</h3>
 	<p>Ceci est une estimation grossière pour du matériel neuf, elle ne fait en aucun cas office de devis ;
 	<ul>
 		<?php
@@ -666,15 +706,24 @@ if (isset($_GET['submit'])) {
 			$budgetConvertisseurHaut=$config_ini['prix']['conv_haut']*$meilleurConvertisseur['VA'];
 			echo '<li>Convertisseur : entre '.convertNumber($budgetConvertisseurBas, 'print').'€ et '.convertNumber($budgetConvertisseurHaut, 'print').'€ (<a rel="tooltip" class="bulles" title="Avec un coût estimé de '.$config_ini['prix']['conv_bas'].'€/VA en fourchette basse & '.$config_ini['prix']['conv_haut'].'€/VA en haute">?</a>)</li>';
 		}
+		echo '<li>Contrôleur de batterie : environ '.convertNumber($BudgetBatControleur, 'print') .'€</li>';
 		echo '<li>Câblage : environ '.convertNumber($BudgetCable, 'print') .'€</li>';
-		$budgetTotalBas=$BudgetPvBas+$BudgetBarBas+$budgetRegulateur+$budgetConvertisseurBas+$BudgetCable;
-		$budgetTotalHaut=$BudgetPvHaut+$BudgetBarHaut+$budgetRegulateur+$budgetConvertisseurHaut+$BudgetCable;
+		$budgetTotalBas=$BudgetPvBas+$BudgetBarBas+$budgetRegulateur+$budgetConvertisseurBas+$BudgetCable+$BudgetBatControleur;
+		$budgetTotalHaut=$BudgetPvHaut+$BudgetBarHaut+$budgetRegulateur+$budgetConvertisseurHaut+$BudgetCable+$BudgetBatControleur;
 		?>
 	</ul>
 	<p>Ce qui nous fait un budget total <b>entre <?= convertNumber($budgetTotalBas, 'print') ?> et <?= convertNumber($budgetTotalHaut, 'print') ?>€</b>. A ça il faut ajouter le prix des supports de panneau, du câblage/cosse ainsi des éléments de protecions (fusible, coup batterie...).</p>
 	
 	<!-- Afficher ou non les informations complémentaire du formulaire -->
 	<script type="text/javascript">
+		$( "#aidePvgisShow" ).click(function() {
+			$( "#aidePvgis" ).show( "slow" );
+			$( "#aidePvgisShow" ).hide( "slow" );
+		});
+		$( "#aidePvgisHide" ).click(function() {
+			$( "#aidePvgis" ).hide( "slow" );
+			$( "#aidePvgisShow" ).show( "slow" );
+		});
 		$( "#resultCalcPvShow" ).click(function() {
 			$( "#resultCalcPv" ).show( "slow" );
 			$( "#resultCalcPvShow" ).hide( "slow" );
@@ -715,6 +764,7 @@ if (isset($_GET['submit'])) {
 			$( "#resultCalcCableReguBat" ).hide( "slow" );
 			$( "#resultCalcCableReguBatShow" ).show( "slow" );
 		});
+		$( "#aidePvgisHide" ).click();
 		$( "#resultCalcPvHide" ).click();
 		$( "#resultCalcBatHide" ).click();
 		$( "#resultCalcReguHide" ).click();
@@ -739,6 +789,10 @@ if (isset($_GET['submit'])) {
 			<option value="2"<?php echo valeurRecupSelect('Ni', 2); ?>>Eclairé</option>
 			<option value="3"<?php echo valeurRecupSelect('Ni', 3); ?>>Expert</option>
 		</select>
+	</div>
+	
+	<div class="conseil debutant">
+		<p>Avant de commencer nous vous conseillons de revenir sur <a href="http://www.planete-domotique.com/blog/2015/10/23/quelques-notions-de-base-sur-lelectricite-unites-de-mesure/" target="_blank">quelques notions de base sur l'électricité</a> nécessaire à l'usage de ce calculateur.</p>
 	</div>
 	
 	<h2 class="titre vous">Votre consommation :</h2>	
@@ -771,7 +825,7 @@ if (isset($_GET['submit'])) {
 		<p>Rayonnement en fonction de votre situation géographique : </p>
 		<ul id="onglets">
 			<li<?php echo ongletActif('carte'); ?>>Carte par zone (simple)</li>
-			<li<?php echo ongletActif('valeur'); ?>>Valeur (précis)</li>
+			<li<?php echo ongletActif('valeur'); ?> id="EjOnglet">Valeur (précis)</li>
 		</ul>
 		<div id="contenu">
 			
@@ -882,7 +936,7 @@ if (isset($_GET['submit'])) {
 				<option value="12"<?php echo valeurRecupSelect('U', 12); ?>>12</option>
 				<option value="24"<?php echo valeurRecupSelect('U', 24); ?>>24</option>
 				<option value="48"<?php echo valeurRecupSelect('U', 48); ?>>48</option>
-			</select> V <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 800Wc : 12V<br />De 800 à 1600 Wc : 24V<br />Au dessus de 1600 Wc : 48V">(?)</a>
+			</select> V <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 500Wc : 12V<br />De 500 à 1500 Wc : 24V<br />Au dessus de 1500 Wc : 48V">(?)</a>
 		</div>
 		<div class="form DD">
 			<label>Degré de décharge limite : </label>
@@ -1128,6 +1182,8 @@ $( "#Ni" ).change(function () {
 function changeNiveau() {
 	// Debutant (1)
 	if ($( "#Ni" ).val() == 1) {
+		$( ".conseil.debutant" ).show();
+		$( "#EjOnglet" ).hide();
 		$( ".form.Ri" ).hide();
 		$( ".form.Rb" ).hide();
 		$( ".form.AUT" ).hide();
@@ -1143,6 +1199,8 @@ function changeNiveau() {
 		$( ".part.cable" ).hide();
 	// Eclaire (2)
 	} else if  ($( "#Ni" ).val() == 2) {
+		$( ".conseil.debutant" ).hide();
+		$( "#EjOnglet" ).show();
 		$( ".form.Ri" ).hide();
 		$( ".form.Rb" ).hide();
 		$( ".form.AUT" ).show();
@@ -1161,6 +1219,8 @@ function changeNiveau() {
 		$( ".form.cablageRegleAparMm" ).hide();
 	// Expert (3)
 	} else if ($( "#Ni" ).val() == 3) {
+		$( ".conseil.debutant" ).hide();
+		$( "#EjOnglet" ).show();
 		$( ".form.Ri" ).show();
 		$( ".form.Rb" ).show();
 		$( ".form.AUT" ).show();

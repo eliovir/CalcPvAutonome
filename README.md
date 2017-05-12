@@ -54,6 +54,8 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
  - Gérer le  litium (avec ces contraintes techniques)
  - Ecrire l'algo
  - Prix boîter de jonction
+	- https://www.avelheol.fr/29-boitier-de-jonction
+	- https://solaireshop.fr/materiel-electrique-et-accessoires/cables-et-connecteurs-solaire.html
  - Prendre en considération l'énergie hybride (éolienne, groupe, hydrolienne...)
  - Prendre en compte l'autodécharge
  - Responsive
@@ -67,6 +69,10 @@ CalcConsommation :
 
  - 1.2
 	- Estimation de budget groupé et totalisé
+	- Ajout du contrôleur de batterie (voltmètre pour installation < à 100Ah)
+	- Pédagogie : 
+		- Aide à la simulation PGVIS
+		- Conseil pour les débutant (lecture base de l'électricité)
  - 1.1.1
 	- Petit bug sur la tension du convertisseur qui n'était pas la bonne
 	- Modification des sections de câble pour arriver "au plus prêt" et non pas "au plus haut" : http://forum.apper-solaire.org/viewtopic.php?f=16&t=9242&start=15#p122113
