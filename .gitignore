@@ -1,6 +1,9 @@
 dev
 var
+log_*
 favicon.ico
 .htaccess
 stats
 footer.php
+header.php
+v1.2

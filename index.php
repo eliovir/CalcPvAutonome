@@ -42,7 +42,7 @@
 		?>
 		<div id="footer">
             <p class="footer_right">Par <a href="http://david.mercereau.info/">David Mercereau</a> (<a href="https://github.com/kepon85/CalcPvAutonome">Dépôt github</a>)</p>
-            <p class="footer_left">CalcPvAutonome version <?php $CalcPvAutonomeVersion ?> est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
+            <p class="footer_left">CalcPvAutonome version <?= $CalcPvAutonomeVersion ?> est un logiciel libre sous <a href="https://fr.wikipedia.org/wiki/Beerware">Licence Beerware</a></p>
         </div>
         <?php 
 		}
