@@ -1,4 +1,4 @@
-<?php $CalcPvAutonomeVersion='1.1.2'; ?>
+<?php $CalcPvAutonomeVersion='2.0'; ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -29,6 +29,7 @@
 		if (isset($_GET['p']) && $_GET['p'] == 'CalcConsommation') {
 			echo '<h1>Calculer ces besoins électriques journalier</h1>';
 			echo $HelpMe;
+			@include_once('./header.php');
 			include('./CalcConsommation.php'); 
 		} elseif (isset($_GET['p']) && $_GET['p'] == 'Modeles') {
 			include('./Modeles.php'); 
@@ -36,6 +37,7 @@
 		} else {
 			echo '<h1>Calculer/dimensionner son installation photovoltaïque isolé (autonome)</h1>';
 			echo $HelpMe;
+			 @include_once('./header.php'); 
 			include('./CalcPvAutonome.php'); 
 		}
 		if ($footer == true) {

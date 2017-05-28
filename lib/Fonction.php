@@ -1,4 +1,46 @@
 <?php
+// Retir les accents
+// http://www.weirdog.com/blog/php/supprimer-les-accents-des-caracteres-accentues.html
+function wd_remove_accents($str)
+{
+    $str = htmlentities($str, ENT_NOQUOTES); 
+    $str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+    $str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
+    $str = preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
+    return $str;
+}
+// Ajoute le ° si c'est une valeur chiffré
+function ajoutDegSiAngleChiffre($deg) {
+	if (preg_match('#[0-9]+$#',$deg)) {
+		return $deg.'°';
+	} else {
+		return $deg;
+	}
+}
+// Transforme 'sud' en 0°
+function nomEnAngle($val) {
+	if (!preg_match('#^[0-9]+$#',$val)) {
+		switch($val) {
+			case 'Sud':
+			case 'sud':
+				$val='0°';
+			break;
+			case 'Est':
+			case 'est':
+				$val='-90°';
+			break;
+			case 'Ouest':
+			case 'ouest':
+				$val='90°';
+			break;
+			case 'Nord':
+			case 'nord':
+				$val='180°';
+			break;
+		} 
+	}
+	return $val;
+}
 // Formulaire afficher ce qui est en get ou ce qui est dans la config
 function valeurRecup($nom) {
 	global $config_ini;
@@ -31,9 +73,13 @@ function convertNumber($number, $to = null) {
 }
 
 // Affichage du debug
-function debug($msg) {
+function debug($msg, $balise=null) {
 	if (isset($_GET['debug'])) {
-		echo '<span class="debug">'.$msg.'</span>';
+		if (isset($balise)) {
+			echo '<'.$balise.' class="debug">'.$msg.'</'.$balise.'>';
+		} else {
+			echo $msg;
+		}
 	}
 }
 
@@ -141,7 +187,7 @@ function chercherRegulateur() {
 function chercherCable_SecionAudessus($sectionMinimum) {
 	global $config_ini;
 	foreach ($config_ini['cablage'] as $idCable => $cable) {
-		debug('<p>Pour une section minimum de '.$sectionMinimum.', on test '.$cable['diametre'].'</p>');
+		debug('Pour une section minimum de '.$sectionMinimum.', on test '.$cable['diametre'], 'p');
 		if ($sectionMinimum < $cable['diametre']) {
 			$meilleurCable['nom']=$cable['nom'];
 			$meilleurCable['diametre']=$cable['diametre'];
@@ -178,10 +224,10 @@ function chercherCable_SecionPlusProche($sectionMinimum) {
 // On cherche le bon convertisseur
 function chercherConvertisseur($U,$Pmax) {
 	global $config_ini;
-	debug('<p>Tension '.$U.'</p>');
+	debug('Tension '.$U, 'p');
 	foreach ($config_ini['convertisseur'] as $convertisseur) {
 		if ($U == $convertisseur['Vbat']) {
-			debug('<p>Test pour le convertisseur '.$convertisseur['nom'].'</p>');
+			debug('Test pour le convertisseur '.$convertisseur['nom'], 'p');
 			if ($Pmax <= $convertisseur['Pmax']) {
 				$meilleurConvertisseur['nom']=$convertisseur['nom'];
 				$meilleurConvertisseur['Pmax']=$convertisseur['Pmax'];

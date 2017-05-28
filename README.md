@@ -15,9 +15,9 @@ Pour perfectionner ce logiciel j'ai besoin de vous. donc n'hésitez par à émet
 Pour l'utilisateur de base :
 
   - 3 mode au formulaire (Débutant, Eclairé, Expert)
-  - Pour déterminer l'ensoleillement : 
-	- (simple) Carte par zone
-	- (précis) Valeur du site http://ines.solaire.free.fr/gisesol_1.php (kWh/m²/j)
+  - Le niveau d'ensoleillement est issus du logiciel  http://ines.solaire.free.fr/gisesol.php
+	- Soit on détermine l'orientation, l'inclinaison et de l'albédo (en expert) en fonction de la ville
+	- Soit on laisse le logiciel nous déterminer l'orientation et l'inclinaison la plus optimum en fonction de la ville
   - En mode expert, ajuster le degré de décharge, les valeurs de rendement électrique des batteries ou du reste de l'installation, capacité de courant charge/décharge max...
   - Déduction automatique du nombre de panneaux, batteries et régulateur nessésaire (possibilité de forcer un modèle type ou de personnaliser ces caractéristiques)
   - Hypothèse de câblage panneaux / régulateur (exemple : 3 panneaux en série sur 2 paralèles branché sur un régulateur)
@@ -40,7 +40,7 @@ Pour les utilisateurs avancés :
 
 #### Requis pour le fonctionnement / l'installation du 
 
-  * PHP (5.5-5.6 recomended) + lib gd
+  * PHP (5.5-5.6 recomended) + lib gd + lib sqlite + lib PDO
   * Lighttpd/Apache (ou autre serveur web, service d'hébergement mutualisé...)
 
 #### Installation
@@ -51,11 +51,15 @@ Le rendre accessible depuis votre serveur http et personnaliser les valeur du fi
 
 ### Todos
 
+ - Bouton "autonomie partiel, estival' (exemple camion, caravane vacance) on prend l'IGP de mai...
+ - Créer une tolérance négative. Exemple si on a besoin de 250W, on peut considérer qu'un panneaux de 240W peut faire l'affaire ? (% tolérence paramétrable)
+ - Prévoir une requête vers INES si la BD est vide, incomplète ou non présente. (nessésaire ?)
  - Gérer le  litium (avec ces contraintes techniques)
  - Ecrire l'algo
  - Prix boîter de jonction
 	- https://www.avelheol.fr/29-boitier-de-jonction
 	- https://solaireshop.fr/materiel-electrique-et-accessoires/cables-et-connecteurs-solaire.html
+	- http://www.simple-et-solaire.com/connectique-cablage-8
  - Prendre en considération l'énergie hybride (éolienne, groupe, hydrolienne...)
  - Prendre en compte l'autodécharge
  - Responsive
@@ -67,6 +71,11 @@ CalcConsommation :
 
 ### Changelog
 
+ - 2.0
+	- Utilisation des valeurs IGP (iradiation global sur plan) de Ines Solaire : http://ines.solaire.free.fr/gisesol.php
+		- Choix de l'orientation, l'inclinaison et de l'albédo (en expert) en fonction de la ville
+		- Possibilité de faire déterminer l'orientation et l'inclinaison la plus optimum en fonction de la ville
+		- Une base local à été aspiré, plus de détail voir https://github.com/kepon85/CalcPvAutonome/blob/master/ines.solaire/README.md
  - 1.2
 	- Estimation de budget groupé et totalisé
 	- Ajout du contrôleur de batterie (voltmètre pour installation < à 100Ah)
