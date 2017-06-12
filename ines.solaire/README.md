@@ -3,7 +3,7 @@
 Ines solaire est un logiciel permettant d'obtenir l'IGP (Irradiation Global dans le plan) qui est une valeur nécessaire pour le calcul de l'installation sur CalcPvAutonome
 	Le logiciel Ines Solaire : http://ines.solaire.free.fr/gisesol.php
 
-A l'aide du script GetData.php je récupère toutes les valeurs IGP du mois le plus défavorable en testant toutes les possibilités d'orientation, d'inclinaison et d'albedo par ville (contenu dans FormData.php). Ce script rempli la base db.sqlite afin que les données reste en local pour éviter la latence du logiciel Ines Solaire lors de calcul sur CalcPvAutonome.
+A l'aide du script GetData.php je récupère toutes les valeurs IGP en testant toutes les possibilités d'orientation, d'inclinaison et d'albedo par ville (contenu dans FormData.php). Ce script rempli la base db.sqlite afin que les données reste en local pour éviter la latence du logiciel Ines Solaire lors de calcul sur CalcPvAutonome.
 	
 ### License
 

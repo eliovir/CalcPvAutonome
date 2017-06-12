@@ -1,4 +1,4 @@
-<?php $CalcPvAutonomeVersion='2.0'; ?>
+<?php $CalcPvAutonomeVersion='2.2'; ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -24,21 +24,20 @@
 <body>
 	<div id="page-wrap">
 		<?php
-		$HelpMe='<p>Ce logiciel libre et colaboratif est en recherche de contributeur. N\'hésitez donc pas à donner votre avis sur la méthode de calucl, l\'orthographe, les idée de fonctionnalités qui vous manque, la couleur qui vous pique les yeux ect... <a href="http://david.mercereau.info/contact/" target="_blank">Envoyez tout ça par email</a> ou directement sur le <a href="https://github.com/kepon85/CalcPvAutonome">dépôt Github</a></p>';
 		$footer=true;
 		if (isset($_GET['p']) && $_GET['p'] == 'CalcConsommation') {
 			echo '<h1>Calculer ces besoins électriques journalier</h1>';
-			echo $HelpMe;
 			@include_once('./header.php');
 			include('./CalcConsommation.php'); 
+			@include_once('./bottom.php'); 
 		} elseif (isset($_GET['p']) && $_GET['p'] == 'Modeles') {
 			include('./Modeles.php'); 
 			$footer=false;
 		} else {
 			echo '<h1>Calculer/dimensionner son installation photovoltaïque isolé (autonome)</h1>';
-			echo $HelpMe;
-			 @include_once('./header.php'); 
+			@include_once('./header.php'); 
 			include('./CalcPvAutonome.php'); 
+			@include_once('./bottom.php'); 
 		}
 		if ($footer == true) {
 		?>
@@ -54,7 +53,7 @@
 		<img src="http://calcpvautonome.zici.fr/lib/solar-panel-1393880_1280.png" alt="">
 	</div>
 	<?php @include_once('./footer.php'); ?>
-</body>
+
 <script type="text/javascript">
 $(document).ready(function() {	
 	/* infobulles http://javascript.developpez.com/tutoriels/javascript/creer-info-bulles-css-et-javascript-simplement-avec-jquery/ */
@@ -83,4 +82,5 @@ $(document).ready(function() {
 }); 
 
 </script>
+</body>
 </html>

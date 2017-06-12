@@ -12,6 +12,12 @@ function debug($msg) {
 	}
 }
 
+// Check l'existance du dossier var
+if (!is_writable($config_ini['schemaCablage']['var_dir_file'])) {
+	echo 'Erreur à signaler à l\'administrateur : Vérifier la présence du répertoire '.$config_ini['schemaCablage']['var_dir_file'].' en lecture/écriture par le serveur.';
+	exit();
+}
+
 // Inspiré de http://codes-sources.commentcamarche.net/source/35997-centrer-un-texte-dans-une-image-gd
 function centrage_texte($chaine,$taillePolice, $widthTotal) {
 	// Je calcule le nombre de caractères dans la chaine

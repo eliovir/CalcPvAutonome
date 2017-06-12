@@ -4,6 +4,13 @@
 // Ces données sont récupéré depuis le site : 
 // http://ines.solaire.free.fr/gisesol.php
 
+/*
+ * 7s par requête
+ * 5016 enregistrement par ville
+ * 65 villes
+ * ... il faut que ça tourne 1 mois pour tout aspirer... OU lancer plusieurs fois le script avec uniquement certain albedo...
+ * Remarques : pas plus de 3 script lancé avec la même IP, sinon ça bloque
+ */
 
 /* 
  * Juste l'albedo 0.3
@@ -25,11 +32,42 @@ include('./lib/simple_html_dom.php');
 include('./ines.solaire/FormData.php');
 
 // Sleep entre 2 requette
-$SLEEP_ENTRE_REQUETE=0;
+$SLEEP_ENTRE_REQUETE=2;
+
 
 if (isset($argv[1])) {
-	$albedos = array ($argv[1]);
+		
+		
+	// Pour faire "plus" rapide
+	//	$albedos = array ($argv[1]);
+
+	// Par groupe
+	/*
+	switch ($argv[1]) {
+		case 1:
+		
+		$albedos = array ('0.3',
+						'0.7');
+		
+		break;
+		case 2:
+		
+			$albedos = array ('0.4',
+							'0.5');
+		
+		break;
+		case 3:
+		
+			$albedos = array ('0.8',
+							'0.9');
+					
+		break;
+		default :
+		exit();
+		
+	}*/
 }
+
 
 // Connect DB
 try {
@@ -45,14 +83,14 @@ try {
 
 // Create DB if not exists pour Optimum
 try {
-		$create = $dbco->query("CREATE TABLE IF NOT EXISTS ".$config_ini['irradiation']['dbTableOptimum']." (
-								id INTEGER PRIMARY KEY,
-								ville CHAR(24) NOT NULL,
-								mois CHAR(20) NOT NULL,
-								inclinaison CHAR(11) NOT NULL,
-								orientation CHAR(5) NOT NULL,
-								albedo CHAR(3) NOT NULL,
-								igp NUMERIC(4) NOT NULL);");
+	$create = $dbco->query("CREATE TABLE IF NOT EXISTS ".$config_ini['irradiation']['dbTableOptimum']." (
+							id INTEGER PRIMARY KEY,
+							ville CHAR(24) NOT NULL,
+							mois CHAR(20) NOT NULL,
+							inclinaison CHAR(11) NOT NULL,
+							orientation CHAR(5) NOT NULL,
+							albedo CHAR(3) NOT NULL,
+							igp NUMERIC(4) NOT NULL);");
 } catch ( PDOException $e ) {
 	$e->getMessage();
 	die();
@@ -62,7 +100,18 @@ function parseHtmlForIgp() {
 	global $html;
 	$Igp = array();
 	$IgpMonth=0;
-	$IGP['defavorable']=(float) 99;
+	$IGP['igp1']=(float) 99;
+	$IGP['igp2']=(float) 99;
+	$IGP['igp3']=(float) 99;
+	$IGP['igp4']=(float) 99;
+	$IGP['igp5']=(float) 99;
+	$IGP['igp6']=(float) 99;
+	$IGP['igp7']=(float) 99;
+	$IGP['igp8']=(float) 99;
+	$IGP['igp9']=(float) 99;
+	$IGP['igp10']=(float) 99;
+	$IGP['igp11']=(float) 99;
+	$IGP['igp12']=(float) 99;
 	$IgpOptimumPourLaVille=null;
 	$IgpOptimumPourLaVilleExplode=null;
 	foreach($html->find('td') as $td) {
@@ -72,14 +121,8 @@ function parseHtmlForIgp() {
 			if ($IgpMonth > 0) {
 				$Igp[$IgpMonth]=(float) str_replace(' ','',$td->plaintext);
 				
-				// Si l'IGP est encore plus défavorable que la précédente, on l'enregistre !
-				//echo "\n".$Igp[$IgpMonth].'" <"'.$IGP['defavorable'].'"';
-				if ($Igp[$IgpMonth] < $IGP['defavorable']) {
-					//echo '## OK '.$Igp[$IgpMonth];
-					$IGP['defavorable'] = $Igp[$IgpMonth];
-				//} else {
-				//	echo 'Not ok';
-				}
+				$IGP['igp'.$IgpMonth]=$Igp[$IgpMonth];
+				
 				$IgpMonth++;
 			}
 			// Si la ligne IGP est trouvé on commence à chercher
@@ -122,21 +165,25 @@ foreach ($villes as $ville) {
 	
 	
 	try {
-		if (preg_match('/^sqlite/', $config_ini['irradiation']['db'])) {
+		
 			$create = $dbco->query("CREATE TABLE IF NOT EXISTS ".$villeTableName." (
 									id INTEGER PRIMARY KEY,
 									inclinaison CHAR(11) NOT NULL,
 									orientation CHAR(5) NOT NULL,
 									albedo CHAR(4) NOT NULL,
-									igp NUMERIC(4) NOT NULL);");
-		} else {
-			$create = $dbco->query("CREATE TABLE IF NOT EXISTS ".$villeTableName." (
-									id INTEGER PRIMARY KEY AUTO_INCREMENT,
-									inclinaison CHAR(11) NOT NULL,
-									orientation CHAR(5) NOT NULL,
-									albedo CHAR(4) NOT NULL,
-									igp CHAR(4) NOT NULL);");
-		}
+									igp1 NUMERIC(4) NOT NULL,
+									igp2 NUMERIC(4) NOT NULL,
+									igp3 NUMERIC(4) NOT NULL,
+									igp4 NUMERIC(4) NOT NULL,
+									igp5 NUMERIC(4) NOT NULL,
+									igp6 NUMERIC(4) NOT NULL,
+									igp7 NUMERIC(4) NOT NULL,
+									igp8 NUMERIC(4) NOT NULL,
+									igp9 NUMERIC(4) NOT NULL,
+									igp10 NUMERIC(4) NOT NULL,
+									igp11 NUMERIC(4) NOT NULL,
+									igp12 NUMERIC(4) NOT NULL);");
+		
 	} catch ( PDOException $e ) {
 		$e->getMessage();
 		die();
@@ -199,15 +246,37 @@ foreach ($villes as $ville) {
 					
 					$IGP = parseHtmlForIgp();
 
-					if ($IGP['defavorable'] != 99) {
-						echo " igp=".$IGP['defavorable'];
+					if ($IGP['igp1'] != 99 && $IGP['igp2'] != 99 && $IGP['igp3'] != 99 && $IGP['igp4'] != 99 && $IGP['igp5'] != 99 && $IGP['igp6'] != 99 && $IGP['igp7'] != 99 && $IGP['igp8'] != 99 && $IGP['igp9'] != 99 && $IGP['igp10'] != 99 && $IGP['igp11'] != 99 && $IGP['igp12'] != 99) {
+						echo " igp1=".$IGP['igp1'];
+						echo " igp2=".$IGP['igp2'];
+						echo " igp3=".$IGP['igp3'];
+						echo " igp4=".$IGP['igp4'];
+						echo " igp5=".$IGP['igp5'];
+						echo " igp6=".$IGP['igp6'];
+						echo " igp7=".$IGP['igp7'];
+						echo " igp8=".$IGP['igp8'];
+						echo " igp9=".$IGP['igp9'];
+						echo " igp10=".$IGP['igp10'];
+						echo " igp11=".$IGP['igp11'];
+						echo " igp12=".$IGP['igp12'];
 						try {
-							$insertcmd = $dbco->prepare("INSERT INTO ".$villeTableName." (inclinaison, orientation, albedo, igp) 
-															VALUES (:inclinaison, :orientation, :albedo, :igp)");
+							$insertcmd = $dbco->prepare("INSERT INTO ".$villeTableName." (inclinaison, orientation, albedo, igp1, igp2, igp3, igp4, igp5, igp6, igp7, igp8, igp9, igp10, igp11, igp12) 
+															VALUES (:inclinaison, :orientation, :albedo, :igp1, :igp2, :igp3, :igp4, :igp5, :igp6, :igp7, :igp8, :igp9, :igp10, :igp11, :igp12)");
 							$insertcmd->bindParam('inclinaison', $inclinaison, PDO::PARAM_STR);
 							$insertcmd->bindParam('orientation', $orientation, PDO::PARAM_STR);
 							$insertcmd->bindParam('albedo', $albedo, PDO::PARAM_STR);
-							$insertcmd->bindParam('igp', $IGP['defavorable'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp1', $IGP['igp1'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp2', $IGP['igp2'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp3', $IGP['igp3'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp4', $IGP['igp4'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp5', $IGP['igp5'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp6', $IGP['igp6'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp7', $IGP['igp7'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp8', $IGP['igp8'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp9', $IGP['igp9'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp10', $IGP['igp10'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp11', $IGP['igp11'], PDO::PARAM_STR);
+							$insertcmd->bindParam('igp12', $IGP['igp12'], PDO::PARAM_STR);
 							$insertcmd->execute();
 						} catch ( PDOException $e ) {
 							echo "\nDB insert error :  ", $e->getMessage();

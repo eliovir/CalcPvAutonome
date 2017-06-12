@@ -83,11 +83,6 @@ function debug($msg, $balise=null) {
 	}
 }
 
-// Affichage des erreurs du formulaire
-function erreurPrint($id, $msg) {
-	return '<li>'.$msg.'</li>';
-}
-
 
 // Recherche bonne config régulateur
 function chercherRegulateur() {
@@ -99,13 +94,13 @@ function chercherRegulateur() {
 	$meilleurRegulateur['diffRegulateurParcPvV'] = 99999;
 	$meilleurRegulateur['diffRegulateurParcPvA'] = 99999	;
 	
-	debug('<ul type="1">');
+	debug('<ul type="1" class="debug">');
 	
 	if ($_GET['ModRegu'] == 'perso') {
 		// Mode perso
 		
 		debug('<li>');
-		debug('Test de config avec le régulateur perso ::: ');
+		debug('Avec le régulateur perso indiqué');
 
 
 		debug($parcPvW.'&lt;'.$_GET['PersoReguPmaxPv'].'W, ');
@@ -142,16 +137,16 @@ function chercherRegulateur() {
 			
 			// Debug
 			debug('<li>');
-			debug('Test de config avec le '.$regulateur['nom'].' ::: ');
-			
-			debug($parcPvW.'&lt;'.$regulateur['PmaxPv'].'W, ');
-			debug($parcPvV.'&lt;'.$regulateur['VmaxPv'].'V, ');
-			debug($parcPvI.'&lt;'.$regulateur['ImaxPv'].'A');
-			
+			debug('Le régulateur type '.$regulateur['nom'].' à les caractéristiques suivantes : ');
+			debug('<ul>');
+			debug('Puissance maximum de panneaux accepté '.$regulateur['PmaxPv'].'W, le parc envisagé est à '.$parcPvW, 'li');
+			debug('Tension PV maximum de circuit ouvert accepté '.$regulateur['VmaxPv'].'V, le parc envisagé est à '.$parcPvV, 'li');
+			debug('Courant de court-circuit PV maximal accepté '.$regulateur['ImaxPv'].'A, le parc envisagé est à '.$parcPvI, 'li');
+			debug('</ul>');
 			if ($parcPvW < $regulateur['PmaxPv']
 			&& $parcPvV < $regulateur['VmaxPv']
 			&& $parcPvI < $regulateur['ImaxPv']) {
-				debug(' | ** ça fonctionne ** ');
+				debug('<li>Donc ça fonctionne !</li>', 'ul');
 			} else {
 				continue;
 			}
@@ -164,7 +159,7 @@ function chercherRegulateur() {
 			if ($diffRegulateurParcPvW < $meilleurRegulateur['diffRegulateurParcPvW']
 			|| $diffRegulateurParcPvV < $meilleurRegulateur['diffRegulateurParcPvV']
 			|| $diffRegulateurParcPvI < $meilleurRegulateur['diffRegulateurParcPvA']) {
-				debug(' | ** meilleur config **');
+				debug('<li><b>Meilleur configuration</b> jusqu\'à présent car le parc est au plus prêt des caractéristiques de notre régulateur</li>', 'ul');
 				$meilleurRegulateur['diffRegulateurParcPvW'] = $diffRegulateurParcPvW;
 				$meilleurRegulateur['diffRegulateurParcPvV'] = $diffRegulateurParcPvV;
 				$meilleurRegulateur['diffRegulateurParcPvA'] = $diffRegulateurParcPvI;
@@ -186,19 +181,23 @@ function chercherRegulateur() {
 // On cherche le bon câble
 function chercherCable_SecionAudessus($sectionMinimum) {
 	global $config_ini;
+	debug('<ul class="debug">');
 	foreach ($config_ini['cablage'] as $idCable => $cable) {
-		debug('Pour une section minimum de '.$sectionMinimum.', on test '.$cable['diametre'], 'p');
+		debug('Pour une section minimum de '.$sectionMinimum.', on test '.$cable['diametre'], 'li');
 		if ($sectionMinimum < $cable['diametre']) {
+			debug('<li>C\'est bon car '.$sectionMinimum.' < '.$cable['diametre'].'</li>', 'ul');
 			$meilleurCable['nom']=$cable['nom'];
 			$meilleurCable['diametre']=$cable['diametre'];
 			$meilleurCable['prix']=$cable['prix'];
 			break;
 		}
 	}
+	debug('</ul>');
 	return $meilleurCable;
 }
 function chercherCable_SecionPlusProche($sectionMinimum) {
 	global $config_ini;
+	debug('<ul class="debug">');
 	$meilleurCable['diffSection']=9999;
 	foreach ($config_ini['cablage'] as $idCable => $cable) {
 		$diffSection=$sectionMinimum-$cable['diametre'];
@@ -206,16 +205,16 @@ function chercherCable_SecionPlusProche($sectionMinimum) {
 		if ($diffSection < 0) {
 			$diffSection=$diffSection*-1;
 		}
-		debug('<p>Pour une section la plus proche de '.$sectionMinimum.', on test '.$cable['diametre'].', il y a une différence de '.$diffSection);
+		debug('Pour une section la plus proche de '.$sectionMinimum.', on test '.$cable['diametre'].', il y a une différence de '.$diffSection.', li');
 		if ($diffSection <= $meilleurCable['diffSection']) {
 			$meilleurCable['nom']=$cable['nom'];
 			$meilleurCable['diametre']=$cable['diametre'];
 			$meilleurCable['prix']=$cable['prix'];
 			$meilleurCable['diffSection']=$diffSection;
-			debug(' : *** Nouvelle bonne config');
+			debug('<li>La différence est la plus faible, c\'est la meilleur bonne configuration</li>', 'ul');
 		}
-		debug('</p>');
 	}
+	debug('</ul>');
 
 	return $meilleurCable;
 	
@@ -224,11 +223,12 @@ function chercherCable_SecionPlusProche($sectionMinimum) {
 // On cherche le bon convertisseur
 function chercherConvertisseur($U,$Pmax) {
 	global $config_ini;
-	debug('Tension '.$U, 'p');
+	debug('<ul class="debug">');
 	foreach ($config_ini['convertisseur'] as $convertisseur) {
 		if ($U == $convertisseur['Vbat']) {
-			debug('Test pour le convertisseur '.$convertisseur['nom'], 'p');
+			debug('Test pour le convertisseur '.$convertisseur['nom'], 'li');
 			if ($Pmax <= $convertisseur['Pmax']) {
+				debug('<li>Il est capable de délivrer '.$convertisseur['Pmax'].'W, c\'est le bon !</li>', 'ul');
 				$meilleurConvertisseur['nom']=$convertisseur['nom'];
 				$meilleurConvertisseur['Pmax']=$convertisseur['Pmax'];
 				$meilleurConvertisseur['Ppointe']=$convertisseur['Ppointe'];
@@ -237,6 +237,23 @@ function chercherConvertisseur($U,$Pmax) {
 			}
 		}
 	}
+	debug('</ul>');
 	return $meilleurConvertisseur;
 }
+
+// Pour les erreurs dans le formulaire
+function erreurDansLeFormulaireValue0($id, $msg) {
+	global $erreurDansLeFormulaire, $_GET;
+	if (empty($_GET[$id]) || $_GET[$id] < 0) {
+		$erreurDansLeFormulaire['nb']++;
+		$erreurDansLeFormulaire['msg']=$erreurDansLeFormulaire['msg'].erreurPrint($id, $msg);
+	}
+	return $erreurDansLeFormulaire;
+}
+
+// Affichage des erreurs du formulaire
+function erreurPrint($id, $msg) {
+	return '<li>'.$msg.'</li>';
+}
+
 ?>

@@ -47,7 +47,7 @@ Pour les utilisateurs avancés :
 
 Télécharger et décompresser le fichier zip du master : https://github.com/kepon85/CalcPvAutonome/archive/master.zip
 
-Le rendre accessible depuis votre serveur http et personnaliser les valeur du fichier config.ini?
+Le rendre accessible depuis votre serveur http et personnaliser les valeur du fichier config.ini
 
 ### Todos
 
@@ -71,6 +71,10 @@ CalcConsommation :
 
 ### Changelog
 
+ - 2.2
+	- Mode transparent/débug pour mieux comprendre le fonctionnement du logiciel (uniquement en mode expert)
+	- Prise en compte de l'autonomie partielle (pour les utilisations saisonières) 
+		- Nouvelle base IGP avec toutes les valeurs d'Ines Solaire : http://ines.solaire.free.fr/gisesol.php
  - 2.0
 	- Utilisation des valeurs IGP (iradiation global sur plan) de Ines Solaire : http://ines.solaire.free.fr/gisesol.php
 		- Choix de l'orientation, l'inclinaison et de l'albédo (en expert) en fonction de la ville
