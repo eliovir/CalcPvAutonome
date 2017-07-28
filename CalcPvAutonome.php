@@ -910,7 +910,7 @@ if (isset($_GET['submit'])) {
 	</div>
 	
 	<div class="conseil debutant">
-		<p>Avant de commencer nous vous conseillons de revenir sur <a href="http://www.planete-domotique.com/blog/2015/10/23/quelques-notions-de-base-sur-lelectricite-unites-de-mesure/" target="_blank">quelques notions de base sur l'électricité</a> nécessaire à l'usage de ce calculateur.</p>
+		<p><a href="http://david.mercereau.info/formation-pv/" target="_blank"><img style="float: right; padding: 10ppx" width="100	" src="./lib/FormationPv.png" alt="" /></a><b>Suggestion</b> : regarder la petite <a href="http://david.mercereau.info/formation-pv/" target="_blank">formation vidéo sur l'autonomie électrique photovoltaîque</a> pour un meilleur usage de ce calculateur.</p>
 	</div>
 	
 	<h2 class="titre vous">Votre consommation :</h2>	
@@ -1429,7 +1429,7 @@ function changeNiveau() {
 		$( ".form.ModeDebug" ).hide();
 	// Eclaire (2)
 	} else if  ($( "#Ni" ).val() == 2) {
-		$( ".conseil.debutant" ).hide();
+		$( ".conseil.debutant" ).show();
 		$( "#EjOnglet" ).show();
 		$( ".form.Ri" ).hide();
 		$( ".form.Rb" ).hide();

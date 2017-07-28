@@ -73,8 +73,8 @@ CalcConsommation :
 
  - 2.2
 	- Mode transparent/débug pour mieux comprendre le fonctionnement du logiciel (uniquement en mode expert)
-	- Prise en compte de l'autonomie partielle (pour les utilisations saisonières) 
-		- Nouvelle base IGP avec toutes les valeurs d'Ines Solaire : http://ines.solaire.free.fr/gisesol.php
+	- Prise en compte de l'autonomie partielle (pour les utilisations saisonnières type camping car...) 
+		- Nouvelle base IGP avec, cette fois ci, toutes les valeurs d'Ines Solaire : http://ines.solaire.free.fr/gisesol.php
  - 2.0
 	- Utilisation des valeurs IGP (iradiation global sur plan) de Ines Solaire : http://ines.solaire.free.fr/gisesol.php
 		- Choix de l'orientation, l'inclinaison et de l'albédo (en expert) en fonction de la ville
