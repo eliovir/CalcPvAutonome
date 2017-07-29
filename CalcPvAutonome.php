@@ -351,7 +351,7 @@ if (isset($_GET['submit'])) {
 	$CourantDechargeMax = $Cap*$_GET['IbatDecharge']/100;
 	// Si le courant de décharge n'est pas respecté par rapport à la taille de la batterie
 	if ($CourantDechargBesoinPmax > $CourantDechargeMax) {
-		echo '<p>Le courant de décharge du parc batterie ne doit pas dépasser '.$_GET['IbatDecharge'].'%, ce qui fait <a rel="tooltip" class="bulles" title="'.convertNumber($Cap, 'print').'Ah * '.$_GET['IbatDecharge'].'/100">'.convertNumber($CourantDechargeMax, 'print').'A</a> dans notre cas. Hors avec un besoin en puissance max de '.$_GET['Pmax'].'W de panneau le courant de décharge est de <a rel="tooltip" class="bulles" title="'.$_GET['Pmax'].'W / '.$U.'V">'.convertNumber($CourantDechargBesoinPmax, 'print').'A</a>. Pour répondre au besoin de puissance maximum de '.$_GET['Pmax'].'W, il vous faut augmenter le parc de batterie à ';
+		echo '<p>Le courant de décharge du parc batterie ne doit pas dépasser '.$_GET['IbatDecharge'].'%, ce qui fait <a rel="tooltip" class="bulles" title="'.convertNumber($Cap, 'print').'Ah * '.$_GET['IbatDecharge'].'/100">'.number_format($CourantDechargeMax, 1, ',', ' ').'A</a> dans notre cas. Hors avec un besoin en puissance max de '.$_GET['Pmax'].'W de panneau le courant de décharge est de <a rel="tooltip" class="bulles" title="'.$_GET['Pmax'].'W / '.$U.'V">'.number_format($CourantDechargBesoinPmax, 1, ',', ' ').'A</a>. Pour répondre au besoin de puissance maximum de '.$_GET['Pmax'].'W, il vous faut augmenter le parc de batterie à ';
 		$Cap=$CourantDechargBesoinPmax*100/$_GET['IbatDecharge'];
 		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>.</p>';
 	} else {
@@ -361,7 +361,7 @@ if (isset($_GET['submit'])) {
 	$CourantChargeMax = $Cap*$_GET['IbatCharge']/100;
 	// Si le courant de charge n'est pas respecté par rapport à la taille de la batterie
 	if ($CourantChargeDesPanneaux > $CourantChargeMax) {
-		echo '<p>Le courant de charge du parc batterie ne doit pas dépasser '.$_GET['IbatCharge'].'%, ce qui fait <a rel="tooltip" class="bulles" title="'.convertNumber($Cap, 'print').'Ah * '.$_GET['IbatCharge'].'/100">'.convertNumber($CourantChargeMax, 'print').'A</a> dans notre cas. Hors avec '.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'Wc de panneau le courant de charge est de <a rel="tooltip" class="bulles" title="'.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W / '.$U.'V">'.convertNumber($CourantChargeDesPanneaux, 'print').'A</a>. Si votre régulateur le permet vous pouvez le brider ou augmenter votre parc de batterie à ';
+		echo '<p>Le courant de charge du parc batterie ne doit pas dépasser '.$_GET['IbatCharge'].'%, ce qui fait <a rel="tooltip" class="bulles" title="'.convertNumber($Cap, 'print').'Ah * '.$_GET['IbatCharge'].'/100">'.number_format($CourantChargeMax, 1, ',', ' ').'A</a> dans notre cas. Hors avec '.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'Wc de panneau le courant de charge est de <a rel="tooltip" class="bulles" title="'.$meilleurParcPv['W']*$meilleurParcPv['nbPv'].'W / '.$U.'V">'.number_format($CourantChargeDesPanneaux, 1, ',', ' ').'A</a>. Si votre régulateur le permet vous pouvez le brider ou augmenter votre parc de batterie à ';
 		$Cap=$CourantChargeDesPanneaux*100/$_GET['IbatCharge'];
 		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>. Nous allons partir sur l\'augmentation du parc de batterie.</p>';
 	} else {
@@ -517,7 +517,7 @@ if (isset($_GET['submit'])) {
 	*/
 	// Courant de charge max avec les batteries
 	$batICharge = $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'] * $_GET['IbatCharge'] / 100;
-	debug('On considère le conrant de charge max du parc de batterie  '.$meilleurParcBatterie['Ah'].'Ah à '.$_GET['IbatCharge'].'%. Ce qui nous fait '.convertNumber($batICharge,'print').'A.','p');
+	debug('On considère le conrant de charge max du parc de batterie  '.$meilleurParcBatterie['Ah'].'Ah à '.$_GET['IbatCharge'].'%. Ce qui nous fait '.number_format($batICharge, 2, ',', ' ').'A.','p');
 	
 	debug('Recherche une hypothèse de câblage des panneauux (au maximum en série pour éviter les pertes/grosses sections de câble) avec tous les <a onclick="window.open(\''.$config_ini['formulaire']['UrlModeles'].'&data=regulateur\',\'Les modèles de batteries\',\'directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=600,fullscreen=no\');">les modèles de régulateurs</a>, en '.$U.'V : ','span');
 	// D'abord on test avec 1 régulateur

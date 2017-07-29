@@ -2,6 +2,7 @@
 <?php 
 include('./lib/Fonction.php');
 $config_ini = parse_ini_file('./config.ini', true); 
+
 ?>
 <p>Pour connaître la consommation (en Watt) de vos appareils électriques vous pouvez : 
 <ul>
@@ -51,19 +52,6 @@ foreach ($config_ini['equipement'] as $equipement) {
 	<!--<input type="submit" value="Sauvegarder ce tableau" id="save" />-->
 </p>
 </form>
-
-<?php
-// Si la provenance est du formulaire de CalPvAutonome 
-$goCalcPvAutonome=$config_ini['formulaire']['UrlCalcPvAutonome'];
-if (isset($_GET['from']) && $_GET['from'] == 'CalcPvAutonome' && isset($_SERVER['HTTP_REFERER'])) {
-	$goCalcPvAutonome = $_SERVER['HTTP_REFERER'];
-	// On retir le Bj (besoin journalier de l'URL Refer si il est présent
-	if (preg_match('#Bj=[0-9]+#', $_SERVER['HTTP_REFERER'])) {
-		$goCalcPvAutonome=preg_replace('/Bj=[0-9]+/', '', $_SERVER['HTTP_REFERER']);
-	}	
-}
-echo '<input type="hidden" value="'.$goCalcPvAutonome.'" id="goCalcPvAutonome" />';
-?>
 
 <script type="text/javascript">
 function ajoutUneLigne() {
@@ -221,11 +209,7 @@ function calcTableau() {
 		PmaxTotal = PmaxEquiRecord
 	}
 	$( '#PmaxTotal').text(PmaxTotal);
-	if ($('#goCalcPvAutonome').val().indexOf('\?') == '-1') {
-		$('#hrefCalcPvAutonome').attr('href', $('#goCalcPvAutonome').val()+'?Bj='+Math.round(ConsoTotal)+'&Pmax='+Math.round(PmaxTotal));
-	} else {
-		$('#hrefCalcPvAutonome').attr('href', $('#goCalcPvAutonome').val()+'&Bj='+Math.round(ConsoTotal)+'&Pmax='+Math.round(PmaxTotal));
-	}
+	$('#hrefCalcPvAutonome').attr('href', '<?= $config_ini['formulaire']['UrlCalcPvAutonome'] ?>'+'?Bj='+Math.round(ConsoTotal)+'&Pmax='+Math.round(PmaxTotal));
 }
 
 // Bouton de partage
