@@ -25,7 +25,9 @@
 	<div id="page-wrap">
 		<?php
 		$footer=true;
-		if (isset($_GET['p']) && $_GET['p'] == 'CalcConsommation') {
+		if (isset($_GET['p']) && $_GET['p'] == 'CalcConsommation'
+		 || $_SERVER['HTTP_HOST'] == 'calconso.zici.fr'
+		 || $_SERVER['HTTP_HOST'] == 'calcconso.zici.fr') {
 			echo '<h1>Calculer ces besoins électriques journalier</h1>';
 			@include_once('./header.php');
 			include('./CalcConsommation.php'); 
