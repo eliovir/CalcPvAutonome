@@ -20,17 +20,17 @@ if (isset($_GET['submit'])) {
 	// Détection des erreurs de formulaires
 	$erreurDansLeFormulaire['nb']=0;
 	
-	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Bj', 'Le besoin journalier n\'est pas correcte car < 0');
-	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Pmax', 'Le besoin en puissance maximum n\'est pas correcte car < 0');
+	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Bj', 'Le besoin journalier n\'est pas correct car < 0');
+	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Pmax', 'Le besoin en puissance maximum n\'est pas correct car < 0');
 	if ($_GET['ModPv'] == 'perso') {
-		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoPvV', 'La tension du panneau personalisé n\'est pas correcte car < 0');
-		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoPvW', 'La puissance du panneau personalisé n\'est pas correcte car < 0');
-		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoPvVdoc', 'La tension en circuit ouvert (Vdoc) du panneau personalisé n\'est pas correcte car < 0');
-		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoPvIsc', 'Le courant de court circuit (Isc) du panneau personalisé n\'est pas correcte car < 0');
+		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoPvV', 'La tension du panneau personnalisé n\'est pas correct car < 0');
+		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoPvW', 'La puissance du panneau personnalisé n\'est pas correct car < 0');
+		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoPvVdoc', 'La tension en circuit ouvert (Vdoc) du panneau personnalisé n\'est pas correct car < 0');
+		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoPvIsc', 'Le courant de court circuit (Isc) du panneau personalisé n\'est pas correct car < 0');
 	}
 	if ($_GET['ModBat'] == 'perso') {
-		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoBatV', 'La tension de la batterie personalisée n\'est pas correcte car < 0');
-		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoBatAh', 'La capacité de la batterie personalisée n\'est pas correcte car < 0');
+		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoBatV', 'La tension de la batterie personnalisée n\'est pas correct car < 0');
+		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoBatAh', 'La capacité de la batterie personnalisée n\'est pas correct car < 0');
 	} elseif ($_GET['ModBat'] == 'auto') {
 		// Assure la compatibilité avant cette fonctionnalitée
 		if (empty($_GET['TypeBat'])) {
@@ -38,14 +38,14 @@ if (isset($_GET['submit'])) {
 		}
 	}
 	if ($_GET['ModRegu'] == 'perso') {
-		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoReguVmaxPv', 'La tension du régulateur personalisé n\'est pas correcte car < 0');
-		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoReguPmaxPv', 'La puissance du régulateur personalisé n\'est pas correcte car < 0');
-		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoReguImaxPv', 'Le courant de court-circuit du régulateur personalisé n\'est pas correcte car < 0');
+		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoReguVmaxPv', 'La tension du régulateur personnalisé n\'est pas correct car < 0');
+		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoReguPmaxPv', 'La puissance du régulateur personnalisé n\'est pas correct car < 0');
+		$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('PersoReguImaxPv', 'Le courant de court-circuit du régulateur personnalisé n\'est pas correct car < 0');
 	}
-	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Aut', 'Le nombre de jour d\'autonomie n\'est pas correcte car < 0');
-	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Rb', 'Le rendement électrique des batteries n\'est pas correcte car < 0');
-	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Ri', 'Le rendement électrique de l\'installation n\'est pas correcte car < 0');
-	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('DD', 'Le degré de décharge n\'est pas correcte car < 0');
+	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Aut', 'Le nombre de jours d\'autonomie n\'est pas correct car < 0');
+	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Rb', 'Le rendement électrique des batteries n\'est pas correct car < 0');
+	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('Ri', 'Le rendement électrique de l\'installation n\'est pas correct car < 0');
+	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('DD', 'Le degré de décharge n\'est pas correct car < 0');
 	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('reguMargeIcc', 'La marge de sécurité Icc du régulateur de charge n\'est pas correcte car < 0');
 	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('distancePvRegu', 'La distance entre les panneaux et le régulateur n\'est pas correcte car < 0');
 	$erreurDansLeFormulaire=erreurDansLeFormulaireValue0('distanceReguBat', 'La distance entre le régulateur et les batteries n\'est pas correcte car < 0');
@@ -66,7 +66,7 @@ if (isset($_GET['submit'])) {
 			}
 			$dbco->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch ( PDOException $e ) {
-			die('Impossible de se connecter à la base de donnée de rayonnement solaire (Ines Solaire), merci de <a href="http://david.mercereau.info/contact/">le signaler</a>. Vous pouvez tout de même utiliser le mode manuel pour faire votre simulation.');
+			die('Impossible de se connecter à la base de données de rayonnement solaire (Ines Solaire), merci de <a href="http://david.mercereau.info/contact/">le signaler</a>. Vous pouvez tout de même utiliser le mode manuel pour faire votre simulation.');
 		}
 		if (isset($_GET['InesSolaireAuto'])) {
 			// Choix optimum 
@@ -75,7 +75,7 @@ if (isset($_GET['submit'])) {
 				$InesSolaireAuto=$dbco->query("SELECT mois, inclinaison, orientation, igp FROM ".$config_ini['irradiation']['dbTableOptimum']." WHERE ville = \"".$_GET['InesVille']."\"")->fetch();
 			} catch ( PDOException $e ) {
 				$erreurDansLeFormulaire['nb']++;
-				$erreurDansLeFormulaire['msg']=$erreurDansLeFormulaire['msg'].erreurPrint('InesSolaireAuto', 'Impossible de choisir l\'orientation et l\'inclinaison la plus favorable pour cette ville. Elle n\'a pas été trouvé dans la base (INES Solaire), merci de <a href="http://david.mercereau.info/contact/">le signaler</a>. Vous pouvez tout de même utiliser le mode manuel pour faire votre simulation. <br />Détail de l\'erreur :.'.$e);
+				$erreurDansLeFormulaire['msg']=$erreurDansLeFormulaire['msg'].erreurPrint('InesSolaireAuto', 'Impossible de choisir l\'orientation et l\'inclinaison la plus favorable pour cette ville. Elle n\'a pas été trouvée dans la base (INES Solaire), merci de <a href="http://david.mercereau.info/contact/">le signaler</a>. Vous pouvez tout de même utiliser le mode manuel pour faire votre simulation. <br />Détail de l\'erreur :.'.$e);
 			}
 			if ($InesSolaireAuto != null) {
 				$InesSolaireAuto['inclinaison']=ajoutDegSiAngleChiffre($InesSolaireAuto['inclinaison']);
@@ -90,12 +90,12 @@ if (isset($_GET['submit'])) {
 				$InesSolaire=$dbco->query($Rqt)->fetch();
 			} catch ( PDOException $e ) {
 				$erreurDansLeFormulaire['nb']++;
-				$erreurDansLeFormulaire['msg']=$erreurDansLeFormulaire['msg'].erreurPrint('InesSolaire', 'Impossible de trouver le rayonnement avec les informations indiqué dans la base de donnée (INES Solaire), merci de <a href="http://david.mercereau.info/contact/">le signaler</a>. Vous pouvez tout de même utiliser le mode manuel pour faire votre simulation. <br />Voici la requête qui a échoué '.$Rqt.' <br />Détail de l\'erreur :.'.$e);
+				$erreurDansLeFormulaire['msg']=$erreurDansLeFormulaire['msg'].erreurPrint('InesSolaire', 'Impossible de trouver le rayonnement avec les informations indiqué dans la base de données (INES Solaire), merci de <a href="http://david.mercereau.info/contact/">le signaler</a>. Vous pouvez tout de même utiliser le mode manuel pour faire votre simulation. <br />Voici la requête qui a échoué '.$Rqt.' <br />Détail de l\'erreur :.'.$e);
 			}
 		}
 	} else if ($_GET['Ej'] < 0) {
 		$erreurDansLeFormulaire['nb']++;
-		$erreurDansLeFormulaire['msg']=$erreurDansLeFormulaire['msg'].erreurPrint('Ej', 'Le rayonnement moyen quotidien n\'est pas correcte car < 0');
+		$erreurDansLeFormulaire['msg']=$erreurDansLeFormulaire['msg'].erreurPrint('Ej', 'Le rayonnement moyen quotidien n\'est pas correct car < 0');
 	}
 	if ($erreurDansLeFormulaire['nb'] != 0) {
 		echo '<div class="erreurForm">';
@@ -108,7 +108,7 @@ if (isset($_GET['submit'])) {
 	?>
 
 	<h2 class="titre">Résultat du dimensionnement</h2>
-	<p><b>Avertissement</b>: Les résultats sont donnés à titre indicatif, nous vous conseillons de vous rapprocher d'un professionnel pour l'achat du matériel, celui-ci pourra valider votre installation. </p>
+	<p><b>Avertissement :</b> Les résultats sont donnés à titre indicatif, nous vous conseillons de vous rapprocher d'un professionnel pour l'achat du matériel, celui-ci pourra valider votre installation. </p>
 	<!-- 
 		Les PV
 	-->
@@ -117,8 +117,8 @@ if (isset($_GET['submit'])) {
 		<p>On cherche ici la puissance (crête exprimée en W) des panneaux photovoltaïques à installer pour satisfaire vos besoins en fonction de votre situation géographique. La formule est la suivante : </p>
 		<p>Pc = Bj / (Rb X Ri X Ej)</p>
 		<ul>
-			<li>Pc (Wc) : Puissance crête (recherché)</li>
-			<li>Bj (Wh/j) : Besoins journaliers = <?= $_GET['Bj'] ?></li>
+			<li>Pc (Wc) : puissance crête (recherché)</li>
+			<li>Bj (Wh/j) : besoins journaliers = <?= $_GET['Bj'] ?></li>
 			<li>Rb : rendement électrique des batteries = <?= $_GET['Rb'] ?></li>
 			<li>Ri : rendement électrique du reste de l’installation (régulateur de charge…) = <?= $_GET['Ri'] ?></li>
 			<li>Ej : rayonnement moyen quotidien du mois le plus défavorable dans le plan du panneau (kWh/m²/j)</li>
@@ -214,7 +214,7 @@ if (isset($_GET['submit'])) {
 	debug('Recherche une hypothèse pour avoir le minimum de panneaux au plus proche des besoins de '.convertNumber($Pc,'print').' : ','span');
 	/* Personnaliser */
 	if ($_GET['ModPv'] == 'perso') {
-		debug('Un panneaux personnalisé à été indiqué, nous allons travailler avec celui-ci uniquement.', 'span');
+		debug('Un panneau personnalisé à été indiqué, nous allons travailler avec celui-ci uniquement.', 'span');
 		// Combien de panneau ?
 		$nbPv=intval($Pc / $_GET['PersoPvW'])+1;
 		// Capacité déduite
@@ -234,7 +234,7 @@ if (isset($_GET['submit'])) {
 			debug('Le type de panneau est forcé en '.$_GET['TypePv'],'p');
 		}
 		if ($_GET['ModPv'] == 'auto' ) {
-			debug('On test tout les <a onclick="window.open(\''.$config_ini['formulaire']['UrlModeles'].'&data=pv\',\'Les modèles de panneaux\',\'directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=600,fullscreen=no\');">modèle de panneau</a> de ce type possibles', 'span');
+			debug('On teste tous les <a onclick="window.open(\''.$config_ini['formulaire']['UrlModeles'].'&data=pv\',\'Les modèles de panneaux\',\'directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=600,fullscreen=no\');">modèle de panneau</a> de ce type possibles', 'span');
 		}
 		if ($_GET['ModPv'] != 'auto') {
 			debug('Il a été forcé le choix de travailler avec le modèle type '.$_GET['ModPv'].'W','p');
@@ -279,7 +279,7 @@ if (isset($_GET['submit'])) {
 				# Nouvelle meilleur config
 				// Debug
 				debug('<ul>');
-				debug('<b>Meilleur configuration</b> pour le moment (soit nb pv < à l\'hypothèse précédente, soit moins de différence avec le besoin','li');
+				debug('<b>Meilleure configuration</b> pour le moment (soit nb pv < à l\'hypothèse précédente, soit moins de différence avec le besoin','li');
 				debug('</ul>');
 				$meilleurParcPv['nbPv'] = $nbPv;
 				$meilleurParcPv['diffPcParc'] = round($diffPcParc);
@@ -312,7 +312,7 @@ if (isset($_GET['submit'])) {
 		<?php 
 		// Si la tension U à été mise en automatique ou que le niveau n'est pas expert
 		if ($_GET['U'] == 0 || $_GET['Ni'] != 3) {
-			debug('Pour la tension final du parc de batterie. Automatiquement : si Pc <500Wc on reste en 12V, entre 500 et 1500 on passe en 24V et au delas des 1500Wc on passe en 48V', 'span');
+			debug('Pour la tension finale du parc de batterie. Automatiquement : si Pc <500Wc on reste en 12V, entre 500 et 1500 on passe en 24V et au delà des 1500Wc on passe en 48V', 'span');
 			if (convertNumber($Pc) < 500) {
 				$U = 12;
 				debug('Ici on est donc en '.$U.'V  car le besoin en panneaux est < à 500Wc', 'span');
@@ -325,15 +325,15 @@ if (isset($_GET['submit'])) {
 			}
 		} else {
 			$U = $_GET['U'];
-			debug('La tension final du parc de batterie est forécé à '.$U.'V', 'span');
+			debug('La tension finale du parc de batterie est forcée à '.$U.'V', 'span');
 		}
 		?>
 		<p>Cap = (Bj x Aut) / (DD x U)</p>
 		<ul>
-			<li>Cap (Ah) : Capacité nominale des batteries (en <a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">C10</a>))</li>
-			<li>Bj (Wh/j) : Besoins journaliers = <?= $_GET['Bj'] ?></li>
-			<li>Aut : Nombre de jour d'autonomie (sans soleil) = <?= $_GET['Aut'] ?></li>
-			<li>DD (%) : <a rel="tooltip" class="bulles" title="Avec des batteries au plomb il ne faut pas passer sous le seuil critique des 50% de degré de décharge, 20% est idéal">Degré de décharge maximum</a> = <?= $_GET['DD'] ?></li>
+			<li>Cap (Ah) : capacité nominale des batteries (en <a href="http://www.batterie-solaire.com/batterie-delestage-electrique.htm" target="_blank">C10</a>))</li>
+			<li>Bj (Wh/j) : besoins journaliers = <?= $_GET['Bj'] ?></li>
+			<li>Aut : nombre de jours d'autonomie (sans soleil) = <?= $_GET['Aut'] ?></li>
+			<li>DD (%) : <a rel="tooltip" class="bulles" title="Avec des batteries au plomb il ne faut pas passer sous le seuil critique des 50% de degré de décharge, 20% est idéal">degré de décharge maximum</a> = <?= $_GET['DD'] ?></li>
 			<li>U (V) : <a rel="tooltip" class="bulles" title="En mode automatique la tension des batteries sera déduite du besoin en panneaux<br />De 0 à 500Wc : 12V<br />De 500 à 1500 Wc : 24V<br />Au dessus de 1500 Wc : 48V">Tension finale du parc de batterie</a> = <?= $U ?></li>
 		</ul>
 		<p>Dans votre cas ça nous fait : </p>
@@ -355,7 +355,7 @@ if (isset($_GET['submit'])) {
 		$Cap=$CourantDechargBesoinPmax*100/$_GET['IbatDecharge'];
 		echo '<b>'.convertNumber($Cap, 'print').'Ah</b>.</p>';
 	} else {
-		debug('On a testé que le courant de déchahrge du parc batterie et on ne dépasse pas les '.$_GET['IbatDecharge'].'%.','p');
+		debug('On a testé que le courant de décharge du parc batterie et on ne dépasse pas les '.$_GET['IbatDecharge'].'%.','p');
 	}
 	$CourantChargeDesPanneaux=$meilleurParcPv['W']*$meilleurParcPv['nbPv']/$U;
 	$CourantChargeMax = $Cap*$_GET['IbatCharge']/100;
@@ -392,12 +392,12 @@ if (isset($_GET['submit'])) {
 	} else {
 		debug('Vous avez choisie de privilégier la technologie '.$_GET['TypeBat']);
 	}
-	debug('Recherche une hypothèse parmis <a onclick="window.open(\''.$config_ini['formulaire']['UrlModeles'].'&data=batterie\',\'Les modèles de batteries\',\'directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=600,fullscreen=no\');">les modèles</a> sur le nombre batterie à mettre en paralèle (noté //). Il faut avoir le minimum de batterie au plus proche des besoins de '.convertNumber($Cap,'print').'Ah : ','span');
+	debug('Recherche une hypothèse parmi <a onclick="window.open(\''.$config_ini['formulaire']['UrlModeles'].'&data=batterie\',\'Les modèles de batteries\',\'directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=600,fullscreen=no\');">les modèles</a> sur le nombre batterie à mettre en paralèle (noté //). Il faut avoir le minimum de batterie au plus proche des besoins de '.convertNumber($Cap,'print').'Ah : ','span');
 	debug('<ul type="1">');
 	foreach ($config_ini['batterie'] as $idBat => $batterie) {
 		// En mode personnalisé on force et on stop la boucle à la fin 
 		if ($_GET['ModBat'] == 'perso') {
-			debug('Une batterie personnalisée à été indiqué, nous allons travailler avec celle-ci uniquement.', 'span');
+			debug('Une batterie personnalisée à été indiquée, nous allons travailler avec celle-ci uniquement.', 'span');
 			// plus loin, la même condition avec un break
 			$batterie['Ah'] = $_GET['PersoBatAh'];
 			$batterie['V'] = $_GET['PersoBatV'];
@@ -424,7 +424,7 @@ if (isset($_GET['submit'])) {
 		$diffCap=$capParcBatterie-$Cap;
 		// Debug
 		debug('<li>');
-		debug('Avec une batterie '.$batterie['nom'].' : il en faudrait '.$nbBatterie.' pour une capacité de '.$capParcBatterie.'Ah. La différence avec le besoin est de '.convertNumber($diffCap,'print').'Ah', 'span');
+		debug('Avec une batterie '.$batterie['nom'].' ,il en faudrait '.$nbBatterie.' pour une capacité de '.$capParcBatterie.'Ah. La différence avec le besoin est de '.convertNumber($diffCap,'print').'Ah', 'span');
 		if ($nbBatterie <= 2) {
 			// + de 2 paralèles n'est pas souhaitable			
 			if ($_GET['ModBat'] == 'perso' 
@@ -433,7 +433,7 @@ if (isset($_GET['submit'])) {
 				# Nouvelle meilleur config
 				// Debug
 				debug('<ul>');
-				debug('<b>Meilleur configuration</b> pour le moment car nb < 2 (pas plus de 2 //) & soit nb < hypothèse précédente, soit moins de différence avec le besoin','li');
+				debug('<b>Meilleure configuration</b> pour le moment car nb < 2 (pas plus de 2 //) & soit nb < hypothèse précédente, soit moins de différence avec le besoin','li');
 				debug('</ul>');
 				$meilleurParcBatterie['diffCap'] = round($diffCap);
 				$meilleurParcBatterie['nom'] = $batterie['nom'];
@@ -458,9 +458,9 @@ if (isset($_GET['submit'])) {
 		if ($_GET['ModBat'] == 'auto') {
 			echo '<p>Une hypothèse de câblage serait d\'avoir <b>'.$meilleurParcBatterie['nbBatterieTotal'].' batterie(s)</b> de type <b>'.$meilleurParcBatterie['nom'].'</b> ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah.</p>';
 		} else if ($_GET['ModBat'] == 'perso') {
-			echo '<p>Vous avez choisi de travailler avec des batterie(s) personnalisé à '.$meilleurParcBatterie['Ah'].'Ah en '.$meilleurParcBatterie['V'].'V. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah.</p>';
+			echo '<p>Vous avez choisi de travailler avec des batteries personnalisées à '.$meilleurParcBatterie['Ah'].'Ah en '.$meilleurParcBatterie['V'].'V. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah.</p>';
 		} else {
-			echo '<p>Vous avez choisi de travailler avec des batterie(s) de type <b>'.$meilleurParcBatterie['nom'].'</b>. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah.</p>';
+			echo '<p>Vous avez choisi de travailler avec des batteries de type <b>'.$meilleurParcBatterie['nom'].'</b>. Voici une hypothèse de câblage avec <b>'.$meilleurParcBatterie['nbBatterieTotal'].'</b> de ces batteries ce qui pousse la capacité du parc à '.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah.</p>';
 		}
 			echo '<ul><li><b>'.$meilleurParcBatterie['nbBatterieSerie'].' batterie(s) en série</b> (<a rel="tooltip" class="bulles" title="Tension de la batterie ('.$meilleurParcBatterie['V'].'V) * '.$meilleurParcBatterie['nbBatterieSerie'].' série(s)">pour une tension de '.$U.'V</a>) ';
 			if ($meilleurParcBatterie['nbBatterieParalle'] != 1) {
@@ -504,7 +504,7 @@ if (isset($_GET['submit'])) {
 			</ul>
 			<li>Puis cliquer sur calculer</li>
 		</ul>
-		<p>Pour maximiser la durée de vie de vos batteries il est conseillé de ne pas descendre sous les 80% de charge (donc 20% de décharge) trop fréquement..</p>
+		<p>Pour maximiser la durée de vie de vos batteries il est conseillé de ne pas descendre sous les 80% de charge (donc 20% de décharge) trop fréquement.</p>
 	</div>
 	<!-- 
 		Régulateur
@@ -517,9 +517,9 @@ if (isset($_GET['submit'])) {
 	*/
 	// Courant de charge max avec les batteries
 	$batICharge = $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'] * $_GET['IbatCharge'] / 100;
-	debug('On considère le conrant de charge max du parc de batterie  '.$meilleurParcBatterie['Ah'].'Ah à '.$_GET['IbatCharge'].'%. Ce qui nous fait '.number_format($batICharge, 2, ',', ' ').'A.','p');
+	debug('On considère le courant de charge max du parc de batteries '.$meilleurParcBatterie['Ah'].'Ah à '.$_GET['IbatCharge'].'%. Ce qui nous fait '.number_format($batICharge, 2, ',', ' ').'A.','p');
 	
-	debug('Recherche une hypothèse de câblage des panneauux (au maximum en série pour éviter les pertes/grosses sections de câble) avec tous les <a onclick="window.open(\''.$config_ini['formulaire']['UrlModeles'].'&data=regulateur\',\'Les modèles de batteries\',\'directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=600,fullscreen=no\');">les modèles de régulateurs</a>, en '.$U.'V : ','span');
+	debug('Recherche une hypothèse de câblage des panneaux (au maximum en série pour éviter les pertes/grosses sections de câble) avec tous les <a onclick="window.open(\''.$config_ini['formulaire']['UrlModeles'].'&data=regulateur\',\'Les modèles de batteries\',\'directories=no,menubar=no,status=no,location=no,resizable=yes,scrollbars=yes,height=500,width=600,fullscreen=no\');">les modèles de régulateurs</a>, en '.$U.'V : ','span');
 	// D'abord on test avec 1 régulateur
 	// Ensuite on test tout en série
 	// Si on trouve pas, on divise en parallèle
@@ -534,7 +534,7 @@ if (isset($_GET['submit'])) {
 		$nbPvSerie = $nbPvConfigFinal;
 		$nbPvParalele = 1;
 		while ($nbPvSerie >= 1) {
-			debug('En considérant '.$nbRegulateur.' régulateur, on test avec '.$nbPvSerie.' panneaux en série sur '.$nbPvParalele.' parallèle :', 'p');
+			debug('En considérant '.$nbRegulateur.' régulateur, on teste avec '.$nbPvSerie.' panneaux en série sur '.$nbPvParalele.' parallèle :', 'p');
 			$VdocParcPv=$meilleurParcPv['Vdoc']*$nbPvSerie;
 			$IscParcPv=$meilleurParcPv['Isc']*$nbPvParalele;
 			$parcPvW = $nbPvSerie*$nbPvParalele * $meilleurParcPv['W'];
@@ -543,7 +543,7 @@ if (isset($_GET['submit'])) {
 			
 			$meilleurRegulateur = chercherRegulateur();
 			
-			// Solutaion trouvé
+			// Solution trouvée
 			if ($meilleurRegulateur['nom']) {
 				break;
 			}
@@ -611,7 +611,7 @@ if (isset($_GET['submit'])) {
 				<li><b><?= $meilleurRegulateur['ImaxPv'] ?>A</b> de courant de court-circuit PV maximal : </li>
 					<ul><li>Avec <?= $nbPvParalele ?> panneau(x) en parallèle(s) ayant une intensité (Isc) de <?= $meilleurParcPv['Isc'] ?>A et une marge de sécurité de <?= $_GET['reguMargeIcc'] ?>%, on monte à <b><?= $nbPvParalele*($meilleurParcPv['Isc']+$meilleurParcPv['Isc']*$_GET['reguMargeIcc']/100) ?>A</b> (<a rel="tooltip" class="bulles" title="(<?= $meilleurParcPv['Isc'] ?>A d'Isc * <?= $_GET['reguMargeIcc'] ?>/100 de marge + <?= $meilleurParcPv['Isc'] ?>A d'Isc) x <?= $nbPvParalele ?> panneau(x) en parallèle(s)">?</a>)</li></ul>
 			</ul>
-			<p>Note : La mise en série multiple la tension (V) et la mise en parallèle multiplie l'intensité (I)</p>
+			<p>Note : la mise en série additionne la tension (V) et la mise en parallèle additionne l'intensité (I)</p>
 			<p>Toutes ces caractéristiques sont disponibles dans la fiche technique du produit. Vous pouvez personnaliser les caractéristiques de votre régulateur en mode <i>Expert</i>.</p>
 			<p><a class="more" id="resultCalcReguHide">Cacher la démarche</a></p>
 			<p> </p>
@@ -619,7 +619,7 @@ if (isset($_GET['submit'])) {
 		<p><a id="resultCalcReguShow">Voir, comprendre la démarche</a></p>	
 		<?php
 		if ($nbPvParalele > 1) {
-			echo 'Quand il y a des parallèles il est recommander de poser un boitier de raccordement avec des fusibles sur chaques branches pour protéger les panneaux contre un courant inverse.';
+			echo 'Quand il y a des parallèles il est recommandé de poser un boitier de raccordement avec des fusibles sur chaque branche pour protéger les panneaux contre un courant inverse.';
 		}
 	}
 	?>
@@ -644,7 +644,7 @@ if (isset($_GET['submit'])) {
 		if ($nbPvSerie > 5 || $meilleurParcBatterie['nbBatterieSerie'] > 5) {
 			$widthImage=100;
 		}
-		echo '<p>Un schéma de câblage a été établie en fonction des hypothèses panneau/régulateur/batterie émises précédemment :</p>';
+		echo '<p>Un schéma de câblage a été établi en fonction des hypothèses panneau/régulateur/batterie émises précédemment :</p>';
 		echo '<p><a target="_blank" href="'.$SchemaUrl.'"><img width="'.$widthImage.'%"  src="'.$SchemaUrl.'" /></a></p>';
 	}
 	?>
@@ -662,14 +662,14 @@ if (isset($_GET['submit'])) {
 		$PuissanceMaxDechargeBatterie=$CourantDechargeMaxParcBatterieHypothetique*$U;
 		echo '<p>Une hypothèse serait d\'opter pour un <b>convertisseur type '.$meilleurConvertisseur['nom'].'</b> qui monte en puissance maximum de sortie à '.$meilleurConvertisseur['Pmax'].'W avec des pointes possible à '.$meilleurConvertisseur['Ppointe'].'W.';
 		if ($PuissanceMaxDechargeBatterie < $meilleurConvertisseur['Pmax']) {
-			echo 'Ceci dit, pour ne pas endommager vos batteries, vous ne pourrez aller au delas des '.$PuissanceMaxDechargeBatterie.'W <a rel="tooltip" class="bulles" title="('.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah de batterie * '.$_GET['IbatDecharge'].'/100 de courant max de décharge des batterie) * '.$U.'V">?</a>';
+			echo 'Ceci dit, pour ne pas endommager vos batteries, vous ne pourrez aller au delà des '.$PuissanceMaxDechargeBatterie.'W <a rel="tooltip" class="bulles" title="('.$meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'].'Ah de batterie * '.$_GET['IbatDecharge'].'/100 de courant max de décharge des batterie) * '.$U.'V">?</a>';
 		}
 		echo '</p>';
 	}
 	?>
 	
 	<h3 id="resultatBatControleur">Contrôleur de batterie</h3>
-	<p>Il vous est conseillé d'avoir un contrôleur de batterie afin de connaître l'état de charge de votre parc de batterie.
+	<p>Il vous est conseillé d'avoir un contrôleur de batterie afin de connaître l'état de charge de votre parc de batteries.
 	<?php if ($Cap > 100 || $meilleurParcBatterie['Ah']*$meilleurParcBatterie['nbBatterieParalle'] > 100) {  
 		// type BMV
 		$BudgetBatControleur = 150;
@@ -699,7 +699,7 @@ if (isset($_GET['submit'])) {
 		<a id="resultCalcCablePvReguShow">(voir, comprendre la démarche)</a></li>
 		<div id="resultCalcCablePvRegu" class="calcul">
 			<p><a class="more" id="resultCalcCablePvReguHide">Cacher la démarche</a></p>
-			<p>La formule pour calculer une seciton de câble pour éviter les pertes est :</p>
+			<p>La formule pour calculer une section de câble pour éviter les pertes est :</p>
 			<p>S = Rho x L x I / PT</p>
 			<ul>
 				<li>S (mm²) : Section du conducteur</li>
@@ -730,7 +730,7 @@ if (isset($_GET['submit'])) {
 		} else { 
 			$BudgetCable=$BudgetCable+$_GET['distancePvRegu']*$meilleurCable['prix'];
 			?>
-			<li>Section de câble la plus proche proposé : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distancePvRegu']*$meilleurCable['prix'] ?>€</li>
+			<li>Section de câble la plus proche proposée : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distancePvRegu']*$meilleurCable['prix'] ?>€</li>
 		<?php } ?>
 		</ul>
 		<?php
@@ -780,7 +780,7 @@ if (isset($_GET['submit'])) {
 		} else { 
 			$BudgetCable=$BudgetCable+$_GET['distanceReguBat']*$meilleurCable['prix'];
 			?>
-			<li>Section de câble la plus proche proposé : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distanceReguBat']*$meilleurCable['prix'] ?>€</li>
+			<li>Section de câble la plus proche proposée : <b><?= $meilleurCable['nom'] ?></b>, pour un coût d'environ <?= $_GET['distanceReguBat']*$meilleurCable['prix'] ?>€</li>
 		<?php } ?>
 		</ul>
 	</ul>
@@ -822,7 +822,7 @@ if (isset($_GET['submit'])) {
 		$budgetTotalHaut=$BudgetPvHaut+$BudgetBarHaut+$budgetRegulateur+$budgetConvertisseurHaut+$BudgetCable+$BudgetBatControleur;
 		?>
 	</ul>
-	<p>Ce qui nous fait un budget total <b>entre <?= convertNumber($budgetTotalBas, 'print') ?> et <?= convertNumber($budgetTotalHaut, 'print') ?>€</b>. A ça il faut ajouter le prix des supports de panneau, du câblage/cosse ainsi des éléments de protecions (fusible, coup batterie...).</p>
+	<p>Ce qui nous fait un budget total <b>entre <?= convertNumber($budgetTotalBas, 'print') ?> et <?= convertNumber($budgetTotalHaut, 'print') ?>€</b>. A ça il faut ajouter le prix des supports de panneau, du câblage/cosse ainsi des éléments de protections (fusible, coup batterie...).</p>
 	<h3 id="resultatDon">Soutenir, contribuer</h3>
 	<p>Si ce logiciel vous a été utile et/ou que vous voulez exprimer de la reconnaissance :  </p>
 	<ul>
